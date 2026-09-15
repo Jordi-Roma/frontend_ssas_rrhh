@@ -2569,6 +2569,8 @@ export interface components {
             codigo: string;
             /** Description */
             description?: string | null;
+            /** Es Base */
+            es_base: boolean;
             /** Is Active */
             is_active: boolean;
             /** Permissions */

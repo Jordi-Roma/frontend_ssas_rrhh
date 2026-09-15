@@ -22,7 +22,8 @@ export const bitacoraApi = {
       `/api/v1/bitacora${query.size ? `?${query}` : ''}`,
     )
   },
-  get(id: string) {
-    return apiRequest<components['schemas']['AuditLogSchema']>(`/api/v1/bitacora/${id}`)
+  get(id: string, empresaId?: string) {
+    const query = empresaId ? `?empresa_id=${encodeURIComponent(empresaId)}` : ''
+    return apiRequest<components['schemas']['AuditLogSchema']>(`/api/v1/bitacora/${id}${query}`)
   },
 }

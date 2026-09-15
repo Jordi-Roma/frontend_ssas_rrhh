@@ -13,6 +13,7 @@ import { EmpresaModulosPage } from '../../features/empresas/pages/EmpresaModulos
 import { OrganizacionPage } from '../../features/organizacion/pages/OrganizacionPage'
 import { PortalPublicoPage } from '../../features/portal/pages/PortalPublicoPage'
 import { RolesPage } from '../../features/roles/pages/RolesPage'
+import { ReportesPage } from '../../features/reportes/pages/ReportesPage'
 import { TableroPage } from '../../features/tablero/pages/TableroPage'
 import { ListadoUsuariosPage } from '../../features/usuarios/pages/ListadoUsuariosPage'
 import { VacanteFormPage } from '../../features/vacantes/pages/VacanteFormPage'
@@ -80,8 +81,6 @@ export function AppRouter() {
       <Route path="/publico/:slug/vacantes/:vacanteId" element={<PortalPublicoPage />} />
       <Route path="/publico/:slug/seguimiento" element={<PortalPublicoPage />} />
 
-      <Route path="/entrevistas" element={<EntrevistasPage />} />
-
       <Route element={<ProtectedArea />}>
         <Route index element={<DashboardPage />} />
         <Route path="cambiar-clave" element={<ChangePasswordPage />} />
@@ -113,6 +112,10 @@ export function AppRouter() {
         <Route
           path="bitacora"
           element={empresa(<BitacoraPage />, 'BITACORA', ['bitacora:ver', 'platform:bitacora:ver'])}
+        />
+        <Route
+          path="reportes"
+          element={empresa(<ReportesPage />, 'REPORTES', ['reportes:ver', 'platform:reportes:gestionar'])}
         />
         <Route
           path="organizacion"

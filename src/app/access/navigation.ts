@@ -77,6 +77,13 @@ export const NAV_ITEMS: NavItem[] = [
     permisos: ['bitacora:ver', 'platform:bitacora:ver'],
     grupo: 'Administración',
   },
+  {
+    to: '/reportes',
+    label: 'Reportes',
+    modulo: 'REPORTES',
+    permisos: ['reportes:ver', 'platform:reportes:gestionar'],
+    grupo: 'Análisis',
+  },
   { to: '/perfil', label: 'Mi perfil', grupo: 'Cuenta' },
   { to: '/cambiar-clave', label: 'Cambiar contraseña', grupo: 'Cuenta' },
 ]

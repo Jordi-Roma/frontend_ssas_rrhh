@@ -199,6 +199,7 @@
 
 .page-stack {
   display: grid;
+  align-content: start;
   gap: var(--space-6);
   max-width: var(--page-max);
   margin-inline: auto;
@@ -319,11 +320,22 @@
   .sidebar {
     position: static;
     height: auto;
+    padding: var(--space-4);
   }
 
   .main-nav {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    overflow-x: auto;
     margin-top: var(--space-5);
+    padding-bottom: var(--space-2);
+  }
+
+  .main-nav a {
+    flex: 0 0 auto;
+  }
+
+  .nav-group-title {
+    display: none;
   }
 
   .sidebar-user {
@@ -340,9 +352,7 @@
 }
 
 @media (max-width: 640px) {
-  .main-nav {
-    grid-template-columns: 1fr;
-  }
+  .main-content { padding: var(--space-4); }
 
   .page-header {
     align-items: stretch;

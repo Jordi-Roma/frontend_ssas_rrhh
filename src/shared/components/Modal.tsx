@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
+import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type ModalProps = {
@@ -84,7 +85,7 @@ export function Modal({ title, onClose, children, footer, size = 'md' }: ModalPr
         <div className="modal-header">
           <h2 id={titleId}>{title}</h2>
           <button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar">
-            ×
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
         {children}
