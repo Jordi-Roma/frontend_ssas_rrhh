@@ -433,6 +433,23 @@ button.metric-card[aria-pressed='true'] {
   gap: var(--space-2);
 }
 
+.filters .check-label {
+  display: flex;
+  min-height: var(--control-h);
+  align-self: end;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.filters .check-label input {
+  width: 1rem;
+  min-height: 1rem;
+  margin: 0;
+  flex: 0 0 1rem;
+}
+
 /* --- Tablas --- */
 .table-wrap {
   overflow-x: auto;
