@@ -84,6 +84,27 @@ export const NAV_ITEMS: NavItem[] = [
     permisos: ['reportes:ver', 'platform:reportes:gestionar'],
     grupo: 'Análisis',
   },
+  {
+    to: '/respaldos',
+    label: 'Backup / Restore',
+    soloRealm: 'platform',
+    permisos: ['platform:backup:ver'],
+    grupo: 'Plataforma',
+  },
+  {
+    to: '/planes',
+    label: 'Planes y suscripciones',
+    soloRealm: 'platform',
+    permisos: ['platform:planes:ver'],
+    grupo: 'Plataforma',
+  },
+  {
+    to: '/suscripcion',
+    label: 'Mi suscripción',
+    soloRealm: 'tenant',
+    permisos: ['suscripcion:ver'],
+    grupo: 'Cuenta',
+  },
   { to: '/perfil', label: 'Mi perfil', grupo: 'Cuenta' },
   { to: '/cambiar-clave', label: 'Cambiar contraseña', grupo: 'Cuenta' },
 ]

@@ -14,12 +14,15 @@ import { OrganizacionPage } from '../../features/organizacion/pages/Organizacion
 import { PortalPublicoPage } from '../../features/portal/pages/PortalPublicoPage'
 import { RolesPage } from '../../features/roles/pages/RolesPage'
 import { ReportesPage } from '../../features/reportes/pages/ReportesPage'
+import { RespaldosPage } from '../../features/respaldos/pages/RespaldosPage'
 import { TableroPage } from '../../features/tablero/pages/TableroPage'
 import { ListadoUsuariosPage } from '../../features/usuarios/pages/ListadoUsuariosPage'
 import { VacanteFormPage } from '../../features/vacantes/pages/VacanteFormPage'
 import { VacantesListPage } from '../../features/vacantes/pages/VacantesListPage'
 import { HabilidadesPage } from '../../features/habilidades/pages/HabilidadesPage'
 import { PostulantesPage } from '../../features/postulantes/pages/PostulantesPage'
+import { MiSuscripcionPage } from '../../features/suscripciones/pages/MiSuscripcionPage'
+import { PlanesPage } from '../../features/suscripciones/pages/PlanesPage'
 import { MiPerfilPage } from '../../features/perfil/pages/MiPerfilPage'
 import { EntrevistasPage } from '../../features/entrevistas/pages/EntrevistasPage'
 import { FullPageStatus } from '../../shared/components'
@@ -87,6 +90,22 @@ export function AppRouter() {
         <Route path="perfil" element={<MiPerfilPage />} />
 
         <Route path="empresas" element={plataforma(<AltaEmpresaPage />, ['platform:empresas:ver'])} />
+        <Route path="respaldos" element={plataforma(<RespaldosPage />, ['platform:backup:ver'])} />
+        <Route path="planes" element={plataforma(<PlanesPage />, ['platform:planes:ver'])} />
+        <Route
+          path="suscripcion"
+          element={
+            <RequireRealm realm="tenant">
+              <RequireAccess permisos={['suscripcion:ver']}>
+                <MiSuscripcionPage />
+              </RequireAccess>
+            </RequireRealm>
+          }
+        />
+        <Route
+          path="suscripcion/resultado"
+          element={<Navigate to="/suscripcion" replace />}
+        />
         <Route
           path="empresas/:empresaId/modulos"
           element={plataforma(<EmpresaModulosPage />, ['platform:modulos:ver', 'platform:modulos:gestionar'])}
