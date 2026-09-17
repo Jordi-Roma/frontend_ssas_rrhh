@@ -49,8 +49,8 @@ export function RegisterCompanyPage() {
       return
     }
 
-    if (form.admin_password.length < 8) {
-      setErrorMsg('La contraseña debe tener al menos 8 caracteres.')
+    if (form.admin_password.length < 12) {
+      setErrorMsg('La contraseña debe tener al menos 12 caracteres.')
       return
     }
 
@@ -248,11 +248,11 @@ export function RegisterCompanyPage() {
                 />
               </Field>
 
-              <Field label="Contraseña (Mínimo 8 caracteres) *">
+              <Field label="Contraseña (Mínimo 12 caracteres) *">
                 <input
                   type="password"
                   className="input"
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder="Mínimo 12 caracteres"
                   value={form.admin_password}
                   onChange={(e) => setForm({ ...form, admin_password: e.target.value })}
                   required
