@@ -1,7 +1,7 @@
 # Arquitectura del frontend SSAS RRHH
 
 ## Decisión
-
+ 
 El frontend usa **Vertical Slicing** y **Screaming Architecture** con una aplicación React
 organizada por funcionalidades. Clean Architecture se aplica de forma pragmática: no se crea una
 capa `domain` o `application` hasta que existan reglas propias del cliente que la justifiquen.
