@@ -9,6 +9,13 @@ export function Badge({ tone = 'neutral', children }: { tone?: BadgeTone; childr
 /** Un único mapa estado -> color para todo el producto. */
 const ESTADO_TONE: Record<string, BadgeTone> = {
   BORRADOR: 'neutral',
+  VIGENTE: 'success',
+  REEMPLAZADO: 'neutral',
+  VENCIDO: 'warning',
+  ACTIVO: 'success',
+  ABIERTO: 'neutral',
+  CALCULADO: 'warning',
+  APROBADO: 'success',
   PUBLICADA: 'success',
   PAUSADA: 'warning',
   CERRADA: 'neutral',

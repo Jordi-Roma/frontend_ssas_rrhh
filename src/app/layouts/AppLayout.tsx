@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import {
   Award, BarChart3, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
   CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
@@ -22,10 +22,16 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
   Administración: ShieldCheck,
   Análisis: BarChart3,
   Cuenta: UserRound,
+  Personal: UsersRound,
+  Nómina: CreditCard,
 }
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   '/': House,
+  '/personal/contratos': ScrollText,
+  '/personal/ausencias/configuracion': CalendarDays,
+  '/nomina/boletas': CreditCard,
+  '/nomina/mis-boletas': ScrollText,
   '/entrevistas': CalendarDays,
   '/seleccion': ListChecks,
   '/vacantes': BriefcaseBusiness,
@@ -204,7 +210,7 @@ export function AppLayout() {
             {error !== null && <small>{error}</small>}
           </header>
         )}
-        <Outlet />
+        <Suspense fallback={<p role="status">Cargando sección…</p>}><Outlet /></Suspense>
       </main>
       {esTenant && <ChatWidget />}
     </div>

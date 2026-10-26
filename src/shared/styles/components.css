@@ -1494,6 +1494,57 @@ td small {
   font: 700 var(--text-lg) / 1 var(--font-mono);
   letter-spacing: 0.08em;
 }
+/* Contratos y documento imprimible de nómina. */
+.text-success { color: var(--success-ink); }
+.text-danger { color: var(--danger); }
+.form-feedback { flex-basis: 100%; min-width: 0; }
+.payslip { min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-5); background: var(--paper); }
+.payslip p { margin: var(--space-1) 0; }
+.payslip-header { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--space-4); border-bottom: 1px solid var(--line-strong); padding-bottom: var(--space-5); }
+.payslip-logo { max-width: 5rem; max-height: 4rem; object-fit: contain; }
+.payslip-title { grid-column: 1 / -1; text-align: center; }
+.payslip-title h2 { color: var(--brand-dark); font-size: var(--text-xl); }
+.payslip-title strong { color: var(--muted); font-size: var(--text-xs); letter-spacing: var(--tracking-caps); }
+.payslip-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin: 0; padding: var(--space-5) 0; }
+.payslip-info dt { color: var(--muted); font-size: var(--text-sm); }
+.payslip-info dd { margin: var(--space-1) 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.payslip-section { margin-top: var(--space-4); }
+.payslip-section h3 { margin: 0 0 var(--space-2); color: var(--brand-dark); font-size: var(--text-md); }
+.payslip table { width: 100%; table-layout: fixed; font-size: var(--text-sm); }
+.payslip th, .payslip td { position: static; padding: var(--space-2); overflow-wrap: anywhere; }
+.payslip th:first-child { width: 30%; }
+.payslip th:last-child { width: 27%; }
+.payslip tfoot { background: var(--surface); font-weight: 700; }
+.payslip-net { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-5); border-radius: var(--radius-sm); padding: var(--space-4); color: var(--brand-dark); background: var(--brand-50); font-size: var(--text-lg); }
+.payslip-signatures { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); margin-top: var(--space-12); text-align: center; }
+.payslip-signatures > div { border-top: 1px solid var(--ink); padding-top: var(--space-2); }
+.payslip-footer { margin-top: var(--space-5); color: var(--muted); font-size: var(--text-xs); }
+@media (max-width: 640px) {
+  .payslip { padding: var(--space-3); }
+  .payslip-info { grid-template-columns: minmax(0, 1fr); }
+  .payslip-net { flex-wrap: wrap; }
+}
+@media print {
+  @page { size: A4; margin: 1.5cm; }
+  html:has(.payslip-overlay) { background: var(--paper); }
+  body:has(.payslip-overlay) { min-height: 0; overflow: visible !important; background: var(--paper); }
+  body:has(.payslip-overlay) > :not(.payslip-overlay) { display: none !important; }
+  .payslip-overlay .modal-backdrop { position: static; display: block; padding: 0; background: transparent; }
+  .payslip-overlay .modal { display: block; width: 100%; max-width: none; max-height: none; overflow: visible; border: 0; border-radius: 0; padding: 0; box-shadow: none; }
+  .payslip-overlay .modal-header, .payslip-overlay .modal-footer, .payslip-overlay .no-print { display: none !important; }
+  .payslip { width: 100%; border: 0; padding: 0; box-shadow: none; font-size: var(--text-sm); }
+  .payslip-header { gap: var(--space-2); padding-bottom: var(--space-3); }
+  .payslip-title h2 { margin-bottom: var(--space-2); }
+  .payslip-info { gap: var(--space-2); padding: var(--space-3) 0; }
+  .payslip th, .payslip td { padding: var(--space-1) var(--space-2); }
+  .payslip-net { margin-bottom: var(--space-3); padding: var(--space-2); font-size: var(--text-md); }
+  .payslip-signatures { display: grid; margin-top: var(--space-8); break-inside: avoid; }
+  .payslip-section { margin-top: var(--space-3); break-inside: avoid; }
+  .payslip tr { break-inside: avoid; }
+  .payslip thead { display: table-header-group; }
+  .payslip a[href]::after { content: none; }
+}
+
 /* --- Refinamiento de interfaz operativa --- */
 .button {
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,

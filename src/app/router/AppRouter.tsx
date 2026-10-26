@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { lazy } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { ChangePasswordPage } from '../../features/auth/pages/ChangePasswordPage'
 import { ForgotPasswordPage } from '../../features/auth/pages/ForgotPasswordPage'
@@ -36,6 +37,11 @@ import { AppLayout } from '../layouts/AppLayout'
 import { DashboardPage } from '../pages/DashboardPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 
+const ContratosPage = lazy(() => import('../../features/personal/pages/ContratosPage').then(module => ({ default: module.ContratosPage })))
+const ConfiguracionAusenciasPage = lazy(() => import('../../features/personal/pages/ConfiguracionAusenciasPage').then(module => ({ default: module.ConfiguracionAusenciasPage })))
+const BoletasPage = lazy(() => import('../../features/nomina/pages/BoletasPage').then(module => ({ default: module.BoletasPage })))
+const MisBoletasPage = lazy(() => import('../../features/nomina/pages/MisBoletasPage').then(module => ({ default: module.MisBoletasPage })))
+
 function ProtectedArea() {
   const { status, user } = useAuth()
   const location = useLocation()
@@ -53,7 +59,7 @@ function GuestOnly({ children }: { children: ReactNode }) {
   return status === 'authenticated' ? <Navigate to="/" replace /> : children
 }
 
-function empresa(page: ReactNode, modulo: string, permisos: string[]) {
+function empresa(page: ReactNode, modulo: string | undefined, permisos: string[]) {
   return (
     <RequireRealm realm="tenant" allowPlatformScope>
       <RequireAccess modulo={modulo} permisos={permisos}>
@@ -72,6 +78,11 @@ function plataforma(page: ReactNode, permisos: string[]) {
 }
 
 const RECLUTAMIENTO = ['vacantes:ver', 'platform:vacantes:gestionar']
+
+function MisBoletasRoute() {
+  const { user } = useAuth()
+  return user?.empresaId ? <MisBoletasPage empresaId={user.empresaId} nombreEmpleado={user.name} /> : <FullPageStatus message="Resolviendo tu empresa…" />
+}
 
 export function AppRouter() {
   return (
@@ -93,6 +104,11 @@ export function AppRouter() {
         <Route path="cambiar-clave" element={<ChangePasswordPage />} />
         <Route path="perfil" element={<MiPerfilPage />} />
         <Route path="ayuda" element={<AyudaPage />} />
+
+        <Route path="personal/contratos" element={empresa(<ContratosPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
+        <Route path="personal/ausencias/configuracion" element={empresa(<ConfiguracionAusenciasPage />, undefined, ['ausencias:mi', 'platform:ausencias:mi'])} />
+        <Route path="nomina/boletas" element={empresa(<BoletasPage />, undefined, ['boletas:ver', 'platform:boletas:ver'])} />
+        <Route path="nomina/mis-boletas" element={<RequireRealm realm="tenant"><RequireAccess permisos={['boletas:mi']}><MisBoletasRoute /></RequireAccess></RequireRealm>} />
 
         <Route path="empresas" element={plataforma(<AltaEmpresaPage />, ['platform:empresas:ver'])} />
         <Route
