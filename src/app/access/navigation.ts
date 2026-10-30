@@ -15,6 +15,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Inicio' },
   { to: '/personal/contratos', label: 'Contratos', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
+  { to: '/personal/ficha', label: 'Ficha de empleado', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
   { to: '/personal/ausencias/configuracion', label: 'Configuración de ausencias', permisos: ['ausencias:mi', 'platform:ausencias:mi'], grupo: 'Personal' },
   { to: '/nomina/boletas', label: 'Boletas de pago', permisos: ['boletas:ver', 'platform:boletas:ver'], grupo: 'Nómina' },
   { to: '/nomina/mis-boletas', label: 'Mis boletas', soloRealm: 'tenant', permisos: ['boletas:mi'], grupo: 'Cuenta' },
