@@ -55,7 +55,7 @@ export function DataTable<T>({
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.key} style={column.align === 'right' ? { textAlign: 'right' } : undefined}>
+              <th key={column.key} className={column.align === 'right' ? 'cell-right' : undefined}>
                 {column.header}
               </th>
             ))}
@@ -67,7 +67,7 @@ export function DataTable<T>({
               <tr key={`skeleton-${index}`}>
                 {columns.map((column) => (
                   <td key={column.key}>
-                    <span className="skeleton skeleton-text" style={{ display: 'block' }} />
+                    <span className="skeleton skeleton-text skeleton-block" />
                   </td>
                 ))}
               </tr>
@@ -83,10 +83,7 @@ export function DataTable<T>({
             rows.map((row) => (
               <tr key={rowKey(row)}>
                 {columns.map((column) => (
-                  <td
-                    key={column.key}
-                    style={column.align === 'right' ? { textAlign: 'right' } : undefined}
-                  >
+                  <td key={column.key} className={column.align === 'right' ? 'cell-right' : undefined}>
                     {column.render(row)}
                   </td>
                 ))}

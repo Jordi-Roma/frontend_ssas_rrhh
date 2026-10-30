@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { Modal } from './Modal'
@@ -32,6 +32,31 @@ function FormularioEnModal({ onClose = () => {} }: { onClose?: () => void }) {
 }
 
 describe('Modal', () => {
+  it('Escape y Tab actuan solo en el dialogo superior de una evaluacion anidada', async () => {
+    const outerClose = vi.fn()
+    const innerClose = vi.fn()
+    function Nested() {
+      const [inner, setInner] = useState(false)
+      return <Modal title="Candidato" onClose={outerClose}>
+        <button onClick={() => setInner(true)}>Registrar evaluacion</button>
+        {inner && <Modal title="Evaluacion" onClose={() => { innerClose(); setInner(false) }}>
+          <button>Guardar evaluacion</button>
+        </Modal>}
+      </Modal>
+    }
+    const usuario = userEvent.setup()
+    render(<Nested />)
+    await usuario.click(screen.getByRole('button', { name: 'Registrar evaluacion' }))
+    const inner = screen.getByRole('dialog', { name: 'Evaluacion' })
+    await usuario.click(within(inner).getByRole('button', { name: 'Guardar evaluacion' }))
+    await usuario.tab()
+    expect(within(inner).getByRole('button', { name: 'Cerrar' })).toHaveFocus()
+    await usuario.keyboard('{Escape}')
+    expect(innerClose).toHaveBeenCalledTimes(1)
+    expect(outerClose).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog', { name: 'Candidato' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Registrar evaluacion' })).toHaveFocus()
+  })
   it('permite escribir un texto completo sin perder el foco', async () => {
     const usuario = userEvent.setup()
     render(<FormularioEnModal />)

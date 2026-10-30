@@ -22,6 +22,8 @@ import { estadoCanonico, formatFechaHora, PERM_GESTIONAR } from '../utils/tabler
 import { RechazarPostulanteModal } from './RechazarPostulanteModal'
 import { ContratarPostulanteModal } from './ContratarPostulanteModal'
 import { HistorialPostulante } from './HistorialPostulante'
+import { SeleccionCandidato } from '../../seleccion/components/SeleccionCandidato'
+import { BancoTalentoAction } from '../../seleccion/components/BancoTalentoAction'
 import '../tablero-ia.css'
 
 type Props = {
@@ -30,6 +32,7 @@ type Props = {
   empresaId?: string
   onClose: () => void
   onUpdated: () => Promise<void> | void
+  onSelectionChanged?: () => void
 }
 
 function valorODefecto(valor: string): string {
@@ -42,9 +45,11 @@ export function PostulanteDetalleModal({
   empresaId,
   onClose,
   onUpdated,
+  onSelectionChanged,
 }: Props) {
   const [rechazando, setRechazando] = useState(false)
   const [contratando, setContratando] = useState(false)
+  const [selectionVersion, setSelectionVersion] = useState(0)
   const [notas, setNotas] = useState<NotaPostulante[]>([])
   const [cargandoNotas, setCargandoNotas] = useState(true)
   const [errorNotas, setErrorNotas] = useState<string | null>(null)
@@ -55,8 +60,6 @@ export function PostulanteDetalleModal({
   const [descargando, setDescargando] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const habilidadesDetectadas = postulante.habilidades_detectadas ?? []
-  const habilidadesFaltantes = postulante.habilidades_faltantes ?? []
 
   useEffect(() => {
     let activo = true
@@ -148,18 +151,15 @@ export function PostulanteDetalleModal({
                 <Button variant="danger-outline" onClick={() => setRechazando(true)}>
                   Rechazar candidato
                 </Button>
-                <Button onClick={() => setContratando(true)}>
-                  Contratar
-                </Button>
               </Can>
             )}
+            {!rechazado && !contratado && postulante.estado !== 'RETIRADA' && <Can permisos={['postulaciones:contratar', 'platform:postulaciones:contratar']}><Button onClick={() => setContratando(true)}>Contratar</Button></Can>}
             <Button variant="ghost" onClick={onClose}>
               Cerrar
             </Button>
           </>
         }
       >
-        {/* el resto del contenido que ya tenías no cambia */}
         <div className="badge-list" role="group" aria-label="Estado y etapa del candidato">
           <EstadoBadge estado={estadoCanonico(postulante.estado)} />
           <EstadoBadge estado={etapaActual?.nombre ?? postulante.etapa} />
@@ -173,6 +173,7 @@ export function PostulanteDetalleModal({
           </Alert>
         )}
         {error !== null && <Alert tone="error">{error}</Alert>}
+        <BancoTalentoAction postulanteId={postulante.postulante_id} empresaId={empresaId} />
 
         <div className="score-box">
           <div className="info-list">
@@ -203,35 +204,7 @@ export function PostulanteDetalleModal({
           </Can>
         </div>
 
-        <div className="ia-panel">
-          <h3>Análisis de CV</h3>
-          <p>
-            Afinidad IA:{' '}
-            <strong>
-              {postulante.puntaje_ia == null ? 'Sin análisis' : `${Math.round(postulante.puntaje_ia)}%`}
-            </strong>
-          </p>
-          <p className="info-label">Habilidades detectadas</p>
-          <div className="ia-chips">
-            {habilidadesDetectadas.length === 0 ? (
-              <span className="text-muted">Ninguna</span>
-            ) : (
-              habilidadesDetectadas.map((h) => (
-                <span key={h} className="ia-chip ok">{h}</span>
-              ))
-            )}
-          </div>
-          <p className="info-label">Habilidades faltantes</p>
-          <div className="ia-chips">
-            {habilidadesFaltantes.length === 0 ? (
-              <span className="text-muted">Ninguna</span>
-            ) : (
-              habilidadesFaltantes.map((h) => (
-                <span key={h} className="ia-chip miss">{h}</span>
-              ))
-            )}
-          </div>
-        </div>
+        <SeleccionCandidato postulacionId={postulante.id} empresaId={empresaId} onChanged={() => { setSelectionVersion(n => n + 1); onSelectionChanged?.() }} />
 
         <div className="detail-grid">
           <div>
@@ -290,6 +263,7 @@ export function PostulanteDetalleModal({
 
         <div>
           <HistorialPostulante
+          key={selectionVersion}
           postulacionId={postulante.id}
           empresaId={empresaId}
         />

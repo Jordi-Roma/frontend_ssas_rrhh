@@ -1,0 +1,4 @@
+.selection-comparison { table-layout: fixed; min-width: 640px; }
+.selection-comparison th, .selection-comparison td { vertical-align: top; overflow-wrap: anywhere; white-space: normal; min-width: 150px; }
+.selection-comparison th:first-child { width: 160px; }
+.selection-comparison th .button { display: flex; margin-top: var(--space-2); }

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Alert, Button, Field, Modal } from '../../../shared/components'
+import { ApiError } from '../../../shared/api/httpClient'
 import {
   CI_EXPEDIDOS,
   contratarPostulante,
@@ -37,10 +38,12 @@ export function ContratarPostulanteModal({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [empleado, setEmpleado] = useState<{ id: string; codigo: string; nombres: string } | null>(null)
 
   function validar() {
     const e: Record<string, string> = {}
     if (!codigo.trim()) e.codigo = 'El código es obligatorio'
+    else if (!/^[A-Za-z0-9_-]{1,40}$/.test(codigo.trim())) e.codigo = 'Usa hasta 40 letras, números, guiones o guion bajo.'
     if (!apellidoPaterno.trim()) e.apellido_paterno = 'El apellido paterno es obligatorio'
     if (!fechaIngreso) e.fecha_ingreso = 'La fecha de ingreso es obligatoria'
     setFieldErrors(e)
@@ -49,11 +52,12 @@ export function ContratarPostulanteModal({
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault()
+    if (saving || empleado) return
     setError('')
     if (!validar()) return
     setSaving(true)
     try {
-      await contratarPostulante(
+      const creado = await contratarPostulante(
         postulante.id,
         {
           codigo: codigo.trim(),
@@ -64,9 +68,10 @@ export function ContratarPostulanteModal({
         },
         empresaId,
       )
-      await onSuccess()
+      setEmpleado(creado)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudo contratar')
+      if (cause instanceof ApiError) setFieldErrors(cause.fieldErrors)
     } finally {
       setSaving(false)
     }
@@ -75,13 +80,13 @@ export function ContratarPostulanteModal({
   return (
     <Modal
       title={`Contratar a ${postulante.nombre_postulante}`}
-      onClose={onClose}
+      onClose={() => { if (saving) return; if (empleado) void onSuccess(); else onClose() }}
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancelar</Button>
-          <Button type="submit" form="form-contratar" loading={saving}>
+          <Button variant="ghost" disabled={saving} onClick={() => { if (empleado) void onSuccess(); else onClose() }}>{empleado ? 'Volver a selección' : 'Cancelar'}</Button>
+          {!empleado && <Button type="submit" form="form-contratar" loading={saving}>
             Confirmar contratación
-          </Button>
+          </Button>}
         </>
       }
     >
@@ -89,8 +94,9 @@ export function ContratarPostulanteModal({
         CI: {postulante.documento_identidad || '—'} · Correo: {postulante.email}
       </p>
       {error && <Alert tone="error">{error}</Alert>}
+      {empleado && <Alert tone="success" title="Empleado creado">{empleado.nombres} · Código {empleado.codigo} · ID {empleado.id}</Alert>}
 
-      <form id="form-contratar" className="form-stack" onSubmit={(e) => void enviar(e)}>
+      {!empleado && <form id="form-contratar" className="form-stack" onSubmit={(e) => void enviar(e)}>
         <Field label="Código de empleado *">
           <input value={codigo} onChange={(e) => setCodigo(e.target.value)} />
           {fieldErrors.codigo && <span className="text-danger">{fieldErrors.codigo}</span>}
@@ -121,7 +127,7 @@ export function ContratarPostulanteModal({
             <span className="text-danger">{fieldErrors.fecha_ingreso}</span>
           )}
         </Field>
-      </form>
+      </form>}
     </Modal>
   )
 }

@@ -147,6 +147,7 @@ export function TableroKanban({ etapas, postulaciones, empresaId, onChanged }: P
           etapas={etapas}
           empresaId={empresaId}
           onClose={() => setSeleccionado(null)}
+          onSelectionChanged={() => void onChanged()}
           onUpdated={async () => {
             setSeleccionado(null)
             await onChanged()

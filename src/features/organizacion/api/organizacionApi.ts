@@ -8,12 +8,10 @@ export type ActualizarDepartamento = components['schemas']['ActualizarDepartamen
 export type CrearCargo = components['schemas']['CrearCargoRequest']
 export type ActualizarCargo = components['schemas']['ActualizarCargoRequest']
 
+export { getDepartamentos, getCargos } from '../../../shared/api/organizacionCatalogosApi'
+
 function scope(empresaId?: string | null) {
   return empresaId ? `?empresa_id=${encodeURIComponent(empresaId)}` : ''
-}
-
-export function getDepartamentos(empresaId?: string | null) {
-  return apiRequest<Departamento[]>(`/api/v1/departamentos${scope(empresaId)}`)
 }
 
 export function crearDepartamento(data: CrearDepartamento, empresaId?: string | null) {
@@ -30,10 +28,6 @@ export function actualizarDepartamento(id: string, data: ActualizarDepartamento,
 
 export function eliminarDepartamento(id: string, empresaId?: string | null) {
   return apiRequest<void>(`/api/v1/departamentos/${id}${scope(empresaId)}`, { method: 'DELETE' })
-}
-
-export function getCargos(empresaId?: string | null) {
-  return apiRequest<Cargo[]>(`/api/v1/cargos${scope(empresaId)}`)
 }
 
 export function crearCargo(data: CrearCargo, empresaId?: string | null) {

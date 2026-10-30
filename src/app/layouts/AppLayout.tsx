@@ -1,15 +1,66 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Suspense, useState } from 'react'
+import {
+  Award, BarChart3, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
+  CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
+  ListChecks, LockKeyhole, Menu, ScrollText, Settings2, ShieldCheck, UserRound,
+  Users, UsersRound, X,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import { Button } from '../../shared/components'
 import { useAccess } from '../access/AccessProvider'
 import { NAV_ITEMS } from '../access/navigation'
 import type { NavItem } from '../access/navigation'
 import { useCompanyScope } from '../context/CompanyScopeContext'
+import { ChatWidget } from '../../features/ayuda/components/ChatWidget'
+
+const GROUP_ICONS: Record<string, LucideIcon> = {
+  Reclutamiento: UsersRound,
+  Plataforma: LayoutGrid,
+  Empresa: Building2,
+  Administración: ShieldCheck,
+  Análisis: BarChart3,
+  Cuenta: UserRound,
+  Personal: UsersRound,
+  Nómina: CreditCard,
+}
+
+const NAV_ICONS: Record<string, LucideIcon> = {
+  '/': House,
+  '/personal/contratos': ScrollText,
+  '/personal/ausencias/configuracion': CalendarDays,
+  '/nomina/boletas': CreditCard,
+  '/nomina/mis-boletas': ScrollText,
+  '/entrevistas': CalendarDays,
+  '/seleccion': ListChecks,
+  '/vacantes': BriefcaseBusiness,
+  '/postulantes': Users,
+  '/habilidades': Award,
+  '/empresas': Building2,
+  '/administradores-globales': ShieldCheck,
+  '/respaldos': DatabaseBackup,
+  '/planes': CreditCard,
+  '/organizacion': UsersRound,
+  '/importaciones': FileUp,
+  '/empresa/configuracion': Settings2,
+  '/usuarios': Users,
+  '/roles': KeyRound,
+  '/bitacora': ScrollText,
+  '/respaldos-empresa': DatabaseBackup,
+  '/reportes': BarChart3,
+  '/suscripcion': CreditCard,
+  '/perfil': UserRound,
+  '/ayuda': CircleHelp,
+  '/cambiar-clave': LockKeyhole,
+}
 
 export function AppLayout() {
+  const [menuOpen, setMenuOpen] = useState(false)
   const { logout, user } = useAuth()
   const { company, companies, error, selectCompany, clearCompany, loading } = useCompanyScope()
   const { can, hasModulo } = useAccess()
+  const { pathname } = useLocation()
 
   const esPlataforma = user?.realm === 'platform'
   const esTenant = user?.realm === 'tenant'
@@ -42,33 +93,75 @@ export function AppLayout() {
     acc.set(grupo, [...(acc.get(grupo) ?? []), item])
     return acc
   }, new Map())
+  const activeGroup = items.find(
+    (item) => item.to !== '/' && (pathname === item.to || pathname.startsWith(`${item.to}/`)),
+  )?.grupo ?? null
+  const [sectionState, setSectionState] = useState<{ pathname: string; group: string | null }>({
+    pathname,
+    group: activeGroup,
+  })
+  const expandedGroup = sectionState.pathname === pathname ? sectionState.group : activeGroup
 
   const mostrarAlcance = esPlataforma || company !== null
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-mark brand-mark-small" aria-hidden="true">
-            S
+      <aside className={`sidebar${menuOpen ? ' sidebar-open' : ''}`}>
+        <div className="sidebar-top">
+          <div className="sidebar-brand">
+            <div className="brand-mark brand-mark-small" aria-hidden="true">
+              S
+            </div>
+            <div>
+              <strong>SSAS</strong>
+              <span>Recursos Humanos</span>
+            </div>
           </div>
-          <div>
-            <strong>SSAS</strong>
-            <span>Recursos Humanos</span>
-          </div>
+          <button
+            className="mobile-menu-toggle"
+            type="button"
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={menuOpen}
+            aria-controls="main-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
 
-        <nav className="main-nav" aria-label="Navegación principal">
-          {[...grupos.entries()].map(([grupo, entradas]) => (
-            <div key={grupo}>
-              {grupo !== '' && <p className="nav-group-title">{grupo}</p>}
-              {entradas.map((item) => (
-                <NavLink key={item.to} to={item.to} end={item.to === '/'}>
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          ))}
+        <nav id="main-navigation" className="main-nav" aria-label="Navegación principal">
+          {[...grupos.entries()].map(([grupo, entradas], index) => {
+            const GroupIcon = GROUP_ICONS[grupo]
+            const open = expandedGroup === grupo
+            return (
+              <div className="nav-group" key={grupo}>
+                {grupo !== '' && (
+                  <button
+                    className={`nav-group-title${open ? ' nav-group-title-open' : ''}`}
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls={`nav-group-${index}`}
+                    onClick={() => setSectionState({ pathname, group: open ? null : grupo })}
+                  >
+                    {GroupIcon && <GroupIcon size={17} aria-hidden="true" />}
+                    <span>{grupo}</span>
+                    <ChevronDown className="nav-group-chevron" size={16} aria-hidden="true" />
+                  </button>
+                )}
+                <div id={`nav-group-${index}`} className="nav-group-links" hidden={grupo !== '' && !open}>
+                  {entradas.map((item) => {
+                    const Icon = NAV_ICONS[item.to]
+                    return (
+                      <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={() => setMenuOpen(false)}>
+                        {Icon && <Icon size={17} aria-hidden="true" />}
+                        <span>{item.label}</span>
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
         </nav>
 
         <div className="sidebar-user">
@@ -117,8 +210,9 @@ export function AppLayout() {
             {error !== null && <small>{error}</small>}
           </header>
         )}
-        <Outlet />
+        <Suspense fallback={<p role="status">Cargando sección…</p>}><Outlet /></Suspense>
       </main>
+      {esTenant && <ChatWidget />}
     </div>
   )
 }

@@ -1,229 +1,50 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import {
-  MODALIDADES_ENTREVISTA,
-  TIPOS_ENTREVISTA,
-  actualizarEntrevista,
-  crearEntrevista,
-  type Entrevista,
-  type EntrevistaFormData,
-  type Entrevistador,
-  type ModalidadEntrevista,
-  type PostulacionOpcion,
-  type TipoEntrevista,
-} from '../api/entrevistasApi'
+import { useState, type FormEvent } from 'react'
+import { CalendarCheck } from 'lucide-react'
+import { Alert, Button, Field } from '../../../shared/components'
+import { ApiError } from '../../../shared/api/httpClient'
+import { MODALIDADES_ENTREVISTA, TIPOS_ENTREVISTA, actualizarEntrevista, crearEntrevista, fechaLocal, type Entrevista, type Entrevistador, type PostulacionOpcion, type TipoEntrevista, type ModalidadEntrevista } from '../api/entrevistasApi'
 
-type Props = {
-  entrevista?: Entrevista | null
-  postulacionId?: number
-  entrevistadores: Entrevistador[]
-  postulaciones: PostulacionOpcion[]
-  onSaved: () => Promise<void>
-}
-
-const empty = {
-  postulacion_id: '',
-  entrevistador_id: '',
-  tipo: 'TECNICA' as TipoEntrevista,
-  fecha_hora: '',
-  duracion_min: '45',
-  modalidad: 'VIRTUAL' as ModalidadEntrevista,
-  enlace_reunion: '',
-  lugar: '',
-}
-
-export function EntrevistaForm({
-  entrevista,
-  postulacionId,
-  entrevistadores,
-  postulaciones,
-  onSaved,
-}: Props) {
-  const [form, setForm] = useState(empty)
+type Props = { entrevista?: Entrevista | null; postulacionId?: string; entrevistadores: Entrevistador[]; postulaciones: PostulacionOpcion[]; empresaId?: string; onSaved: () => Promise<void>; onCancel: () => void }
+export function EntrevistaForm({ entrevista, postulacionId, entrevistadores, postulaciones, empresaId, onSaved, onCancel }: Props) {
+  const [form, setForm] = useState({ postulacion_id: entrevista?.postulacion_id ?? postulacionId ?? '', entrevistador_id: entrevista?.entrevistador_id ?? '', tipo: entrevista?.tipo ?? 'TECNICA' as TipoEntrevista, fecha_hora: entrevista ? fechaLocal(entrevista.fecha_hora) : '', duracion_min: String(entrevista?.duracion_min ?? 45), modalidad: entrevista?.modalidad ?? 'VIRTUAL' as ModalidadEntrevista, enlace_reunion: entrevista?.enlace_reunion ?? '', lugar: entrevista?.lugar ?? '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [ok, setOk] = useState('')
-  const [bad, setBad] = useState('')
+  const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
-
-  useEffect(() => {
-    if (entrevista) {
-      setForm({
-        postulacion_id: String(entrevista.postulacion_id),
-        entrevistador_id: String(entrevista.entrevistador_id),
-        tipo: entrevista.tipo,
-        fecha_hora: entrevista.fecha_hora,
-        duracion_min: entrevista.duracion_min == null ? '' : String(entrevista.duracion_min),
-        modalidad: entrevista.modalidad,
-        enlace_reunion: entrevista.enlace_reunion,
-        lugar: entrevista.lugar,
-      })
-    } else {
-      setForm({
-        ...empty,
-        postulacion_id: postulacionId ? String(postulacionId) : '',
-      })
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    if (saving) return
+    const issues: Record<string, string> = {}
+    if (!form.postulacion_id) issues.postulacion_id = 'Selecciona la postulación.'
+    if (!form.entrevistador_id) issues.entrevistador_id = 'Selecciona el entrevistador.'
+    if (!form.fecha_hora || !Number.isFinite(new Date(form.fecha_hora).getTime()) || new Date(form.fecha_hora) <= new Date()) issues.fecha_hora = 'Selecciona una fecha futura.'
+    if (!Number.isInteger(Number(form.duracion_min)) || Number(form.duracion_min) <= 0 || Number(form.duracion_min) > 480) issues.duracion_min = 'La duración debe estar entre 1 y 480 minutos.'
+    if (form.modalidad === 'VIRTUAL') {
+      try { if (new URL(form.enlace_reunion).protocol !== 'https:') throw new Error() } catch { issues.enlace_reunion = 'Ingresa un enlace HTTPS válido.' }
     }
-  }, [entrevista, postulacionId])
-
-  function validate() {
-    const e: Record<string, string> = {}
-    if (!form.postulacion_id) e.postulacion_id = 'Selecciona la postulación'
-    if (!form.entrevistador_id) e.entrevistador_id = 'Selecciona el entrevistador'
-    if (!form.fecha_hora) e.fecha_hora = 'La fecha y hora son obligatorias'
-    else if (new Date(form.fecha_hora) <= new Date()) e.fecha_hora = 'Debe ser fecha/hora futura'
-    if (form.duracion_min && (Number.isNaN(Number(form.duracion_min)) || Number(form.duracion_min) < 1)) {
-      e.duracion_min = 'Debe ser 1 o más'
-    }
-    if (form.modalidad === 'VIRTUAL' && !form.enlace_reunion.trim()) {
-      e.enlace_reunion = 'El enlace es obligatorio en modalidad virtual'
-    }
-    if (form.modalidad === 'PRESENCIAL' && !form.lugar.trim()) {
-      e.lugar = 'El lugar es obligatorio en modalidad presencial'
-    }
-    setErrors(e)
-    return Object.keys(e).length === 0
-  }
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setOk('')
-    setBad('')
-    if (!validate()) return
-    setSaving(true)
+    if (form.modalidad === 'PRESENCIAL' && !form.lugar.trim()) issues.lugar = 'El lugar es obligatorio.'
+    setErrors(issues)
+    if (Object.keys(issues).length) return
+    setSaving(true); setError('')
     try {
-      const payload: EntrevistaFormData = {
-        postulacion_id: Number(form.postulacion_id),
-        entrevistador_id: Number(form.entrevistador_id),
-        tipo: form.tipo,
-        fecha_hora: form.fecha_hora,
-        duracion_min: form.duracion_min === '' ? null : Number(form.duracion_min),
-        modalidad: form.modalidad,
-        enlace_reunion: form.modalidad === 'VIRTUAL' ? form.enlace_reunion.trim() : '',
-        lugar: form.modalidad === 'PRESENCIAL' ? form.lugar.trim() : '',
-      }
-      if (entrevista) await actualizarEntrevista(entrevista.id, payload)
-      else await crearEntrevista(payload)
-      setOk(entrevista ? 'Entrevista actualizada' : 'Entrevista programada')
+      const payload = { ...form, fecha_hora: new Date(form.fecha_hora).toISOString(), duracion_min: Number(form.duracion_min), enlace_reunion: form.modalidad === 'VIRTUAL' ? form.enlace_reunion.trim() : '', lugar: form.modalidad === 'PRESENCIAL' ? form.lugar.trim() : '' }
+      if (entrevista) await actualizarEntrevista(entrevista.id, payload, empresaId)
+      else await crearEntrevista(payload, empresaId)
       await onSaved()
-    } catch (err) {
-      setBad(err instanceof Error ? err.message : 'No se pudo guardar')
-    } finally {
-      setSaving(false)
-    }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo guardar la entrevista.'); if (cause instanceof ApiError) setErrors(cause.fieldErrors) }
+    finally { setSaving(false) }
   }
-
-  return (
-    <form className="en-card" onSubmit={handleSubmit}>
-      <h2>{entrevista ? 'Editar entrevista' : 'Programar entrevista'}</h2>
-      <div className="en-form-grid">
-        <div>
-          <label className="en-label">Postulación <i>*</i></label>
-          <select
-            className={`en-select ${errors.postulacion_id ? 'error' : ''}`}
-            value={form.postulacion_id}
-            onChange={(e) => setForm({ ...form, postulacion_id: e.target.value })}
-          >
-            <option value="">Seleccionar</option>
-            {postulaciones.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre_postulante} — {p.vacante}
-              </option>
-            ))}
-          </select>
-          {errors.postulacion_id && <div className="en-error">{errors.postulacion_id}</div>}
-        </div>
-        <div>
-          <label className="en-label">Entrevistador <i>*</i></label>
-          <select
-            className={`en-select ${errors.entrevistador_id ? 'error' : ''}`}
-            value={form.entrevistador_id}
-            onChange={(e) => setForm({ ...form, entrevistador_id: e.target.value })}
-          >
-            <option value="">Seleccionar</option>
-            {entrevistadores.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.nombre} ({u.rol})
-              </option>
-            ))}
-          </select>
-          {errors.entrevistador_id && <div className="en-error">{errors.entrevistador_id}</div>}
-        </div>
-        <div>
-          <label className="en-label">Tipo <i>*</i></label>
-          <select
-            className="en-select"
-            value={form.tipo}
-            onChange={(e) => setForm({ ...form, tipo: e.target.value as TipoEntrevista })}
-          >
-            {TIPOS_ENTREVISTA.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="en-label">Fecha y hora <i>*</i></label>
-          <input
-            type="datetime-local"
-            className={`en-input ${errors.fecha_hora ? 'error' : ''}`}
-            value={form.fecha_hora}
-            onChange={(e) => setForm({ ...form, fecha_hora: e.target.value })}
-          />
-          {errors.fecha_hora && <div className="en-error">{errors.fecha_hora}</div>}
-        </div>
-        <div>
-          <label className="en-label">Duración (min)</label>
-          <input
-            className={`en-input ${errors.duracion_min ? 'error' : ''}`}
-            value={form.duracion_min}
-            onChange={(e) => setForm({ ...form, duracion_min: e.target.value })}
-          />
-          {errors.duracion_min && <div className="en-error">{errors.duracion_min}</div>}
-        </div>
-        <div>
-          <label className="en-label">Modalidad <i>*</i></label>
-          <select
-            className="en-select"
-            value={form.modalidad}
-            onChange={(e) => setForm({ ...form, modalidad: e.target.value as ModalidadEntrevista })}
-          >
-            {MODALIDADES_ENTREVISTA.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {form.modalidad === 'VIRTUAL' && (
-        <>
-          <label className="en-label">Enlace de reunión <i>*</i></label>
-          <input
-            className={`en-input ${errors.enlace_reunion ? 'error' : ''}`}
-            value={form.enlace_reunion}
-            onChange={(e) => setForm({ ...form, enlace_reunion: e.target.value })}
-          />
-          {errors.enlace_reunion && <div className="en-error">{errors.enlace_reunion}</div>}
-        </>
-      )}
-
-      {form.modalidad === 'PRESENCIAL' && (
-        <>
-          <label className="en-label">Lugar <i>*</i></label>
-          <input
-            className={`en-input ${errors.lugar ? 'error' : ''}`}
-            value={form.lugar}
-            onChange={(e) => setForm({ ...form, lugar: e.target.value })}
-          />
-          {errors.lugar && <div className="en-error">{errors.lugar}</div>}
-        </>
-      )}
-
-      {bad && <div className="en-bad">{bad}</div>}
-      {ok && <div className="en-ok">{ok}</div>}
-
-      <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-        <button className="en-btn" type="submit" disabled={saving}>
-          {saving ? 'Guardando...' : entrevista ? 'Guardar cambios' : 'Programar entrevista'}
-        </button>
-      </div>
-    </form>
-  )
+  return <form className="form-stack" onSubmit={submit}>
+    {error && <Alert tone="error">{error}</Alert>}
+    <div className="form-grid">
+      <Field label="Postulación" error={errors.postulacion_id}><select required value={form.postulacion_id} onChange={e => setForm({ ...form, postulacion_id: e.target.value })}><option value="">Seleccionar</option>{postulaciones.map(p => <option key={p.id} value={p.id}>{p.nombre_postulante} · {p.vacante}</option>)}{entrevista && !postulaciones.some(p => p.id === entrevista.postulacion_id) && <option value={entrevista.postulacion_id}>{entrevista.nombre_postulante ?? entrevista.postulacion_id}</option>}</select></Field>
+      <Field label="Entrevistador" error={errors.entrevistador_id}><select required value={form.entrevistador_id} onChange={e => setForm({ ...form, entrevistador_id: e.target.value })}><option value="">Seleccionar</option>{entrevistadores.map(u => <option key={u.id} value={u.id}>{u.nombre} ({u.rol})</option>)}</select></Field>
+      <Field label="Tipo"><select value={form.tipo} onChange={e => setForm({ ...form, tipo: e.target.value as TipoEntrevista })}>{TIPOS_ENTREVISTA.map(t => <option key={t}>{t}</option>)}</select></Field>
+      <Field label="Fecha y hora" error={errors.fecha_hora}><input required type="datetime-local" value={form.fecha_hora} onChange={e => setForm({ ...form, fecha_hora: e.target.value })} /></Field>
+      <Field label="Duración (minutos)" error={errors.duracion_min}><input required type="number" min={1} step={1} value={form.duracion_min} onChange={e => setForm({ ...form, duracion_min: e.target.value })} /></Field>
+      <Field label="Modalidad"><select value={form.modalidad} onChange={e => setForm({ ...form, modalidad: e.target.value as ModalidadEntrevista })}>{MODALIDADES_ENTREVISTA.map(m => <option key={m}>{m}</option>)}</select></Field>
+    </div>
+    {form.modalidad === 'VIRTUAL' && <Field label="Enlace de reunión" error={errors.enlace_reunion}><input required type="url" value={form.enlace_reunion} onChange={e => setForm({ ...form, enlace_reunion: e.target.value })} /></Field>}
+    {form.modalidad === 'PRESENCIAL' && <Field label="Lugar" error={errors.lugar}><input required value={form.lugar} onChange={e => setForm({ ...form, lugar: e.target.value })} /></Field>}
+    <div className="form-actions"><Button variant="ghost" onClick={onCancel} disabled={saving}>Cancelar</Button><Button type="submit" loading={saving}><CalendarCheck size={16} /> {entrevista ? 'Guardar cambios' : 'Programar entrevista'}</Button></div>
+  </form>
 }

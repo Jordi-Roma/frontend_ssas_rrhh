@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Plus } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -187,7 +188,7 @@ export function CargosSection({ cargos, departamentos, empresaId, loading, error
       header: 'Rango salarial',
       render: (item) =>
         item.salario_min != null || item.salario_max != null ? (
-          <span style={{ color: 'var(--brand-dark)', fontWeight: 700, whiteSpace: 'nowrap' }}>
+          <span className="strong-cell">
             Bs. {item.salario_min ?? '0'} - {item.salario_max ?? '—'}
           </span>
         ) : (
@@ -224,7 +225,7 @@ export function CargosSection({ cargos, departamentos, empresaId, loading, error
       eyebrow="Puestos de trabajo con escala salarial de la empresa activa"
       actions={
         <Button variant="primary" onClick={openCreate}>
-          + Nuevo cargo
+          <Plus size={17} aria-hidden="true" /> Nuevo cargo
         </Button>
       }
     >
@@ -328,7 +329,7 @@ export function CargosSection({ cargos, departamentos, empresaId, loading, error
               />
             </Field>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer' }}>
+            <label className="check-label">
               <input
                 type="checkbox"
                 checked={form.activo}

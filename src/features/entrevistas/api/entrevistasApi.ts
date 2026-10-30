@@ -1,113 +1,37 @@
-export type TipoEntrevista =
-  | 'TECNICA'
-  | 'TELEFONICA'
-  | 'VIRTUAL'
-  | 'PRESENCIAL'
-  | 'PSICOLOGICA'
+import { apiRequest, buildQuery } from '../../../shared/api/httpClient'
 
+export type TipoEntrevista = 'TECNICA' | 'TELEFONICA' | 'VIRTUAL' | 'PRESENCIAL' | 'PSICOLOGICA'
 export type ModalidadEntrevista = 'VIRTUAL' | 'PRESENCIAL' | 'TELEFONICA'
-
-export const TIPOS_ENTREVISTA: TipoEntrevista[] = [
-  'TECNICA',
-  'TELEFONICA',
-  'VIRTUAL',
-  'PRESENCIAL',
-  'PSICOLOGICA',
-]
-
-export const MODALIDADES_ENTREVISTA: ModalidadEntrevista[] = [
-  'VIRTUAL',
-  'PRESENCIAL',
-  'TELEFONICA',
-]
-
-export type Entrevistador = {
-  id: number
-  nombre: string
-  rol: 'RECLUTADOR' | 'JEFE_AREA'
+export type EstadoEntrevista = 'PROGRAMADA' | 'CONFIRMADA' | 'REALIZADA' | 'CANCELADA'
+export const TIPOS_ENTREVISTA: TipoEntrevista[] = ['TECNICA', 'TELEFONICA', 'VIRTUAL', 'PRESENCIAL', 'PSICOLOGICA']
+export const MODALIDADES_ENTREVISTA: ModalidadEntrevista[] = ['VIRTUAL', 'PRESENCIAL', 'TELEFONICA']
+export type Entrevistador = { id: string; nombre: string; rol: string }
+export type PostulacionOpcion = { id: string; nombre_postulante: string; vacante: string }
+export type EntrevistaFormData = { postulacion_id: string; entrevistador_id: string; tipo: TipoEntrevista; fecha_hora: string; duracion_min: number; modalidad: ModalidadEntrevista; enlace_reunion: string; lugar: string }
+export type ResultadoEntrevista = { puntaje: number; observaciones: string; recomendacion: string }
+export type Entrevista = Omit<EntrevistaFormData, 'enlace_reunion' | 'lugar'> & { enlace_reunion: string | null; lugar: string | null; id: string; estado: EstadoEntrevista; puntaje: number | null; observaciones: string | null; recomendacion: string | null; nombre_postulante?: string; entrevistador_nombre?: string }
+export type EntrevistaFilters = { page?: number; per_page?: number; estado?: string; postulacion_id?: string; entrevistador_id?: string; fecha_desde?: string; fecha_hasta?: string }
+export function normalizeEntrevista(item: Entrevista): Entrevista { return { ...item, puntaje: item.puntaje == null ? null : Number(item.puntaje) } }
+export function getEntrevistas(filters: EntrevistaFilters = {}, empresaId?: string) {
+  const { page = 1, per_page = 10, fecha_desde, fecha_hasta, estado, postulacion_id } = filters
+  return apiRequest<{ items: Entrevista[]; total: number }>(`/api/v1/entrevistas${buildQuery({ offset: (page - 1) * per_page, limit: per_page, desde: fecha_desde, hasta: fecha_hasta, estado, postulacion_id, empresa_id: empresaId })}`).then(data => ({ ...data, items: data.items.map(normalizeEntrevista) }))
 }
-
-export type PostulacionOpcion = {
-  id: number
-  nombre_postulante: string
-  vacante: string
+export function getOpcionesEntrevistas(empresaId?: string) {
+  return apiRequest<{ entrevistadores: Entrevistador[]; postulaciones: PostulacionOpcion[] }>(`/api/v1/entrevistas/opciones${buildQuery({ empresa_id: empresaId })}`)
 }
-
-export type Entrevista = {
-  id: number
-  postulacion_id: number
-  entrevistador_id: number
-  tipo: TipoEntrevista
-  fecha_hora: string
-  duracion_min: number | null
-  modalidad: ModalidadEntrevista
-  enlace_reunion: string
-  lugar: string
+export function crearEntrevista(data: EntrevistaFormData, empresaId?: string) {
+  return apiRequest<Entrevista>(`/api/v1/entrevistas${buildQuery({ empresa_id: empresaId })}`, { method: 'POST', body: data }).then(normalizeEntrevista)
 }
-
-export type EntrevistaFormData = Omit<Entrevista, 'id'>
-
-const delay = (ms = 350) => new Promise((r) => setTimeout(r, ms))
-
-export const ENTREVISTADORES: Entrevistador[] = [
-  { id: 2, nombre: 'Carlos Fernández', rol: 'RECLUTADOR' },
-  { id: 8, nombre: 'Ana López', rol: 'RECLUTADOR' },
-  { id: 4, nombre: 'Juan Pérez', rol: 'JEFE_AREA' },
-]
-
-export const POSTULACIONES: PostulacionOpcion[] = [
-  { id: 5, nombre_postulante: 'Diego Roca', vacante: 'Desarrollador Backend' },
-  { id: 4, nombre_postulante: 'Renata Suárez', vacante: 'Desarrollador Backend' },
-  { id: 6, nombre_postulante: 'Pablo Arias', vacante: 'Auxiliar Contable' },
-]
-
-let entrevistas: Entrevista[] = [
-  {
-    id: 1,
-    postulacion_id: 5,
-    entrevistador_id: 2,
-    tipo: 'TECNICA',
-    fecha_hora: '2026-09-20T10:00',
-    duracion_min: 45,
-    modalidad: 'VIRTUAL',
-    enlace_reunion: 'https://meet.ssah.app/drc-102',
-    lugar: '',
-  },
-]
-
-export async function getEntrevistadores() {
-  await delay()
-  return [...ENTREVISTADORES]
+export function actualizarEntrevista(id: string, data: EntrevistaFormData, empresaId?: string) {
+  return apiRequest<Entrevista>(`/api/v1/entrevistas/${encodeURIComponent(id)}${buildQuery({ empresa_id: empresaId })}`, { method: 'PATCH', body: data }).then(normalizeEntrevista)
 }
-
-export async function getPostulacionesOpcion() {
-  await delay()
-  return [...POSTULACIONES]
+export function cambiarEstadoEntrevista(id: string, estado: EstadoEntrevista, empresaId?: string) {
+  return apiRequest<Entrevista>(`/api/v1/entrevistas/${encodeURIComponent(id)}/estado${buildQuery({ empresa_id: empresaId })}`, { method: 'PATCH', body: { estado } }).then(normalizeEntrevista)
 }
-
-export async function getEntrevistas() {
-  await delay()
-  return [...entrevistas]
+export function registrarResultadoEntrevista(id: string, data: ResultadoEntrevista, empresaId?: string) {
+  return apiRequest<Entrevista>(`/api/v1/entrevistas/${encodeURIComponent(id)}/resultado${buildQuery({ empresa_id: empresaId })}`, { method: 'PATCH', body: data }).then(normalizeEntrevista)
 }
-
-export async function getEntrevista(id: number) {
-  await delay()
-  const item = entrevistas.find((e) => e.id === id)
-  if (!item) throw new Error('Entrevista no encontrada')
-  return { ...item }
-}
-
-export async function crearEntrevista(data: EntrevistaFormData) {
-  await delay()
-  const nueva: Entrevista = { ...data, id: Date.now() }
-  entrevistas = [nueva, ...entrevistas]
-  return nueva
-}
-
-export async function actualizarEntrevista(id: number, data: EntrevistaFormData) {
-  await delay()
-  entrevistas = entrevistas.map((e) => (e.id === id ? { ...e, ...data } : e))
-  const item = entrevistas.find((e) => e.id === id)
-  if (!item) throw new Error('Entrevista no encontrada')
-  return item
+export function fechaLocal(value: string) {
+  const date = new Date(value)
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16)
 }

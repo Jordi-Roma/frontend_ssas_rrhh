@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-26T01:36:48.030Z",
+  "environment": "API interceptada; datos ficticios; sin escrituras reales",
+  "checks": [
+    "CU21: vacío, datos, conflicto sin pérdida y recarga tras alta",
+    "CU22: catálogo vacío, asignación confirmada y 409 conservando valores",
+    "CU27: vacío, detalle, error 403 e impresión A4 con firmas sin navegación",
+    "Empleado: endpoints propios e impresión accesibles solo con boletas:mi",
+    "Móvil 390px: contratos sin desbordamiento horizontal"
+  ],
+  "unexpected": [],
+  "errors": []
+}

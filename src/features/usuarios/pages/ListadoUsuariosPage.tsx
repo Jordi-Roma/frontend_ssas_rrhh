@@ -25,9 +25,7 @@ import { evaluarPassword, generarPassword, passwordEsValida } from '../utils/pas
 type User = components['schemas']['UsuarioResponse']
 type Role = components['schemas']['RoleSchema']
 
-/** Alcance del usuario que se está creando. Determina si se envía `empresa_id`
- *  y, por tanto, si nace como usuario de empresa o como administrador global. */
-type Ambito = 'empresa' | 'plataforma'
+type UserScope = 'company' | 'platform'
 
 type AccionPendiente = {
   usuario: User
@@ -69,11 +67,11 @@ const PERM_RESTAURAR = ['usuarios:restaurar', 'platform:usuarios:gestionar']
 const PERM_PASSWORD = ['usuarios:cambiar_password', 'platform:usuarios:gestionar']
 const PERM_DESBLOQUEAR = ['usuarios:desbloquear', 'platform:usuarios:gestionar']
 
-export function ListadoUsuariosPage() {
+export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
   const { user } = useAuth()
   const { company } = useCompanyScope()
   const { can } = useAccess()
-  const esPlataforma = user?.realm === 'platform'
+  const esVistaGlobal = scope === 'platform'
 
   const [usuarios, setUsuarios] = useState<User[]>([])
   const [total, setTotal] = useState(0)
@@ -87,8 +85,6 @@ export function ListadoUsuariosPage() {
   const [error, setError] = useState<string | null>(null)
   const [mensaje, setMensaje] = useState<string | null>(null)
 
-  // Alcance del alta. Un usuario de empresa solo puede crear en su empresa.
-  const [ambito, setAmbito] = useState<Ambito>(esPlataforma && company === null ? 'plataforma' : 'empresa')
   const [roles, setRoles] = useState<Role[]>([])
   const [rolesError, setRolesError] = useState<string | null>(null)
 
@@ -106,11 +102,8 @@ export function ListadoUsuariosPage() {
   const [nuevaClave, setNuevaClave] = useState('')
   const [exigirCambio, setExigirCambio] = useState(true)
 
-  // El alcance de LECTURA siempre es la empresa activa; para plataforma sin empresa
-  // seleccionada, el backend devuelve los usuarios globales.
-  const empresaLectura = company?.id
-  // El alcance de ESCRITURA depende del ámbito elegido en el formulario.
-  const empresaAlta = ambito === 'empresa' ? (company?.id ?? user?.empresaId ?? undefined) : undefined
+  const empresaLectura = esVistaGlobal ? undefined : (company?.id ?? user?.empresaId ?? undefined)
+  const empresaAlta = empresaLectura
 
   const cargar = useCallback(async () => {
     setLoading(true)
@@ -140,7 +133,7 @@ export function ListadoUsuariosPage() {
     void cargar()
   }, [cargar])
 
-  // Los roles asignables dependen del ámbito: los de la empresa, o los globales.
+  // Los roles asignables dependen del alcance de la pantalla.
   // Enviar un rol de otro ámbito hace que el backend rechace el alta.
   useEffect(() => {
     let activo = true
@@ -159,10 +152,6 @@ export function ListadoUsuariosPage() {
       activo = false
     }
   }, [empresaAlta])
-
-  useEffect(() => {
-    if (esPlataforma && company === null) setAmbito('plataforma')
-  }, [esPlataforma, company])
 
   const requisitos = useMemo(
     () => evaluarPassword(createForm.password, createForm.username, createForm.email),
@@ -222,7 +211,7 @@ export function ListadoUsuariosPage() {
       setShowCreate(false)
       setCreateForm(FORM_VACIO)
       setMensaje(
-        ambito === 'plataforma'
+        esVistaGlobal
           ? 'Administrador de plataforma creado correctamente.'
           : 'Usuario creado correctamente.',
       )
@@ -340,7 +329,7 @@ export function ListadoUsuariosPage() {
   const columnas: Column<User>[] = [
     {
       key: 'colaborador',
-      header: 'Colaborador',
+      header: esVistaGlobal ? 'Administrador' : 'Colaborador',
       render: (usuario) => (
         <>
           <strong>
@@ -517,8 +506,9 @@ export function ListadoUsuariosPage() {
         </Field>
         <Field
           label="Roles"
+          group
           hint={
-            ambito === 'plataforma'
+            esVistaGlobal
               ? 'Roles globales de la plataforma. Obligatorio: sin rol el usuario no puede iniciar sesión.'
               : 'Roles de esta empresa. Obligatorio: sin rol el usuario no puede iniciar sesión.'
           }
@@ -528,8 +518,9 @@ export function ListadoUsuariosPage() {
             <Alert tone="error">{rolesError}</Alert>
           ) : sinRolesEnAmbito ? (
             <Alert tone="info">
-              No hay roles disponibles en este ámbito. Crea primero un rol en «Roles y permisos»; sin
-              roles no es posible dar de alta usuarios.
+              {esVistaGlobal
+                ? 'No hay roles globales disponibles. Consulta la configuración de roles de la plataforma.'
+                : 'No hay roles disponibles en esta empresa. Crea primero un rol en «Roles y permisos».'}
             </Alert>
           ) : (
             <div className="check-grid">
@@ -555,12 +546,12 @@ export function ListadoUsuariosPage() {
   return (
     <section className="page-stack">
       <PageHeader
-        eyebrow="Administración"
-        title="Usuarios"
+        eyebrow={esVistaGlobal ? 'Plataforma' : 'Administración'}
+        title={esVistaGlobal ? 'Administradores globales' : 'Usuarios'}
         description={
-          esPlataforma
-            ? 'Cuentas de la empresa activa y administradores de la plataforma.'
-            : 'Colaboradores de tu empresa, sus roles y sus credenciales.'
+          esVistaGlobal
+            ? 'Cuentas con acceso a la administración de la plataforma.'
+            : 'Colaboradores de la empresa activa, sus roles y sus credenciales.'
         }
         actions={
           <Can permisos={PERM_CREAR}>
@@ -571,7 +562,7 @@ export function ListadoUsuariosPage() {
                 setShowCreate(true)
               }}
             >
-              Nuevo usuario
+              {esVistaGlobal ? 'Nuevo administrador' : 'Nuevo usuario'}
             </Button>
           </Can>
         }
@@ -583,17 +574,14 @@ export function ListadoUsuariosPage() {
         </Alert>
       )}
 
-      {esPlataforma && company === null && (
-        <Alert tone="info" title="Sin empresa activa">
-          Estás operando en el ámbito de la plataforma: el listado muestra administradores globales y
-          las altas crean administradores de plataforma. Para gestionar los usuarios de una empresa,
-          selecciónala en el encabezado.
-        </Alert>
-      )}
-
       {mensaje !== null && <Alert tone="success">{mensaje}</Alert>}
 
-      <Panel title="Directorio" count={`${total} usuario${total === 1 ? '' : 's'}`}>
+      <Panel
+        title="Directorio"
+        count={`${total} ${esVistaGlobal
+          ? (total === 1 ? 'administrador' : 'administradores')
+          : (total === 1 ? 'usuario' : 'usuarios')}`}
+      >
         <form
           className="filters"
           onSubmit={(evento) => {
@@ -647,8 +635,12 @@ export function ListadoUsuariosPage() {
           loading={loading}
           error={error}
           onRetry={() => void cargar()}
-          emptyMessage="No hay usuarios que coincidan con la búsqueda."
-          caption="Usuarios del alcance actual"
+          emptyMessage={
+            esVistaGlobal
+              ? 'No hay administradores globales que coincidan con la búsqueda.'
+              : 'No hay usuarios que coincidan con la búsqueda.'
+          }
+          caption={esVistaGlobal ? 'Administradores globales' : 'Usuarios de la empresa activa'}
         />
 
         {!loading && error === null && total > 0 && (
@@ -666,24 +658,12 @@ export function ListadoUsuariosPage() {
       </Panel>
 
       {showCreate && (
-        <Modal title="Nuevo usuario" size="lg" onClose={() => setShowCreate(false)}>
+        <Modal
+          title={esVistaGlobal ? 'Nuevo administrador global' : 'Nuevo usuario'}
+          size="lg"
+          onClose={() => setShowCreate(false)}
+        >
           <form className="form-stack" onSubmit={(evento) => void crear(evento)}>
-            {esPlataforma && (
-              <Field
-                label="Ámbito de la cuenta"
-                hint="Un administrador de plataforma no pertenece a ninguna empresa y solo recibe permisos globales."
-              >
-                <select value={ambito} onChange={(evento) => setAmbito(evento.target.value as Ambito)}>
-                  <option value="empresa" disabled={company === null}>
-                    {company !== null
-                      ? `Usuario de ${company.nombre_comercial}`
-                      : 'Usuario de empresa (selecciona una empresa primero)'}
-                  </option>
-                  <option value="plataforma">Administrador de plataforma</option>
-                </select>
-              </Field>
-            )}
-
             {camposComunes(createForm, setCreateForm)}
 
             <Field
@@ -743,7 +723,7 @@ export function ListadoUsuariosPage() {
                 Cancelar
               </Button>
               <Button type="submit" loading={guardando} disabled={sinRolesEnAmbito}>
-                Crear usuario
+                {esVistaGlobal ? 'Crear administrador' : 'Crear usuario'}
               </Button>
             </div>
           </form>

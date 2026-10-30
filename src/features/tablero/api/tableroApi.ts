@@ -156,7 +156,7 @@ export function contratarPostulante(
   data: ContratarPayload,
   empresaId?: string,
 ) {
-  return apiRequest(
+  return apiRequest<{ id: string; codigo: string; nombres: string; apellido_paterno: string }>(
     scopedPath(`/api/v1/postulaciones/${encodeURIComponent(id)}/contratar`, empresaId),
     { method: 'POST', body: data },
   )
@@ -186,11 +186,7 @@ export type EventoHistorial = {
 }
 
 export async function getHistorialPostulante(id: string, empresaId?: string) {
-  try {
-    return await apiRequest<EventoHistorial[]>(
-      scopedPath(`/api/v1/postulaciones/${encodeURIComponent(id)}/entrevistas`, empresaId),
-    )
-  } catch {
-    return []
-  }
+  return apiRequest<EventoHistorial[]>(
+    scopedPath(`/api/v1/postulaciones/${encodeURIComponent(id)}/historial`, empresaId),
+  )
 }

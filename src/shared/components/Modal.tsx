@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
+import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type ModalProps = {
@@ -44,12 +45,14 @@ export function Modal({ title, onClose, children, footer, size = 'md' }: ModalPr
   // Escape para cerrar y tabulación circular dentro del diálogo.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      const dialog = dialogRef.current
+      const dialogs = document.querySelectorAll('[role="dialog"][aria-modal="true"]')
+      if (dialog === null || dialogs[dialogs.length - 1] !== dialog) return
       if (event.key === 'Escape') {
         onCloseRef.current()
         return
       }
-      const dialog = dialogRef.current
-      if (event.key !== 'Tab' || dialog === null) return
+      if (event.key !== 'Tab') return
       const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE))
       if (focusable.length === 0) return
       const first = focusable[0]
@@ -84,7 +87,7 @@ export function Modal({ title, onClose, children, footer, size = 'md' }: ModalPr
         <div className="modal-header">
           <h2 id={titleId}>{title}</h2>
           <button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar">
-            ×
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
         {children}

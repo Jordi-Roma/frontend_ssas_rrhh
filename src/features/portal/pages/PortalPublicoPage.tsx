@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { Alert, Button, LoadingBlock } from '../../../shared/components'
+import { ChatWidget } from '../../ayuda/components/ChatWidget'
 import { VacantesPublicasList } from '../components/VacantesPublicasList'
 import { VacantePublicaDetalle } from '../components/VacantePublicaDetalle'
 import { PostulacionForm } from '../components/PostulacionForm'
@@ -297,6 +298,7 @@ export function PortalPublicoPage() {
           </>
         )}
       </div>
+      {empresa !== null && <ChatWidget key={slug} slug={slug} />}
     </div>
   )
 }

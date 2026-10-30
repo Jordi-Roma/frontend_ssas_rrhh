@@ -6,13 +6,14 @@ type FieldProps = {
   error?: string | null
   hint?: string
   className?: string
+  group?: boolean
 }
 
 /** Etiqueta, control, pista y error con el mismo ritmo en todos los formularios. */
-export function Field({ label, children, error, hint, className = '' }: FieldProps) {
+export function Field({ label, children, error, hint, className = '', group = false }: FieldProps) {
   const classes = ['field', error ? 'field-invalid' : '', className].filter(Boolean).join(' ')
-  return (
-    <label className={classes}>
+  const content = (
+    <>
       <span>{label}</span>
       {children}
       {hint !== undefined && error == null && <span className="field-hint">{hint}</span>}
@@ -21,6 +22,9 @@ export function Field({ label, children, error, hint, className = '' }: FieldPro
           {error}
         </span>
       )}
-    </label>
+    </>
   )
+  return group
+    ? <div className={classes} role="group" aria-label={label}>{content}</div>
+    : <label className={classes}>{content}</label>
 }

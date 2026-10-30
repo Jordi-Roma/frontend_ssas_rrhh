@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
-const sourceUrl = process.env.OPENAPI_URL ?? 'https://backendssasrrhh-production.up.railway.app/openapi.json'
+const sourceUrl = process.env.OPENAPI_URL ?? 'https://backendssasrrhh-production-7c33.up.railway.app/openapi.json'
 const outputPath = join(mkdtempSync(join(tmpdir(), 'ssas-openapi-')), 'schema.d.ts')
 const cliPath = join(process.cwd(), 'node_modules', 'openapi-typescript', 'bin', 'cli.js')
 

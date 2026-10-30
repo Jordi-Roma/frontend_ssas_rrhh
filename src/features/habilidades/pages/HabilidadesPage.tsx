@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Pencil, Plus, Power } from 'lucide-react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import {
   Alert,
@@ -167,11 +168,9 @@ export function HabilidadesPage() {
       render: (item) => (
         <div className="row-actions">
           <Button variant="secondary" size="sm" onClick={() => openEdit(item)}>
-            Editar
+            <Pencil size={16} aria-hidden="true" /> Editar
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => void toggleStatus(item)}>
-            {item.activo ? 'Desactivar' : 'Activar'}
-          </Button>
+          <button className="icon-button icon-button-danger" type="button" onClick={() => void toggleStatus(item)} title={item.activo ? 'Desactivar habilidad' : 'Activar habilidad'} aria-label={`${item.activo ? 'Desactivar' : 'Activar'} ${item.nombre}`}><Power size={17} aria-hidden="true" /></button>
         </div>
       ),
     },
@@ -200,13 +199,13 @@ export function HabilidadesPage() {
         description="Competencias técnicas y blandas utilizadas para calificar candidatos y asociar requisitos a vacantes."
         actions={
           <Button variant="primary" onClick={openCreate}>
-            + Nueva habilidad
+            <Plus size={17} aria-hidden="true" /> Nueva habilidad
           </Button>
         }
       />
 
       {message && (
-        <div style={{ marginBottom: '1rem' }}>
+        <div className="content-alert">
           <Alert tone="success" title="Éxito">
             {message}
           </Alert>
@@ -217,7 +216,7 @@ export function HabilidadesPage() {
         title="Catálogo Institucional"
         eyebrow={loadError ? 'Sin datos' : `${items.length} habilidades configuradas`}
       >
-        <div style={{ marginBottom: '1rem', maxWidth: 400 }}>
+        <div className="compact-control">
           <input
             className="input"
             placeholder="Buscar por nombre o categoría..."
@@ -283,7 +282,7 @@ export function HabilidadesPage() {
               />
             </Field>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer' }}>
+            <label className="check-label">
               <input
                 type="checkbox"
                 checked={formActivo}

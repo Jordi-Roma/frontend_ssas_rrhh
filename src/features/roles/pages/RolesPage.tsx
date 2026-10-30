@@ -1,23 +1,14 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { KeyRound, Plus, Power, Save, Settings2 } from 'lucide-react'
 import type { components } from '../../../shared/api/schema'
-import { rolesApi } from '../api/rolesApi'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
-import { Alert, Badge, Button, ConfirmDialog, Field, PageHeader, Panel } from '../../../shared/components'
+import { Alert, Badge, Button, ConfirmDialog, DataTable, EmptyState, Field, Modal, PageHeader, Panel, type Column } from '../../../shared/components'
+import { rolesApi } from '../api/rolesApi'
 
 type Role = components['schemas']['RoleSchema']
 type Permission = components['schemas']['PermisoSchema']
-
-/** Convierte un código de recurso/operación (ej. "postulaciones_publicas") en texto legible. */
-function humanizar(texto: string): string {
-  return texto
-    .toLowerCase()
-    .replace(/[_\-]/g, ' ')
-    .replace(/\b\w/g, (caracter) => caracter.toUpperCase())
-}
-
-function nombrePermiso(p: Permission): string {
-  return `${humanizar(p.operacion)} ${humanizar(p.recurso)}`
-}
+const humanizar = (text: string) => text.toLowerCase().replace(/[_-]/g, ' ').replace(/\b\w/g, (value) => value.toUpperCase())
+const permissionName = (permission: Permission) => `${humanizar(permission.operacion)} ${humanizar(permission.recurso)}`
 
 export function RolesPage() {
   const { company } = useCompanyScope()
@@ -26,424 +17,135 @@ export function RolesPage() {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(new Set())
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
-  const [savingPermissions, setSavingPermissions] = useState(false)
-  const [creatingRole, setCreatingRole] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [roleToDelete, setRoleToDelete] = useState<Role | null>(null)
-
-  // New role form
-  const [newRoleName, setNewRoleName] = useState('')
-  const [newRoleCodigo, setNewRoleCodigo] = useState('')
-  const [newRoleDesc, setNewRoleDesc] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [roleToToggle, setRoleToToggle] = useState<Role | null>(null)
+  const [name, setName] = useState('')
+  const [code, setCode] = useState('')
+  const [description, setDescription] = useState('')
 
   async function load() {
-    setStatus('loading')
-    setErrorMessage(null)
+    setStatus('loading'); setError(null)
     try {
-      const [availableRoles, availablePermissions] = await Promise.all([
-        rolesApi.list(company?.id),
-        rolesApi.permisos(),
-      ])
-      setRoles(availableRoles)
-      setPermissions(availablePermissions)
-      setStatus('success')
-    } catch (err) {
-      setStatus('error')
-      setErrorMessage(err instanceof Error ? err.message : 'No se pudieron cargar los roles')
+      const [roleItems, permissionItems] = await Promise.all([rolesApi.list(company?.id), rolesApi.permisos()])
+      setRoles(roleItems); setPermissions(permissionItems); setStatus('success')
+    } catch (cause) {
+      setStatus('error'); setError(cause instanceof Error ? cause.message : 'No se pudieron cargar los roles.')
     }
   }
+  useEffect(() => { void load() }, [company?.id])
 
-  useEffect(() => {
-    void load()
-  }, [company?.id])
+  const groups = useMemo(() => {
+    const result: Record<string, Permission[]> = {}
+    permissions.forEach((permission) => {
+      const key = permission.modulo?.toUpperCase() ?? 'GENERAL'
+      result[key] = [...(result[key] ?? []), permission]
+    })
+    return Object.entries(result).sort(([a], [b]) => a.localeCompare(b))
+  }, [permissions])
 
-  function editPermissions(role: Role) {
+  function edit(role: Role) {
     setSelectedRole(role)
-    setSelectedPermissions(new Set((role.permissions ?? []).map((p) => p.id)))
-    setMessage(null)
-    setErrorMessage(null)
+    setSelectedPermissions(new Set((role.permissions ?? []).map((permission) => permission.id)))
+    setMessage(null); setError(null)
+  }
+
+  function togglePermission(id: string) {
+    setSelectedPermissions((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+
+  function toggleGroup(group: Permission[]) {
+    const allSelected = group.every((permission) => selectedPermissions.has(permission.id))
+    setSelectedPermissions((current) => {
+      const next = new Set(current)
+      group.forEach((permission) => allSelected ? next.delete(permission.id) : next.add(permission.id))
+      return next
+    })
   }
 
   async function savePermissions() {
-    if (selectedRole === null) return
-    setSavingPermissions(true)
-    setMessage(null)
-    setErrorMessage(null)
+    if (!selectedRole) return
+    setSaving(true); setError(null)
     try {
-      const updated = await rolesApi.assignPermissions(selectedRole.id, [...selectedPermissions])
-      setRoles((current) => current.map((role) => (role.id === updated.id ? updated : role)))
-      setSelectedRole(updated)
-      setMessage(`Permisos del rol "${updated.name}" actualizados correctamente.`)
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'No se pudieron actualizar los permisos')
-    } finally {
-      setSavingPermissions(false)
-    }
+      const updated = await rolesApi.assignPermissions(selectedRole.id, [...selectedPermissions], company?.id)
+      setRoles((current) => current.map((role) => role.id === updated.id ? updated : role))
+      setSelectedRole(updated); setMessage(`Permisos de "${updated.name}" actualizados.`)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudieron guardar los permisos.')
+    } finally { setSaving(false) }
   }
 
-  async function handleCreate(e: FormEvent) {
-    e.preventDefault()
-    setCreatingRole(true)
-    setMessage(null)
-    setErrorMessage(null)
+  async function createRole(event: FormEvent) {
+    event.preventDefault(); setSaving(true); setError(null)
     try {
-      await rolesApi.create({
-        name: newRoleName.trim(),
-        codigo: newRoleCodigo.trim().toUpperCase(),
-        description: newRoleDesc.trim() || null,
-      })
-      setNewRoleName('')
-      setNewRoleCodigo('')
-      setNewRoleDesc('')
-      setMessage('Rol creado correctamente.')
+      await rolesApi.create({ name: name.trim(), codigo: code.trim(), description: description.trim() || null }, company?.id)
+      setName(''); setCode(''); setDescription(''); setShowCreate(false); setMessage('Rol creado correctamente.')
       await load()
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'No se pudo crear el rol')
-    } finally {
-      setCreatingRole(false)
-    }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo crear el rol.')
+    } finally { setSaving(false) }
   }
 
-  async function confirmDelete() {
-    if (!roleToDelete) return
+  async function toggleStatus() {
+    if (!roleToToggle) return
+    const active = !roleToToggle.is_active
     try {
-      await rolesApi.remove(roleToDelete.id)
-      if (selectedRole?.id === roleToDelete.id) {
-        setSelectedRole(null)
-      }
-      setMessage(`Rol "${roleToDelete.name}" eliminado correctamente.`)
-      setRoleToDelete(null)
+      await rolesApi.update(roleToToggle.id, { is_active: active }, company?.id)
+      if (selectedRole?.id === roleToToggle.id) setSelectedRole(null)
+      setMessage(`Rol "${roleToToggle.name}" ${active ? 'activado' : 'desactivado'}.`); setRoleToToggle(null)
       await load()
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'No se pudo eliminar el rol')
-    }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudo cambiar el estado.') }
   }
 
-  // Group permissions by resource module
-  const groupedPermissions = useMemo(() => {
-    const groups: Record<string, Permission[]> = {}
-    for (const p of permissions) {
-      const groupKey = p.modulo ? p.modulo.toUpperCase() : 'GENERAL'
-      if (!groups[groupKey]) groups[groupKey] = []
-      groups[groupKey].push(p)
-    }
-    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
-  }, [permissions])
+  const columns: Column<Role>[] = [
+    { key: 'name', header: 'Nombre', render: (role) => <strong>{role.name}</strong> },
+    { key: 'code', header: 'Código', render: (role) => <code className="code-chip">{role.codigo}</code> },
+    { key: 'permissions', header: 'Permisos', render: (role) => <Badge tone="neutral">{role.permissions?.length ?? 0} permisos</Badge> },
+    { key: 'status', header: 'Estado', render: (role) => <Badge tone={role.is_active ? 'success' : 'warning'}>{role.is_active ? 'Activo' : 'Inactivo'}</Badge> },
+    { key: 'actions', header: 'Acciones', align: 'right', render: (role) => <div className="row-actions">
+      <Button variant="secondary" size="sm" onClick={() => edit(role)} disabled={role.es_base} title={role.es_base ? 'Rol protegido por el sistema' : 'Configurar permisos'}><Settings2 size={16} aria-hidden="true" />{role.es_base ? 'Protegido' : 'Permisos'}</Button>
+      {!role.es_base && <button className="icon-button icon-button-danger" type="button" onClick={() => setRoleToToggle(role)} title={role.is_active ? 'Desactivar rol' : 'Activar rol'} aria-label={`${role.is_active ? 'Desactivar' : 'Activar'} ${role.name}`}><Power size={17} aria-hidden="true" /></button>}
+    </div> },
+  ]
 
-  function togglePermission(id: string) {
-    setSelectedPermissions((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
+  return <div className="page-stack">
+    <PageHeader eyebrow="Seguridad y control de acceso" title="Roles y permisos" description="Administra perfiles y permisos de la empresa activa." actions={<Button onClick={() => { setError(null); setShowCreate(true) }}><Plus size={17} aria-hidden="true" />Nuevo rol</Button>} />
+    {message && <Alert tone="success" title="Operación completada">{message}</Alert>}
+    {error && !showCreate && <Alert tone="error" title="No se pudo completar la operación">{error}</Alert>}
+    <Panel title="Roles configurados" count={`${roles.length} perfiles disponibles`}>
+      {status === 'success' && roles.length === 0
+        ? <EmptyState title="Todavía no hay roles" message="Crea el primer perfil y luego asigna sus permisos." action={<Button onClick={() => setShowCreate(true)}><Plus size={17} aria-hidden="true" />Crear rol</Button>} />
+        : <DataTable columns={columns} rows={roles} rowKey={(role) => role.id} loading={status === 'loading'} error={status === 'error' ? error : null} onRetry={() => void load()} caption="Roles de la empresa activa" />}
+    </Panel>
 
-  function selectAll() {
-    setSelectedPermissions(new Set(permissions.map((p) => p.id)))
-  }
+    {selectedRole && <Panel title={`Permisos de ${selectedRole.name}`} count={`${selectedPermissions.size} de ${permissions.length} seleccionados`} actions={<Button variant="ghost" size="sm" onClick={() => setSelectedRole(null)}>Cerrar editor</Button>}>
+      <div className="role-permissions">{groups.map(([module, group]) => {
+        const selected = group.filter((permission) => selectedPermissions.has(permission.id)).length
+        return <section className="permission-group" key={module}>
+          <div className="permission-group-header"><div className="permission-group-title"><KeyRound size={17} aria-hidden="true" /><strong>{humanizar(module)}</strong><Badge tone={selected ? 'success' : 'neutral'}>{selected} / {group.length}</Badge></div><Button variant="ghost" size="sm" onClick={() => toggleGroup(group)}>{selected === group.length ? 'Quitar todos' : 'Seleccionar todos'}</Button></div>
+          <div className="permission-grid">{group.map((permission) => {
+            const checked = selectedPermissions.has(permission.id)
+            return <label className={`permission-option${checked ? ' selected' : ''}`} key={permission.id}><input type="checkbox" checked={checked} onChange={() => togglePermission(permission.id)} /><span><strong>{permissionName(permission)}</strong><small>{permission.descripcion || permission.codigo}</small></span></label>
+          })}</div>
+        </section>
+      })}</div>
+      <div className="sticky-actions"><Button loading={saving} onClick={() => void savePermissions()}><Save size={17} aria-hidden="true" />Guardar permisos</Button></div>
+    </Panel>}
 
-  function deselectAll() {
-    setSelectedPermissions(new Set())
-  }
+    {showCreate && <Modal title="Nuevo rol" onClose={() => setShowCreate(false)}><form className="form-stack" onSubmit={createRole}>
+      <Field label="Nombre del rol *"><input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. Reclutador senior" required /></Field>
+      <Field label="Código *" hint="Usa mayúsculas, números y guion bajo."><input value={code} onChange={(event) => setCode(event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))} placeholder="RECLUTADOR_SENIOR" required /></Field>
+      <Field label="Descripción"><textarea value={description} onChange={(event) => setDescription(event.target.value)} /></Field>
+      {error && <Alert tone="error">{error}</Alert>}
+      <div className="modal-footer"><Button variant="ghost" onClick={() => setShowCreate(false)}>Cancelar</Button><Button type="submit" loading={saving}><Plus size={17} aria-hidden="true" />Crear rol</Button></div>
+    </form></Modal>}
 
-  function toggleGroup(groupPerms: Permission[]) {
-    const allSelected = groupPerms.every((p) => selectedPermissions.has(p.id))
-    setSelectedPermissions((prev) => {
-      const next = new Set(prev)
-      if (allSelected) {
-        groupPerms.forEach((p) => next.delete(p.id))
-      } else {
-        groupPerms.forEach((p) => next.add(p.id))
-      }
-      return next
-    })
-  }
-
-  return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '1.5rem 1rem 3rem' }}>
-      <PageHeader
-        eyebrow="Seguridad y Control de Acceso"
-        title="Roles y Permisos Granulares"
-        description="Administra los perfiles de acceso y permisos RBAC asignados a los usuarios de la organización."
-      />
-
-      {message && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <Alert tone="success" title="Éxito">
-            {message}
-          </Alert>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <Alert tone="error" title="Error">
-            {errorMessage}
-          </Alert>
-        </div>
-      )}
-
-      {/* Formulario de creación */}
-      <Panel title="Crear Nuevo Rol" eyebrow="Define un rol personalizado para tu equipo">
-        <form onSubmit={handleCreate} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
-          <Field label="Nombre del rol *">
-            <input
-              className="input"
-              placeholder="Ej. Reclutador Senior"
-              value={newRoleName}
-              onChange={(e) => setNewRoleName(e.target.value)}
-              required
-            />
-          </Field>
-
-          <Field label="Código (identificador) *">
-            <input
-              className="input"
-              placeholder="RECLUTADOR_SENIOR"
-              value={newRoleCodigo}
-              onChange={(e) => setNewRoleCodigo(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
-              required
-            />
-          </Field>
-
-          <Field label="Descripción">
-            <input
-              className="input"
-              placeholder="Responsable de publicaciones..."
-              value={newRoleDesc}
-              onChange={(e) => setNewRoleDesc(e.target.value)}
-            />
-          </Field>
-
-          <div>
-            <Button variant="primary" type="submit" loading={creatingRole}>
-              + Crear rol
-            </Button>
-          </div>
-        </form>
-      </Panel>
-
-      {/* Lista de roles */}
-      <div style={{ marginTop: '1.5rem' }}>
-        <Panel title="Roles Configurados" eyebrow="Catálogo de perfiles disponibles">
-          {status === 'loading' ? (
-            <p style={{ color: '#64748b' }}>Cargando catálogo de roles...</p>
-          ) : roles.length === 0 ? (
-            <p style={{ color: '#64748b', fontStyle: 'italic' }}>No hay roles registrados.</p>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
-                <thead>
-                  <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
-                    <th style={{ padding: '0.75rem 1rem' }}>Nombre</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Código</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Permisos</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Estado</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {roles.map((role) => {
-                    const isSelected = selectedRole?.id === role.id
-                    return (
-                      <tr
-                        key={role.id}
-                        style={{
-                          borderBottom: '1px solid #f1f5f9',
-                          background: isSelected ? '#f0fdf4' : 'transparent',
-                        }}
-                      >
-                        <td style={{ padding: '0.75rem 1rem', fontWeight: 600, color: '#0f172a' }}>
-                          {role.name}
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <code style={{ background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '0.25rem' }}>
-                            {role.codigo}
-                          </code>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <Badge tone="neutral">{role.permissions?.length ?? 0} permisos</Badge>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <Badge tone={role.is_active ? 'success' : 'warning'}>
-                            {role.is_active ? 'Activo' : 'Inactivo'}
-                          </Badge>
-                        </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
-                            <Button
-                              variant={isSelected ? 'primary' : 'secondary'}
-                              size="sm"
-                              onClick={() => editPermissions(role)}
-                            >
-                              {isSelected ? '✓ Editando' : 'Configurar permisos'}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setRoleToDelete(role)}
-                            >
-                              Eliminar
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Panel>
-      </div>
-
-      {/* Editor granular de permisos para el rol seleccionado */}
-      {selectedRole && (
-        <div style={{ marginTop: '2rem' }}>
-          <Panel
-            title={`Permisos para: ${selectedRole.name}`}
-            eyebrow={`${selectedPermissions.size} de ${permissions.length} permisos activos`}
-            actions={
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                <Button variant="ghost" size="sm" onClick={selectAll}>
-                  Seleccionar todos
-                </Button>
-                <Button variant="ghost" size="sm" onClick={deselectAll}>
-                  Deseleccionar todos
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  loading={savingPermissions}
-                  onClick={() => void savePermissions()}
-                >
-                  Guardar permisos
-                </Button>
-              </div>
-            }
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {groupedPermissions.map(([modulo, perms]) => {
-                const selectedInGroup = perms.filter((p) => selectedPermissions.has(p.id)).length
-                const allGroupSelected = selectedInGroup === perms.length
-
-                return (
-                  <div
-                    key={modulo}
-                    style={{
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '0.5rem',
-                      overflow: 'hidden',
-                      background: '#ffffff',
-                    }}
-                  >
-                    {/* Header del módulo */}
-                    <div
-                      style={{
-                        padding: '0.75rem 1rem',
-                        background: '#f8fafc',
-                        borderBottom: '1px solid #e2e8f0',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '0.5rem',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
-                          Módulo {modulo}
-                        </span>
-                        <Badge tone={selectedInGroup > 0 ? 'success' : 'neutral'}>
-                          {selectedInGroup} / {perms.length} seleccionados
-                        </Badge>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleGroup(perms)}
-                        style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                      >
-                        {allGroupSelected ? 'Deseleccionar módulo' : 'Seleccionar módulo'}
-                      </Button>
-                    </div>
-
-                    {/* Checkboxes de permisos */}
-                    <div
-                      style={{
-                        padding: '1rem',
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                        gap: '0.75rem',
-                      }}
-                    >
-                      {perms.map((p) => {
-                        const isChecked = selectedPermissions.has(p.id)
-                        return (
-                          <label
-                            key={p.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'flex-start',
-                              gap: '0.75rem',
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: '0.375rem',
-                              border: isChecked ? '1px solid #86efac' : '1px solid #f1f5f9',
-                              background: isChecked ? '#f0fdf4' : '#fafafa',
-                              cursor: 'pointer',
-                              transition: 'all 0.15s ease',
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => togglePermission(p.id)}
-                              style={{ width: 16, height: 16, marginTop: '0.15rem', cursor: 'pointer' }}
-                            />
-                            <div>
-                              <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '0.85rem' }}>
-                                {nombrePermiso(p)}
-                              </div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>
-                                {p.descripcion || p.codigo}
-                              </div>
-                            </div>
-                          </label>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-              <Button
-                variant="primary"
-                loading={savingPermissions}
-                onClick={() => void savePermissions()}
-              >
-                Guardar cambios para {selectedRole.name}
-              </Button>
-            </div>
-          </Panel>
-        </div>
-      )}
-
-      {/* Confirmación de eliminación */}
-      {roleToDelete && (
-        <ConfirmDialog
-          title="Eliminar Rol"
-          message={`¿Estás seguro de que deseas eliminar el rol "${roleToDelete.name}"? Los usuarios que lo tengan asignado perderán los permisos asociados.`}
-          confirmLabel="Eliminar definitivamente"
-          tone="danger"
-          onConfirm={() => void confirmDelete()}
-          onCancel={() => setRoleToDelete(null)}
-        />
-      )}
-    </div>
-  )
+    {roleToToggle && <ConfirmDialog title={roleToToggle.is_active ? 'Desactivar rol' : 'Activar rol'} message={`¿Deseas ${roleToToggle.is_active ? 'desactivar' : 'activar'} el rol "${roleToToggle.name}"?`} confirmLabel={roleToToggle.is_active ? 'Desactivar' : 'Activar'} tone={roleToToggle.is_active ? 'danger' : 'primary'} onConfirm={() => void toggleStatus()} onCancel={() => setRoleToToggle(null)} />}
+  </div>
 }

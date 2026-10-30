@@ -14,6 +14,11 @@ import { TableroKanban } from '../components/TableroKanban'
 import { PERM_VACANTES_EDITAR, PERM_VER } from '../utils/tableroUi'
 
 export function TableroPage() {
+  const { selectedCompanyId } = useCompanyScope()
+  const { id } = useParams()
+  return <Tablero key={`${selectedCompanyId}:${id}`} />
+}
+function Tablero() {
   const { id } = useParams()
   const { company } = useCompanyScope()
   const { can } = useAccess()
@@ -68,6 +73,7 @@ export function TableroPage() {
         description={descripcion}
         actions={
           <>
+            {id && <Link className="button button-secondary" to={`/vacantes/${id}/seleccion`}>Ranking y comparación</Link>}
             <Link className="button button-ghost" to="/vacantes">
               Volver a vacantes
             </Link>
@@ -100,7 +106,7 @@ export function TableroPage() {
         </>
       )}
 
-      {loading ? (
+      {loading && etapas.length === 0 ? (
         <LoadingBlock message="Cargando postulaciones…" />
       ) : error !== null ? null : etapas.length === 0 ? (
         <EmptyState

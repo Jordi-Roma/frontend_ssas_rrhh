@@ -36,12 +36,12 @@ export function HistorialPostulante({ postulacionId, empresaId }: Props) {
 
   return (
     <div>
-      <h3>Historial de entrevistas y evaluaciones</h3>
+      <h3>Historial de selección</h3>
       {error !== null && <Alert tone="error">{error}</Alert>}
       {loading ? (
         <LoadingBlock message="Cargando historial…" />
-      ) : eventos.length === 0 ? (
-        <p className="board-empty">Todavía no hay entrevistas ni evaluaciones registradas.</p>
+      ) : error !== null ? null : eventos.length === 0 ? (
+        <p className="board-empty">Todavía no hay eventos registrados.</p>
       ) : (
         <ol className="timeline">
           {eventos.map((evento) => (

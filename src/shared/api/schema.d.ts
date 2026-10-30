@@ -204,6 +204,218 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ayuda/preguntas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Preguntas
+         * @description Consulta guías autorizadas. La IA optativa recibe solo contenido fijo de la guía.
+         */
+        get: operations["preguntas_api_v1_ayuda_preguntas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ayuda/consultar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Consultar
+         * @description Consulta guías autorizadas. La IA optativa recibe solo contenido fijo de la guía.
+         */
+        post: operations["consultar_api_v1_ayuda_consultar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ayuda/articulos/{article_id}/explicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Explicar Articulo
+         * @description Consulta guías autorizadas. La IA optativa recibe solo contenido fijo de la guía.
+         */
+        post: operations["explicar_articulo_api_v1_ayuda_articulos__article_id__explicar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/articulos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Articles
+         * @description Lista artículos de conocimiento de la empresa autenticada.
+         */
+        get: operations["list_articles_api_v1_chatbot_articulos_get"];
+        put?: never;
+        /**
+         * Create Article
+         * @description Crea e indexa un artículo de conocimiento de la empresa.
+         */
+        post: operations["create_article_api_v1_chatbot_articulos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/articulos/{article_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read Article
+         * @description Consulta un artículo publicado de la empresa.
+         */
+        get: operations["read_article_api_v1_chatbot_articulos__article_id__get"];
+        /**
+         * Update Article
+         * @description Actualiza y reindexa un artículo de conocimiento de la empresa.
+         */
+        put: operations["update_article_api_v1_chatbot_articulos__article_id__put"];
+        post?: never;
+        /**
+         * Delete Article
+         * @description Elimina un artículo y sus fragmentos indexados.
+         */
+        delete: operations["delete_article_api_v1_chatbot_articulos__article_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/sugerencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Suggestions
+         * @description Sugiere preguntas basadas en artículos publicados de la empresa.
+         */
+        get: operations["suggestions_api_v1_chatbot_sugerencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/publico/{slug}/sugerencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Suggestions
+         * @description Sugiere preguntas públicas de una empresa activa.
+         */
+        get: operations["public_suggestions_api_v1_chatbot_publico__slug__sugerencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/publico/{slug}/articulos/{article_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Public Read Article
+         * @description Consulta un artículo público publicado por la empresa.
+         */
+        get: operations["public_read_article_api_v1_chatbot_publico__slug__articulos__article_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/mensajes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Message
+         * @description Responde con conocimiento publicado de la empresa autenticada.
+         */
+        post: operations["message_api_v1_chatbot_mensajes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chatbot/publico/{slug}/mensajes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Public Message
+         * @description Responde con conocimiento público publicado por la empresa.
+         */
+        post: operations["public_message_api_v1_chatbot_publico__slug__mensajes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bitacora": {
         parameters: {
             query?: never;
@@ -216,6 +428,46 @@ export interface paths {
          * @description Lista eventos inmutables con filtros por actor, módulo, acción y fechas. Un usuario empresarial solo consulta su empresa; plataforma puede seleccionar una empresa. Permisos: `bitacora:ver` o `platform:bitacora:ver`.
          */
         get: operations["list_audit_logs_api_v1_bitacora_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bitacora/integridad": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Verificar integridad de la bitácora
+         * @description Recorre la cadena de hashes del alcance autorizado y señala el primer evento alterado o ausente, sin descifrar ni exponer su contenido.
+         */
+        get: operations["verify_audit_integrity_api_v1_bitacora_integridad_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bitacora/exportar-cifrada": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exportar archivo confidencial de bitácora
+         * @description Descarga los eventos como JSON Lines con sobres AES-GCM y hashes de integridad. El archivo no contiene la llave ni detalles en texto claro.
+         */
+        get: operations["export_encrypted_audit_api_v1_bitacora_exportar_cifrada_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -335,6 +587,66 @@ export interface paths {
          * @description Elimina una habilidad de la empresa autorizada.
          */
         delete: operations["eliminar_habilidad_api_v1_habilidades__habilidad_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{kind}/plantilla": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Plantilla
+         * @description Operación de importación CSV/Excel limitada a la empresa autorizada.
+         */
+        get: operations["plantilla_api_v1_importaciones__kind__plantilla_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{kind}/previsualizar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Previsualizar
+         * @description Operación de importación CSV/Excel limitada a la empresa autorizada.
+         */
+        post: operations["previsualizar_api_v1_importaciones__kind__previsualizar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/importaciones/{kind}/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirmar
+         * @description Operación de importación CSV/Excel limitada a la empresa autorizada.
+         */
+        post: operations["confirmar_api_v1_importaciones__kind__confirmar_post"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -608,6 +920,708 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/personal/empleados/{empleado_id}/documentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar documentos del legajo */
+        get: operations["list_documents_api_v1_personal_empleados__empleado_id__documentos_get"];
+        put?: never;
+        /** Agregar documento privado al legajo */
+        post: operations["upload_document_api_v1_personal_empleados__empleado_id__documentos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/documentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mi legajo */
+        get: operations["my_documents_api_v1_personal_mi_documentos_get"];
+        put?: never;
+        /** Agregar comprobante a mi legajo */
+        post: operations["upload_own_document_api_v1_personal_mi_documentos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/empleados/{empleado_id}/documentos/{documento_id}/descarga": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Descargar documento del legajo */
+        get: operations["download_document_api_v1_personal_empleados__empleado_id__documentos__documento_id__descarga_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/empleados/{empleado_id}/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar historial de contratos */
+        get: operations["contracts_api_v1_personal_empleados__empleado_id__contratos_get"];
+        put?: never;
+        /** Registrar nueva version de contrato */
+        post: operations["create_contract_api_v1_personal_empleados__empleado_id__contratos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/contratos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mis contratos */
+        get: operations["my_contracts_api_v1_personal_mi_contratos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/documentos/{documento_id}/descarga": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Descargar documento propio */
+        get: operations["download_own_document_api_v1_personal_mi_documentos__documento_id__descarga_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/empleados/{empleado_id}/vacaciones/{gestion}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Asignar saldo anual de vacaciones */
+        put: operations["assign_vacation_balance_api_v1_personal_empleados__empleado_id__vacaciones__gestion__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/tipos-ausencia": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar tipos de ausencia */
+        get: operations["absence_types_api_v1_personal_tipos_ausencia_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia/entrada": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar entrada con GPS */
+        post: operations["clock_in_api_v1_personal_mi_asistencia_entrada_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia/salida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Marcar salida con GPS */
+        post: operations["clock_out_api_v1_personal_mi_asistencia_salida_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mis asistencias */
+        get: operations["my_attendance_api_v1_personal_mi_asistencia_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/asistencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar asistencia de la empresa */
+        get: operations["company_attendance_api_v1_personal_asistencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/equipo/asistencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar asistencia de mi equipo */
+        get: operations["team_attendance_api_v1_personal_mi_equipo_asistencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/ausencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mis solicitudes */
+        get: operations["my_absences_api_v1_personal_mi_ausencias_get"];
+        put?: never;
+        /** Solicitar ausencia */
+        post: operations["request_absence_api_v1_personal_mi_ausencias_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/ausencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar solicitudes de la empresa */
+        get: operations["company_absences_api_v1_personal_ausencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/equipo/ausencias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar solicitudes de mi equipo */
+        get: operations["team_absences_api_v1_personal_mi_equipo_ausencias_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/ausencias/{solicitud_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aprobar o rechazar ausencia */
+        post: operations["decide_absence_api_v1_personal_ausencias__solicitud_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia/correcciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Solicitar correccion de fichaje */
+        post: operations["request_correction_api_v1_personal_mi_asistencia_correcciones_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/asistencia/correcciones/{solicitud_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolver correccion como jefe directo */
+        post: operations["decide_correction_api_v1_personal_asistencia_correcciones__solicitud_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia/horas-extra": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Solicitar horas extra fichadas */
+        post: operations["request_overtime_api_v1_personal_mi_asistencia_horas_extra_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/asistencia/horas-extra/{solicitud_id}/jefe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirmar horas extra como jefe directo */
+        post: operations["decide_overtime_boss_api_v1_personal_asistencia_horas_extra__solicitud_id__jefe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/asistencia/horas-extra/{solicitud_id}/rrhh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Autorizar horas extra para nomina */
+        post: operations["decide_overtime_hr_api_v1_personal_asistencia_horas_extra__solicitud_id__rrhh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/asistencia/ajustes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mis ajustes de asistencia */
+        get: operations["my_adjustments_api_v1_personal_mi_asistencia_ajustes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/mi/equipo/asistencia/ajustes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar ajustes pendientes de mi equipo */
+        get: operations["team_adjustments_api_v1_personal_mi_equipo_asistencia_ajustes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/personal/asistencia/horas-extra/pendientes-rrhh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar horas extra pendientes de RRHH */
+        get: operations["pending_hr_overtime_api_v1_personal_asistencia_horas_extra_pendientes_rrhh_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/salario-minimo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registrar salario minimo legal verificado */
+        post: operations["create_minimum_wage_api_v1_nomina_salario_minimo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/parametros-legales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar tasas salariales y vigencias */
+        get: operations["list_legal_rates_api_v1_nomina_parametros_legales_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/parametros-legales/{codigo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registrar tasa legal verificada */
+        post: operations["create_legal_rate_api_v1_nomina_parametros_legales__codigo__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/estructura": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar estructura salarial */
+        get: operations["salary_structure_api_v1_nomina_estructura_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/estructura/reglas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Agregar regla salarial validada */
+        post: operations["add_salary_rule_api_v1_nomina_estructura_reglas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listar periodos de nomina */
+        get: operations["periods_api_v1_nomina_periodos_get"];
+        put?: never;
+        /** Abrir periodo de nomina */
+        post: operations["open_period_api_v1_nomina_periodos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/rc-iva": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Registrar importe retenido de planilla tributaria */
+        put: operations["register_tax_withholding_api_v1_nomina_periodos__periodo_id__rc_iva_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/rc-iva/datos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Registrar datos F110 y saldo para calculo automatico RC-IVA */
+        put: operations["register_tax_data_api_v1_nomina_periodos__periodo_id__rc_iva_datos_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/haber-proporcional": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Registrar haber proporcional revisado para ingreso, salida o ausencia sin goce */
+        put: operations["register_proportional_pay_api_v1_nomina_periodos__periodo_id__haber_proporcional_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/haber-proporcional/sugerencia": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Previsualizar haber proporcional por dias calendario */
+        get: operations["suggest_proportional_pay_api_v1_nomina_periodos__periodo_id__haber_proporcional_sugerencia_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/calcular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Calcular nomina con parametros vigentes */
+        post: operations["calculate_period_api_v1_nomina_periodos__periodo_id__calcular_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/aprobar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aprobar nomina calculada */
+        post: operations["approve_period_api_v1_nomina_periodos__periodo_id__aprobar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/periodos/{periodo_id}/boletas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar boletas de un periodo */
+        get: operations["period_payslips_api_v1_nomina_periodos__periodo_id__boletas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/mi/boletas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar mis boletas aprobadas */
+        get: operations["my_payslips_api_v1_nomina_mi_boletas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/mi/boletas/{boleta_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar detalle de mi boleta aprobada */
+        get: operations["my_payslip_detail_api_v1_nomina_mi_boletas__boleta_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/nomina/boletas/{boleta_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar detalle de boleta */
+        get: operations["payslip_detail_api_v1_nomina_boletas__boleta_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/publico/postulaciones": {
         parameters: {
             query?: never;
@@ -642,6 +1656,46 @@ export interface paths {
         get: operations["consultar_postulacion_publica_api_v1_publico_postulaciones__codigo__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/publico/postulaciones/{codigo}/entrevista": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consultar Entrevista
+         * @description Consulta la próxima entrevista activa mediante el código de seguimiento.
+         */
+        get: operations["consultar_entrevista_api_v1_publico_postulaciones__codigo__entrevista_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/publico/postulaciones/{codigo}/entrevista/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Confirmar Entrevista
+         * @description Confirma la entrevista programada mediante el código de seguimiento.
+         */
+        post: operations["confirmar_entrevista_api_v1_publico_postulaciones__codigo__entrevista_confirmar_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -876,6 +1930,402 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/seleccion/vacantes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vacantes Para Seleccion
+         * @description Vacantes para seleccion dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["vacantes_para_seleccion_api_v1_seleccion_vacantes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/entrevistas/opciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Opciones
+         * @description Opciones dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["opciones_api_v1_entrevistas_opciones_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/entrevistas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Agenda
+         * @description Agenda dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["agenda_api_v1_entrevistas_get"];
+        put?: never;
+        /**
+         * Crear Entrevista
+         * @description Crear entrevista dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["crear_entrevista_api_v1_entrevistas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/entrevistas/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Entrevista
+         * @description Entrevista dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["entrevista_api_v1_entrevistas__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Editar Entrevista
+         * @description Editar entrevista dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        patch: operations["editar_entrevista_api_v1_entrevistas__id__patch"];
+        trace?: never;
+    };
+    "/api/v1/entrevistas/{id}/estado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Estado Entrevista
+         * @description Estado entrevista dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        patch: operations["estado_entrevista_api_v1_entrevistas__id__estado_patch"];
+        trace?: never;
+    };
+    "/api/v1/entrevistas/{id}/resultado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Resultado
+         * @description Resultado dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        patch: operations["resultado_api_v1_entrevistas__id__resultado_patch"];
+        trace?: never;
+    };
+    "/api/v1/postulaciones/{id}/entrevistas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Entrevistas Postulacion
+         * @description Entrevistas postulacion dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["entrevistas_postulacion_api_v1_postulaciones__id__entrevistas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postulaciones/{id}/evaluaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Evaluaciones
+         * @description Evaluaciones dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["evaluaciones_api_v1_postulaciones__id__evaluaciones_get"];
+        put?: never;
+        /**
+         * Crear Evaluacion
+         * @description Crear evaluacion dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["crear_evaluacion_api_v1_postulaciones__id__evaluaciones_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evaluaciones/opciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Evaluadores
+         * @description Evaluadores dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["evaluadores_api_v1_evaluaciones_opciones_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evaluaciones/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Editar Evaluacion
+         * @description Editar evaluacion dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        patch: operations["editar_evaluacion_api_v1_evaluaciones__id__patch"];
+        trace?: never;
+    };
+    "/api/v1/postulaciones/{id}/analisis-cv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Analisis
+         * @description Analisis dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["analisis_api_v1_postulaciones__id__analisis_cv_get"];
+        put?: never;
+        /**
+         * Analizar
+         * @description Analizar dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["analizar_api_v1_postulaciones__id__analisis_cv_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vacantes/{id}/ranking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ranking
+         * @description Ranking dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["ranking_api_v1_vacantes__id__ranking_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vacantes/{id}/comparar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Comparar
+         * @description Comparar dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["comparar_api_v1_vacantes__id__comparar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postulaciones/{id}/contratar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Contratar
+         * @description Contratar dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["contratar_api_v1_postulaciones__id__contratar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/empleados": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Empleados
+         * @description Empleados dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["empleados_api_v1_empleados_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/empleados/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Empleado
+         * @description Empleado dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["empleado_api_v1_empleados__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postulantes/{id}/banco-talento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Banco
+         * @description Banco dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        patch: operations["banco_api_v1_postulantes__id__banco_talento_patch"];
+        trace?: never;
+    };
+    "/api/v1/postulantes/{id}/postulaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Asociar
+         * @description Asociar dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        post: operations["asociar_api_v1_postulantes__id__postulaciones_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postulaciones/{id}/historial": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Historial
+         * @description Historial dentro de la empresa autorizada. Requiere permiso específico; plataforma debe indicar empresa_id.
+         */
+        get: operations["historial_api_v1_postulaciones__id__historial_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/roles": {
         parameters: {
             query?: never;
@@ -941,6 +2391,342 @@ export interface paths {
          * @description Reemplaza el conjunto completo de permisos del rol. Los permisos deben existir y ser válidos para el alcance.
          */
         put: operations["assign_permissions_api_v1_roles__role_id__permissions_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/catalogo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Catalogo
+         * @description Lista las fuentes y columnas que pueden utilizarse sin aceptar SQL libre.
+         */
+        get: operations["catalogo_api_v1_reportes_catalogo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/interpretar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Interpretar
+         * @description Interpreta texto; no envía filas ni el catálogo al proveedor de IA.
+         */
+        post: operations["interpretar_api_v1_reportes_interpretar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar
+         * @description Lista las definiciones de reportes guardadas dentro de la empresa autorizada.
+         */
+        get: operations["listar_api_v1_reportes_get"];
+        put?: never;
+        /**
+         * Crear
+         * @description Guarda una definición validada para reutilizar columnas, filtros y orden.
+         */
+        post: operations["crear_api_v1_reportes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/{report_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Actualizar
+         * @description Modifica o desactiva una definición perteneciente al alcance autorizado.
+         */
+        patch: operations["actualizar_api_v1_reportes__report_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/reportes/vista-previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Vista Previa
+         * @description Ejecuta una consulta limitada y devuelve una vista previa paginada.
+         */
+        post: operations["vista_previa_api_v1_reportes_vista_previa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/exportar/{formato}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Exportar
+         * @description Genera y descarga el reporte en HTML, Excel o PDF y registra la ejecución.
+         */
+        post: operations["exportar_api_v1_reportes_exportar__formato__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reportes/enviar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enviar
+         * @description Genera el reporte y lo envía como adjunto mediante la configuración SMTP.
+         */
+        post: operations["enviar_api_v1_reportes_enviar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar respaldos
+         * @description Lista hasta cien respaldos del sistema, ordenados desde el más reciente.
+         */
+        get: operations["list_backups_api_v1_respaldos_get"];
+        put?: never;
+        /**
+         * Crear respaldo completo
+         * @description Programa un volcado del esquema público y lo guarda en Storage privado.
+         */
+        post: operations["create_backup_api_v1_respaldos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos/{respaldo_id}/descargar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Descargar respaldo
+         * @description Verifica el hash SHA-256 antes de entregar el archivo de respaldo.
+         */
+        get: operations["download_backup_api_v1_respaldos__respaldo_id__descargar_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos/{respaldo_id}/restaurar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restaurar toda la base de datos
+         * @description Programa una restauración destructiva tras validar su habilitación y confirmación.
+         */
+        post: operations["restore_backup_api_v1_respaldos__respaldo_id__restaurar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos/{respaldo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Eliminar respaldo
+         * @description Elimina el archivo privado y su registro, salvo que exista una operación en curso.
+         */
+        delete: operations["delete_backup_api_v1_respaldos__respaldo_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos-empresa/configuracion/{empresa_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tenant Backup Config
+         * @description Consulta si la copia diaria está habilitada para la empresa indicada.
+         */
+        get: operations["get_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Tenant Backup Config
+         * @description Activa o desactiva la programación diaria de una empresa desde plataforma.
+         */
+        patch: operations["update_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/respaldos-empresa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar respaldos por empresa
+         * @description Lista el historial paginado del alcance autorizado; plataforma puede ver todas.
+         */
+        get: operations["list_tenant_backups_api_v1_respaldos_empresa_get"];
+        put?: never;
+        /**
+         * Create Tenant Backup
+         * @description Solicita una copia manual; el backend con el volumen de CV la procesa.
+         */
+        post: operations["create_tenant_backup_api_v1_respaldos_empresa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos-empresa/ultimo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Último respaldo de empresa
+         * @description Devuelve el último intento y la última copia válida de una empresa.
+         */
+        get: operations["latest_tenant_backup_api_v1_respaldos_empresa_ultimo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos-empresa/{backup_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tenant Backup
+         * @description Consulta el estado de una copia sin revelar copias de otras empresas.
+         */
+        get: operations["get_tenant_backup_api_v1_respaldos_empresa__backup_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/respaldos-empresa/{backup_id}/descargar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Descargar respaldo de empresa
+         * @description Descarga una copia completa tras comprobar su integridad SHA-256.
+         */
+        get: operations["download_tenant_backup_api_v1_respaldos_empresa__backup_id__descargar_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1142,6 +2928,170 @@ export interface paths {
          * @description Restablece los intentos fallidos y elimina el bloqueo temporal. Permisos: `usuarios:desbloquear` o `platform:usuarios:gestionar`.
          */
         patch: operations["desbloquear_usuario_api_v1_usuarios__usuario_id__desbloquear_patch"];
+        trace?: never;
+    };
+    "/api/v1/planes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar planes
+         * @description Lista los planes SaaS activos; plataforma puede incluir inactivos.
+         */
+        get: operations["list_plans_api_v1_planes_get"];
+        put?: never;
+        /**
+         * Crear plan
+         * @description Crea un plan global con límites y módulos contratables.
+         */
+        post: operations["create_plan_api_v1_planes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/planes/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Actualizar plan
+         * @description Actualiza precio, límites, módulos y Price ID de Sandbox.
+         */
+        put: operations["update_plan_api_v1_planes__plan_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suscripcion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consultar mi suscripción
+         * @description Devuelve plan, vigencia y estado del tenant autenticado.
+         */
+        get: operations["get_subscription_api_v1_suscripcion_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suscripcion/consumo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consultar consumo
+         * @description Calcula usuarios, vacantes activas y almacenamiento del tenant.
+         */
+        get: operations["get_consumption_api_v1_suscripcion_consumo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suscripcion/empresas/{empresa_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Ajustar suscripción
+         * @description Permite a plataforma asignar un plan o estado manualmente.
+         */
+        put: operations["assign_subscription_api_v1_suscripcion_empresas__empresa_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suscripcion/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Crear Checkout
+         * @description Crea una sesión Stripe Checkout en modo suscripción para el tenant.
+         */
+        post: operations["create_checkout_api_v1_suscripcion_checkout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/suscripcion/portal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Abrir portal de pagos
+         * @description Crea una sesión temporal de Stripe Customer Portal.
+         */
+        post: operations["create_portal_api_v1_suscripcion_portal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Recibir webhook Stripe
+         * @description Verifica la firma y procesa eventos de suscripción de forma idempotente.
+         */
+        post: operations["stripe_webhook_api_v1_webhooks_stripe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/vacantes": {
@@ -1360,6 +3310,37 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AbsenceDecision */
+        AbsenceDecision: {
+            /** Aprobar */
+            aprobar: boolean;
+            /** Observacion */
+            observacion?: string | null;
+            /** Dias Habiles Vacacion */
+            dias_habiles_vacacion?: number | null;
+        };
+        /** AbsenceInput */
+        AbsenceInput: {
+            /**
+             * Tipo Ausencia Id
+             * Format: uuid
+             */
+            tipo_ausencia_id: string;
+            /**
+             * Fecha Inicio
+             * Format: date
+             */
+            fecha_inicio: string;
+            /**
+             * Fecha Fin
+             * Format: date
+             */
+            fecha_fin: string;
+            /** Motivo */
+            motivo: string;
+            /** Documento Id */
+            documento_id?: string | null;
+        };
         /** ActualizarCargoRequest */
         ActualizarCargoRequest: {
             /** Nombre */
@@ -1435,6 +3416,19 @@ export interface components {
             /** Prima */
             prima?: number | string | null;
         };
+        /** ActualizarReporte */
+        ActualizarReporte: {
+            /** Nombre */
+            nombre?: string | null;
+            /** Columnas */
+            columnas?: string[] | null;
+            /** Filtros */
+            filtros?: components["schemas"]["FiltroReporte"][] | null;
+            /** Orden */
+            orden?: components["schemas"]["OrdenReporte"][] | null;
+            /** Activo */
+            activo?: boolean | null;
+        };
         /** ActualizarUsuarioRequest */
         ActualizarUsuarioRequest: {
             /** Nombre */
@@ -1486,15 +3480,104 @@ export interface components {
             /** Habilidades */
             habilidades?: components["schemas"]["HabilidadRequeridaVacanteItem"][] | null;
         };
+        /** AgendaResponse */
+        AgendaResponse: {
+            /** Items */
+            items: components["schemas"]["EntrevistaResponse"][];
+            /** Total */
+            total: number;
+        };
+        /** AnalisisResponse */
+        AnalisisResponse: {
+            /** Id */
+            id: string;
+            /** Postulacion Id */
+            postulacion_id: string;
+            /** Puntaje Afinidad */
+            puntaje_afinidad: string;
+            /** Habilidades Detectadas */
+            habilidades_detectadas: string[];
+            /** Habilidades Faltantes */
+            habilidades_faltantes: string[];
+            /** Anios Experiencia Detectados */
+            anios_experiencia_detectados: number | null;
+            /** Resumen Ia */
+            resumen_ia: string;
+            /** Fortalezas */
+            fortalezas: string[];
+            /** Observaciones */
+            observaciones: string | null;
+            /** Modelo Usado */
+            modelo_usado: string;
+            /** Tiempo Proceso Ms */
+            tiempo_proceso_ms: number;
+            /**
+             * Fecha Analisis
+             * Format: date-time
+             */
+            fecha_analisis: string;
+        };
+        /** ArticleInput */
+        ArticleInput: {
+            /** Titulo */
+            titulo: string;
+            /** Contenido */
+            contenido: string;
+            /**
+             * Categoria
+             * @default General
+             */
+            categoria: string;
+            /**
+             * Publico
+             * @default false
+             */
+            publico: boolean;
+            /**
+             * Publicado
+             * @default false
+             */
+            publicado: boolean;
+        };
+        /** AsociarRequest */
+        AsociarRequest: {
+            /**
+             * Vacante Id
+             * Format: uuid
+             */
+            vacante_id: string;
+        };
         /** AssignPermissionsRequest */
         AssignPermissionsRequest: {
             /** Permission Ids */
-            permission_ids: string[];
+            permission_ids?: string[];
+        };
+        /** AssignSubscriptionRequest */
+        AssignSubscriptionRequest: {
+            /** Plan Id */
+            plan_id: string;
+            /**
+             * Estado
+             * @default ACTIVA
+             * @enum {string}
+             */
+            estado: "PRUEBA" | "PENDIENTE" | "ACTIVA" | "VENCIDA" | "PAGO_FALLIDO" | "SUSPENDIDA" | "CANCELADA";
+            /** Fecha Fin */
+            fecha_fin?: string | null;
+        };
+        /** AuditIntegritySchema */
+        AuditIntegritySchema: {
+            /** Valid */
+            valid: boolean;
+            /** Checked Records */
+            checked_records: number;
+            /** First Invalid Id */
+            first_invalid_id?: string | null;
         };
         /** AuditLogPageSchema */
         AuditLogPageSchema: {
             /** Items */
-            items?: components["schemas"]["AuditLogSchema"][];
+            items?: components["schemas"]["AuditLogSummarySchema"][];
             /** Total */
             total: number;
             /** Page */
@@ -1526,14 +3609,6 @@ export interface components {
             affected_table?: string | null;
             /** Record Id */
             record_id?: string | null;
-            /** Previous Data */
-            previous_data?: {
-                [key: string]: unknown;
-            } | null;
-            /** New Data */
-            new_data?: {
-                [key: string]: unknown;
-            } | null;
             /** Source Ip */
             source_ip?: string | null;
             /** User Agent */
@@ -1543,6 +3618,69 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Previous Data */
+            previous_data?: {
+                [key: string]: unknown;
+            } | null;
+            /** New Data */
+            new_data?: {
+                [key: string]: unknown;
+            } | null;
+            /** Integrity Verified */
+            integrity_verified?: boolean | null;
+        };
+        /** AuditLogSummarySchema */
+        AuditLogSummarySchema: {
+            /** Id */
+            id: string;
+            /** Empresa Id */
+            empresa_id?: string | null;
+            /** Module */
+            module: string;
+            /** Action */
+            action: string;
+            /** Description */
+            description: string;
+            /** Level */
+            level: string;
+            /** User Id */
+            user_id?: string | null;
+            /** Actor Label */
+            actor_label?: string | null;
+            /** Affected Table */
+            affected_table?: string | null;
+            /** Record Id */
+            record_id?: string | null;
+            /** Source Ip */
+            source_ip?: string | null;
+            /** User Agent */
+            user_agent?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** BackupConfigRequest */
+        BackupConfigRequest: {
+            /** Auto Habilitado */
+            auto_habilitado: boolean;
+        };
+        /** BackupConfigResponse */
+        BackupConfigResponse: {
+            /** Empresa Id */
+            empresa_id: string;
+            /** Auto Habilitado */
+            auto_habilitado: boolean;
+            /** Retencion Dias */
+            retencion_dias: number;
+            /** Servicio Habilitado */
+            servicio_habilitado: boolean;
+        };
+        /** BancoRequest */
+        BancoRequest: {
+            /** En Banco Talento */
+            en_banco_talento: boolean;
         };
         /** BitacoraResumen */
         BitacoraResumen: {
@@ -1563,6 +3701,13 @@ export interface components {
              * Format: date-time
              */
             fecha: string;
+        };
+        /** Body_confirmar_api_v1_importaciones__kind__confirmar_post */
+        Body_confirmar_api_v1_importaciones__kind__confirmar_post: {
+            /** Archivo */
+            archivo: string;
+            /** Sha256 */
+            sha256: string;
         };
         /** Body_crear_postulacion_publica_api_v1_publico_postulaciones_post */
         Body_crear_postulacion_publica_api_v1_publico_postulaciones_post: {
@@ -1592,12 +3737,33 @@ export interface components {
             anios_experiencia: number;
             /**
              * Cv
-             * Format: binary
              * @description Archivo CV en PDF o DOCX, maximo 5 MB.
              */
             cv: string;
             /** Linkedin */
             linkedin?: string | null;
+        };
+        /** Body_previsualizar_api_v1_importaciones__kind__previsualizar_post */
+        Body_previsualizar_api_v1_importaciones__kind__previsualizar_post: {
+            /** Archivo */
+            archivo: string;
+        };
+        /** Body_upload_document_api_v1_personal_empleados__empleado_id__documentos_post */
+        Body_upload_document_api_v1_personal_empleados__empleado_id__documentos_post: {
+            /** Archivo */
+            archivo: string;
+        };
+        /** Body_upload_own_document_api_v1_personal_mi_documentos_post */
+        Body_upload_own_document_api_v1_personal_mi_documentos_post: {
+            /** Archivo */
+            archivo: string;
+        };
+        /** BossDecision */
+        BossDecision: {
+            /** Aprobar */
+            aprobar: boolean;
+            /** Observacion */
+            observacion: string;
         };
         /** CambiarEtapaRequest */
         CambiarEtapaRequest: {
@@ -1613,6 +3779,37 @@ export interface components {
              * @default true
              */
             must_change: boolean;
+        };
+        /** CandidatoResponse */
+        CandidatoResponse: {
+            /** Id */
+            id: string;
+            /** Postulante Id */
+            postulante_id: string;
+            /** Nombre Postulante */
+            nombre_postulante: string;
+            /** Estado */
+            estado: string;
+            /** Experiencia Anios */
+            experiencia_anios: number;
+            /** Educacion */
+            educacion: string;
+            /** Puntaje Ia */
+            puntaje_ia: number | null;
+            /** Puntaje Manual */
+            puntaje_manual: number | null;
+            /** Puntaje Evaluaciones */
+            puntaje_evaluaciones: number | null;
+            /** Puntaje Entrevistas */
+            puntaje_entrevistas: number | null;
+            /** Habilidades Detectadas */
+            habilidades_detectadas: string[];
+            /** Habilidades Faltantes */
+            habilidades_faltantes: string[];
+            /** Entrevistas */
+            entrevistas: components["schemas"]["EntrevistaResponse"][];
+            /** Evaluaciones */
+            evaluaciones: components["schemas"]["EvaluacionResponse"][];
         };
         /** CargoResponse */
         CargoResponse: {
@@ -1653,6 +3850,116 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** ChatInput */
+        ChatInput: {
+            /** Pregunta */
+            pregunta: string;
+        };
+        /** CheckoutRequest */
+        CheckoutRequest: {
+            /** Plan Id */
+            plan_id: string;
+        };
+        /** CompararRequest */
+        CompararRequest: {
+            /** Postulacion Ids */
+            postulacion_ids: string[];
+        };
+        /** ConsumptionResponse */
+        ConsumptionResponse: {
+            /** Estado */
+            estado: string;
+            usuarios: components["schemas"]["LimitUsage"];
+            vacantes_activas: components["schemas"]["LimitUsage"];
+            almacenamiento_mb: components["schemas"]["LimitUsage"];
+        };
+        /** ContractInput */
+        ContractInput: {
+            /** Numero Contrato */
+            numero_contrato: string;
+            /**
+             * Cargo Id
+             * Format: uuid
+             */
+            cargo_id: string;
+            /**
+             * Departamento Id
+             * Format: uuid
+             */
+            departamento_id: string;
+            /** Jefe Directo Id */
+            jefe_directo_id?: string | null;
+            /** Tipo Contrato */
+            tipo_contrato: string;
+            /** Modalidad */
+            modalidad: string;
+            /** Jornada */
+            jornada: string;
+            /**
+             * Hora Entrada Programada
+             * Format: time
+             */
+            hora_entrada_programada: string;
+            /** Horas Jornada */
+            horas_jornada: number | string;
+            /** Minutos Descanso */
+            minutos_descanso: number;
+            /** Salario Basico */
+            salario_basico: number | string;
+            /**
+             * Fecha Inicio
+             * Format: date
+             */
+            fecha_inicio: string;
+            /** Fecha Fin */
+            fecha_fin?: string | null;
+            /** Motivo Cambio */
+            motivo_cambio?: string | null;
+        };
+        /** ContratarRequest */
+        ContratarRequest: {
+            /** Codigo */
+            codigo: string;
+            /** Apellido Paterno */
+            apellido_paterno: string;
+            /**
+             * Apellido Materno
+             * @default
+             */
+            apellido_materno: string;
+            /**
+             * Ci Expedido
+             * @enum {string}
+             */
+            ci_expedido: "SC" | "LP" | "CB" | "OR" | "PT" | "TJ" | "CH" | "BE" | "PD";
+            /**
+             * Fecha Ingreso
+             * Format: date
+             */
+            fecha_ingreso: string;
+        };
+        /** CorrectionInput */
+        CorrectionInput: {
+            /**
+             * Fecha
+             * Format: date
+             */
+            fecha: string;
+            /** Asistencia Id */
+            asistencia_id?: string | null;
+            /**
+             * Nueva Entrada
+             * Format: date-time
+             */
+            nueva_entrada: string;
+            /**
+             * Nueva Salida
+             * Format: date-time
+             */
+            nueva_salida: string;
+            /** Motivo */
+            motivo: string;
         };
         /** CrearCargoRequest */
         CrearCargoRequest: {
@@ -1734,6 +4041,24 @@ export interface components {
              * @enum {string}
              */
             fuente: "PORTAL_WEB" | "APP_MOVIL" | "LINKEDIN" | "REFERIDO" | "FERIA" | "OTRO";
+        };
+        /** CrearReporte */
+        CrearReporte: {
+            /** Fuente */
+            fuente: string;
+            /** Columnas */
+            columnas: string[];
+            /** Filtros */
+            filtros?: components["schemas"]["FiltroReporte"][];
+            /** Orden */
+            orden?: components["schemas"]["OrdenReporte"][];
+            /** Nombre */
+            nombre: string;
+        };
+        /** CrearRespaldoSchema */
+        CrearRespaldoSchema: {
+            /** Nombre */
+            nombre?: string | null;
         };
         /** CrearUsuarioRequest */
         CrearUsuarioRequest: {
@@ -1842,6 +4167,28 @@ export interface components {
             created_at?: string | null;
             /** Updated At */
             updated_at?: string | null;
+        };
+        /** EmpleadoResponse */
+        EmpleadoResponse: {
+            /** Id */
+            id: string;
+            /** Empresa Id */
+            empresa_id: string;
+            /** Codigo */
+            codigo: string;
+            /** Nombres */
+            nombres: string;
+            /** Apellido Paterno */
+            apellido_paterno: string;
+            /** Apellido Materno */
+            apellido_materno: string | null;
+            /**
+             * Fecha Ingreso
+             * Format: date
+             */
+            fecha_ingreso: string;
+            /** Estado */
+            estado: string;
         };
         /** EmpresaCreateData */
         EmpresaCreateData: {
@@ -2002,6 +4349,145 @@ export interface components {
             /** Portal Publico Activo */
             portal_publico_activo?: boolean | null;
         };
+        /** EntrevistaRequest */
+        EntrevistaRequest: {
+            /**
+             * Postulacion Id
+             * Format: uuid
+             */
+            postulacion_id: string;
+            /**
+             * Entrevistador Id
+             * Format: uuid
+             */
+            entrevistador_id: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "TECNICA" | "TELEFONICA" | "VIRTUAL" | "PRESENCIAL" | "PSICOLOGICA";
+            /**
+             * Fecha Hora
+             * Format: date-time
+             */
+            fecha_hora: string;
+            /**
+             * Duracion Min
+             * @default 45
+             */
+            duracion_min: number;
+            /**
+             * Modalidad
+             * @enum {string}
+             */
+            modalidad: "VIRTUAL" | "PRESENCIAL" | "TELEFONICA";
+            /**
+             * Enlace Reunion
+             * @default
+             */
+            enlace_reunion: string;
+            /**
+             * Lugar
+             * @default
+             */
+            lugar: string;
+        };
+        /** EntrevistaResponse */
+        EntrevistaResponse: {
+            /** Id */
+            id: string;
+            /** Postulacion Id */
+            postulacion_id: string;
+            /** Entrevistador Id */
+            entrevistador_id: string;
+            /** Tipo */
+            tipo: string;
+            /**
+             * Fecha Hora
+             * Format: date-time
+             */
+            fecha_hora: string;
+            /** Duracion Min */
+            duracion_min: number;
+            /** Modalidad */
+            modalidad: string;
+            /** Enlace Reunion */
+            enlace_reunion: string | null;
+            /** Lugar */
+            lugar: string | null;
+            /** Estado */
+            estado: string;
+            /** Puntaje */
+            puntaje: string | null;
+            /** Observaciones */
+            observaciones: string | null;
+            /** Recomendacion */
+            recomendacion: string | null;
+            /**
+             * Fecha Registro
+             * Format: date-time
+             */
+            fecha_registro: string;
+            /** Nombre Postulante */
+            nombre_postulante?: string | null;
+            /** Entrevistador Nombre */
+            entrevistador_nombre?: string | null;
+        };
+        /** EntrevistaVisible */
+        EntrevistaVisible: {
+            /** Id */
+            id: string;
+            /**
+             * Fecha Hora
+             * Format: date-time
+             */
+            fecha_hora: string;
+            /** Duracion Min */
+            duracion_min: number;
+            /** Modalidad */
+            modalidad: string;
+            /** Lugar */
+            lugar: string | null;
+            /** Enlace Reunion */
+            enlace_reunion: string | null;
+            /** Estado */
+            estado: string;
+        };
+        /** EntrevistadorOpcion */
+        EntrevistadorOpcion: {
+            /** Id */
+            id: string;
+            /** Nombre */
+            nombre: string;
+            /** Rol */
+            rol: string;
+        };
+        /** EnviarReporteRequest */
+        EnviarReporteRequest: {
+            /** Fuente */
+            fuente: string;
+            /** Columnas */
+            columnas: string[];
+            /** Filtros */
+            filtros?: components["schemas"]["FiltroReporte"][];
+            /** Orden */
+            orden?: components["schemas"]["OrdenReporte"][];
+            /** Destinatarios */
+            destinatarios: string[];
+            /**
+             * Formato
+             * @enum {string}
+             */
+            formato: "xlsx" | "html" | "pdf";
+        };
+        /** EstadoRequest */
+        EstadoRequest: {
+            /**
+             * Estado
+             * @enum {string}
+             */
+            estado: "CONFIRMADA" | "CANCELADA";
+        };
         /** EtapaResponse */
         EtapaResponse: {
             /** Id */
@@ -2019,6 +4505,94 @@ export interface components {
             /** Es Rechazado */
             es_rechazado: boolean;
         };
+        /** EvaluacionRequest */
+        EvaluacionRequest: {
+            /** Evaluador Id */
+            evaluador_id?: string | null;
+            /** Tipo */
+            tipo: string;
+            /** Nombre */
+            nombre: string;
+            /** Puntaje */
+            puntaje: number | string;
+            /** Puntaje Maximo */
+            puntaje_maximo: number | string;
+            /** Aprobado */
+            aprobado: boolean;
+            /**
+             * Observaciones
+             * @default
+             */
+            observaciones: string;
+        };
+        /** EvaluacionResponse */
+        EvaluacionResponse: {
+            /** Evaluador Id */
+            evaluador_id: string;
+            /** Tipo */
+            tipo: string;
+            /** Nombre */
+            nombre: string;
+            /** Puntaje */
+            puntaje: string;
+            /** Puntaje Maximo */
+            puntaje_maximo: string;
+            /** Aprobado */
+            aprobado: boolean;
+            /** Observaciones */
+            observaciones?: string | null;
+            /** Id */
+            id: string;
+            /** Postulacion Id */
+            postulacion_id: string;
+            /** Evaluador Nombre */
+            evaluador_nombre?: string | null;
+            /** Archivo Url */
+            archivo_url: string | null;
+            /**
+             * Fecha
+             * Format: date-time
+             */
+            fecha: string;
+        };
+        /** EventoResponse */
+        EventoResponse: {
+            /** Id */
+            id: string;
+            /** Tipo */
+            tipo: string;
+            /**
+             * Fecha
+             * Format: date-time
+             */
+            fecha: string;
+            /** Responsable */
+            responsable: string;
+            /** Puntaje */
+            puntaje?: number | null;
+            /**
+             * Recomendacion
+             * @default
+             */
+            recomendacion: string;
+            /**
+             * Observaciones
+             * @default
+             */
+            observaciones: string;
+        };
+        /** FiltroReporte */
+        FiltroReporte: {
+            /** Campo */
+            campo: string;
+            /**
+             * Operador
+             * @enum {string}
+             */
+            operador: "igual" | "contiene" | "mayor_igual" | "menor_igual" | "entre";
+            /** Valor */
+            valor: unknown;
+        };
         /** ForgotPasswordResponseSchema */
         ForgotPasswordResponseSchema: {
             /** Message */
@@ -2035,6 +4609,34 @@ export interface components {
             email: string;
             /** Empresa Slug */
             empresa_slug: string;
+        };
+        /** GPSInput */
+        GPSInput: {
+            /** Latitud */
+            latitud: number | string;
+            /** Longitud */
+            longitud: number | string;
+        };
+        /** HRDecision */
+        HRDecision: {
+            /** Aprobar */
+            aprobar: boolean;
+            /** Observacion */
+            observacion: string;
+            /** Monto Autorizado */
+            monto_autorizado?: number | string | null;
+            /** Referencia Calculo */
+            referencia_calculo?: string | null;
+            /**
+             * Calculo Automatico
+             * @default false
+             */
+            calculo_automatico: boolean;
+            /**
+             * Dia No Feriado Confirmado
+             * @default false
+             */
+            dia_no_feriado_confirmado: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2124,6 +4726,46 @@ export interface components {
             /** Telefono */
             telefono?: string | null;
         };
+        /** InterpretarReporteRequest */
+        InterpretarReporteRequest: {
+            /** Texto */
+            texto: string;
+        };
+        /** InterpretarReporteResponse */
+        InterpretarReporteResponse: {
+            config: components["schemas"]["ReporteConfig"] | null;
+            /** Aclaracion */
+            aclaracion?: string | null;
+        };
+        /** LatestBackupsResponse */
+        LatestBackupsResponse: {
+            ultimo_intento: components["schemas"]["TenantBackupResponse"] | null;
+            ultimo_exitoso: components["schemas"]["TenantBackupResponse"] | null;
+        };
+        /** LegalRateInput */
+        LegalRateInput: {
+            /**
+             * Vigente Desde
+             * Format: date
+             */
+            vigente_desde: string;
+            /**
+             * Vigente Hasta
+             * Format: date
+             */
+            vigente_hasta: string;
+            /** Porcentaje */
+            porcentaje: number | string;
+            /** Norma Legal */
+            norma_legal: string;
+        };
+        /** LimitUsage */
+        LimitUsage: {
+            /** Usado */
+            usado: number;
+            /** Limite */
+            limite: number;
+        };
         /**
          * LoginSchema
          * @description Credenciales de acceso.
@@ -2166,6 +4808,23 @@ export interface components {
         MessageSchema: {
             /** Message */
             message: string;
+        };
+        /** MinimumWageInput */
+        MinimumWageInput: {
+            /**
+             * Vigente Desde
+             * Format: date
+             */
+            vigente_desde: string;
+            /**
+             * Vigente Hasta
+             * Format: date
+             */
+            vigente_hasta: string;
+            /** Monto */
+            monto: number | string;
+            /** Norma Legal */
+            norma_legal: string;
         };
         /** ModuloEmpresaResponse */
         ModuloEmpresaResponse: {
@@ -2243,6 +4902,45 @@ export interface components {
              */
             created_at: string;
         };
+        /** OpcionesResponse */
+        OpcionesResponse: {
+            /** Entrevistadores */
+            entrevistadores: components["schemas"]["EntrevistadorOpcion"][];
+            /** Postulaciones */
+            postulaciones: components["schemas"]["PostulacionOpcion"][];
+        };
+        /** OperacionRespaldoSchema */
+        OperacionRespaldoSchema: {
+            /** Id */
+            id: string;
+            /** Estado */
+            estado: string;
+            /** Mensaje */
+            mensaje: string;
+        };
+        /** OrdenReporte */
+        OrdenReporte: {
+            /** Campo */
+            campo: string;
+            /**
+             * Direccion
+             * @default asc
+             * @enum {string}
+             */
+            direccion: "asc" | "desc";
+        };
+        /** OvertimeInput */
+        OvertimeInput: {
+            /**
+             * Asistencia Id
+             * Format: uuid
+             */
+            asistencia_id: string;
+            /** Horas Solicitadas */
+            horas_solicitadas: number | string;
+            /** Motivo */
+            motivo: string;
+        };
         /** ParametroLegalRequest */
         ParametroLegalRequest: {
             /**
@@ -2305,6 +5003,13 @@ export interface components {
              */
             updated_at: string;
         };
+        /** PeriodInput */
+        PeriodInput: {
+            /** Gestion */
+            gestion: number;
+            /** Mes */
+            mes: number;
+        };
         /** PermisoSchema */
         PermisoSchema: {
             /** Id */
@@ -2332,6 +5037,75 @@ export interface components {
             action: string;
             /** Description */
             description?: string | null;
+        };
+        /** PlanRequest */
+        PlanRequest: {
+            /** Nombre */
+            nombre: string;
+            /** Descripcion */
+            descripcion?: string | null;
+            /** Precio Mensual */
+            precio_mensual: number | string;
+            /**
+             * Moneda
+             * @default USD
+             */
+            moneda: string;
+            /** Max Usuarios */
+            max_usuarios: number;
+            /** Max Vacantes Activas */
+            max_vacantes_activas: number;
+            /** Max Almacenamiento Mb */
+            max_almacenamiento_mb: number;
+            /** Stripe Price Id */
+            stripe_price_id?: string | null;
+            /** Modulos */
+            modulos?: string[];
+            /**
+             * Activo
+             * @default true
+             */
+            activo: boolean;
+        };
+        /** PlanResponse */
+        PlanResponse: {
+            /** Nombre */
+            nombre: string;
+            /** Descripcion */
+            descripcion?: string | null;
+            /** Precio Mensual */
+            precio_mensual: string;
+            /**
+             * Moneda
+             * @default USD
+             */
+            moneda: string;
+            /** Max Usuarios */
+            max_usuarios: number;
+            /** Max Vacantes Activas */
+            max_vacantes_activas: number;
+            /** Max Almacenamiento Mb */
+            max_almacenamiento_mb: number;
+            /** Stripe Price Id */
+            stripe_price_id?: string | null;
+            /** Modulos */
+            modulos?: string[];
+            /**
+             * Activo
+             * @default true
+             */
+            activo: boolean;
+            /** Id */
+            id: string;
+        };
+        /** PostulacionOpcion */
+        PostulacionOpcion: {
+            /** Id */
+            id: string;
+            /** Nombre Postulante */
+            nombre_postulante: string;
+            /** Vacante */
+            vacante: string;
         };
         /** PostulacionPublicaResponse */
         PostulacionPublicaResponse: {
@@ -2378,6 +5152,20 @@ export interface components {
             /** En Banco Talento */
             en_banco_talento: boolean;
         };
+        /** ProportionalPayInput */
+        ProportionalPayInput: {
+            /**
+             * Empleado Id
+             * Format: uuid
+             */
+            empleado_id: string;
+            /** Dias Pagados */
+            dias_pagados: number;
+            /** Haber Basico Pagado */
+            haber_basico_pagado: number | string;
+            /** Referencia Calculo */
+            referencia_calculo: string;
+        };
         /** ProvisionEmpresaRequest */
         ProvisionEmpresaRequest: {
             empresa: components["schemas"]["EmpresaCreateData"];
@@ -2413,10 +5201,27 @@ export interface components {
              */
             puntaje: number | string;
         };
+        /** Question */
+        Question: {
+            /** Pregunta */
+            pregunta: string;
+        };
+        /** RankingResponse */
+        RankingResponse: {
+            /** Items */
+            items: components["schemas"]["CandidatoResponse"][];
+            /** Total */
+            total: number;
+        };
         /** RechazarRequest */
         RechazarRequest: {
             /** Motivo Rechazo Id */
             motivo_rechazo_id: string;
+        };
+        /** RedirectResponse */
+        RedirectResponse: {
+            /** Url */
+            url: string;
         };
         /** RefreshTokenSchema */
         RefreshTokenSchema: {
@@ -2492,6 +5297,48 @@ export interface components {
              */
             message: string;
         };
+        /** ReporteConfig */
+        ReporteConfig: {
+            /** Fuente */
+            fuente: string;
+            /** Columnas */
+            columnas: string[];
+            /** Filtros */
+            filtros?: components["schemas"]["FiltroReporte"][];
+            /** Orden */
+            orden?: components["schemas"]["OrdenReporte"][];
+        };
+        /** ReporteResponse */
+        ReporteResponse: {
+            /** Fuente */
+            fuente: string;
+            /** Columnas */
+            columnas: string[];
+            /** Filtros */
+            filtros?: components["schemas"]["FiltroReporte"][];
+            /** Orden */
+            orden?: components["schemas"]["OrdenReporte"][];
+            /** Nombre */
+            nombre: string;
+            /** Id */
+            id: string;
+            /** Empresa Id */
+            empresa_id: string;
+            /** Usuario Id */
+            usuario_id: string;
+            /** Activo */
+            activo: boolean;
+            /**
+             * Fecha Registro
+             * Format: date-time
+             */
+            fecha_registro: string;
+            /**
+             * Fecha Actualizacion
+             * Format: date-time
+             */
+            fecha_actualizacion: string;
+        };
         /** ResendVerificationSchema */
         ResendVerificationSchema: {
             /**
@@ -2508,6 +5355,50 @@ export interface components {
             token: string;
             /** New Password */
             new_password: string;
+        };
+        /** RespaldoSchema */
+        RespaldoSchema: {
+            /** Id */
+            id: string;
+            /** Nombre */
+            nombre: string;
+            /** Formato */
+            formato: string;
+            /** Tamano Bytes */
+            tamano_bytes: number | null;
+            /** Sha256 */
+            sha256: string | null;
+            /** Estado */
+            estado: string;
+            /** Creado Por Id */
+            creado_por_id: string;
+            /**
+             * Fecha Creacion
+             * Format: date-time
+             */
+            fecha_creacion: string;
+            /** Fecha Finalizacion */
+            fecha_finalizacion: string | null;
+            /** Fecha Restauracion */
+            fecha_restauracion: string | null;
+            /** Restaurado Por Id */
+            restaurado_por_id: string | null;
+            /** Mensaje Error */
+            mensaje_error: string | null;
+        };
+        /** RestaurarRespaldoSchema */
+        RestaurarRespaldoSchema: {
+            /** Confirmacion */
+            confirmacion: string;
+        };
+        /** ResultadoRequest */
+        ResultadoRequest: {
+            /** Puntaje */
+            puntaje: number | string;
+            /** Observaciones */
+            observaciones: string;
+            /** Recomendacion */
+            recomendacion: string;
         };
         /** ResumenDashboardResponse */
         ResumenDashboardResponse: {
@@ -2569,10 +5460,31 @@ export interface components {
             codigo: string;
             /** Description */
             description?: string | null;
+            /** Es Base */
+            es_base: boolean;
             /** Is Active */
             is_active: boolean;
             /** Permissions */
             permissions?: components["schemas"]["PermissionSchema"][];
+        };
+        /** SalaryRuleInput */
+        SalaryRuleInput: {
+            /** Codigo */
+            codigo: string;
+            /** Nombre */
+            nombre: string;
+            /** Tipo */
+            tipo: string;
+            /** Secuencia */
+            secuencia: number;
+            /** Tipo Calculo */
+            tipo_calculo: string;
+            /** Monto Fijo */
+            monto_fijo?: number | string | null;
+            /** Base Calculo */
+            base_calculo?: string | null;
+            /** Parametro Codigo */
+            parametro_codigo?: string | null;
         };
         /** SeguimientoPostulacionResponse */
         SeguimientoPostulacionResponse: {
@@ -2594,6 +5506,35 @@ export interface components {
              * Format: date-time
              */
             fecha_ultimo_cambio: string;
+        };
+        /** SubscriptionResponse */
+        SubscriptionResponse: {
+            /** Id */
+            id: string;
+            /** Empresa Id */
+            empresa_id: string;
+            plan: components["schemas"]["PlanResponse"];
+            /** Estado */
+            estado: string;
+            /**
+             * Fecha Inicio
+             * Format: date
+             */
+            fecha_inicio: string;
+            /** Fecha Fin */
+            fecha_fin: string | null;
+            /** Periodo Prueba Hasta */
+            periodo_prueba_hasta: string | null;
+            /** Cancelar Al Fin Periodo */
+            cancelar_al_fin_periodo: boolean;
+            /** Fecha Ultimo Pago */
+            fecha_ultimo_pago: string | null;
+            /** Fecha Proximo Cobro */
+            fecha_proximo_cobro: string | null;
+            /** Stripe Customer Id */
+            stripe_customer_id: string | null;
+            /** Stripe Subscription Id */
+            stripe_subscription_id: string | null;
         };
         /** TableroItem */
         TableroItem: {
@@ -2617,6 +5558,8 @@ export interface components {
             motivo_rechazo: string | null;
             /** Puntaje Manual */
             puntaje_manual: string | null;
+            /** Puntaje Ia */
+            puntaje_ia?: string | null;
             /** Codigo Seguimiento */
             codigo_seguimiento: string;
             /**
@@ -2624,6 +5567,84 @@ export interface components {
              * Format: date-time
              */
             fecha_postulacion: string;
+        };
+        /** TaxDataInput */
+        TaxDataInput: {
+            /**
+             * Empleado Id
+             * Format: uuid
+             */
+            empleado_id: string;
+            /**
+             * F110 Credito
+             * @default 0
+             */
+            f110_credito: number | string;
+            /**
+             * Saldo Favor Anterior
+             * @default 0
+             */
+            saldo_favor_anterior: number | string;
+            /**
+             * Mantenimiento Valor
+             * @default 0
+             */
+            mantenimiento_valor: number | string;
+            /**
+             * Saldo Siete Rg
+             * @default 0
+             */
+            saldo_siete_rg: number | string;
+            /**
+             * F110 Siete Rg
+             * @default 0
+             */
+            f110_siete_rg: number | string;
+            /** Referencia Planilla */
+            referencia_planilla: string;
+        };
+        /** TaxWithholdingInput */
+        TaxWithholdingInput: {
+            /**
+             * Empleado Id
+             * Format: uuid
+             */
+            empleado_id: string;
+            /** Rc Iva Retenido */
+            rc_iva_retenido: number | string;
+            /** Referencia Planilla */
+            referencia_planilla: string;
+        };
+        /** TenantBackupRequest */
+        TenantBackupRequest: {
+            /** Empresa Id */
+            empresa_id?: string | null;
+        };
+        /** TenantBackupResponse */
+        TenantBackupResponse: {
+            /** Id */
+            id: string;
+            /** Empresa Id */
+            empresa_id: string;
+            /** Origen */
+            origen: string;
+            /** Estado */
+            estado: string;
+            /**
+             * Fecha Creacion
+             * Format: date-time
+             */
+            fecha_creacion: string;
+            /** Fecha Inicio */
+            fecha_inicio: string | null;
+            /** Fecha Finalizacion */
+            fecha_finalizacion: string | null;
+            /** Tamano Bytes */
+            tamano_bytes: number | null;
+            /** Sha256 */
+            sha256: string | null;
+            /** Mensaje Error */
+            mensaje_error: string | null;
         };
         /** TokenPairSchema */
         TokenPairSchema: {
@@ -2862,6 +5883,22 @@ export interface components {
              */
             habilidades: components["schemas"]["HabilidadVacanteResponse"][];
         };
+        /** VacanteSeleccionResponse */
+        VacanteSeleccionResponse: {
+            /** Id */
+            id: string;
+            /** Titulo */
+            titulo: string;
+            /** Habilidades */
+            habilidades: string[];
+        };
+        /** VacationBalanceInput */
+        VacationBalanceInput: {
+            /** Gestion */
+            gestion: number;
+            /** Dias Asignados */
+            dias_asignados: number;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -2870,11 +5907,30 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
         /** VerifyEmailSchema */
         VerifyEmailSchema: {
             /** Token */
             token: string;
+        };
+        /** VistaPrevia */
+        VistaPrevia: {
+            /** Columnas */
+            columnas: string[];
+            /** Items */
+            items: {
+                [key: string]: unknown;
+            }[];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Per Page */
+            per_page: number;
         };
     };
     responses: never;
@@ -3329,6 +6385,389 @@ export interface operations {
             };
         };
     };
+    preguntas_api_v1_ayuda_preguntas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    consultar_api_v1_ayuda_consultar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Question"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    explicar_articulo_api_v1_ayuda_articulos__article_id__explicar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_articles_api_v1_chatbot_articulos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    create_article_api_v1_chatbot_articulos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArticleInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_article_api_v1_chatbot_articulos__article_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_article_api_v1_chatbot_articulos__article_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArticleInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_article_api_v1_chatbot_articulos__article_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggestions_api_v1_chatbot_sugerencias_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    public_suggestions_api_v1_chatbot_publico__slug__sugerencias_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_read_article_api_v1_chatbot_publico__slug__articulos__article_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+                article_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    message_api_v1_chatbot_mensajes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_message_api_v1_chatbot_publico__slug__mensajes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_audit_logs_api_v1_bitacora_get: {
         parameters: {
             query?: {
@@ -3340,6 +6779,12 @@ export interface operations {
                 module?: string | null;
                 /** @description Filtra por código de acción. */
                 action?: string | null;
+                /** @description Filtra por nivel del evento. */
+                level?: string | null;
+                /** @description Filtra por tabla afectada. */
+                affected_table?: string | null;
+                /** @description Filtra por registro afectado. */
+                record_id?: string | null;
                 /** @description Fecha y hora inicial, inclusiva. */
                 start_date?: string | null;
                 /** @description Fecha y hora final, inclusiva. */
@@ -3378,6 +6823,110 @@ export interface operations {
             };
             /** @description Evento no encontrado dentro del alcance. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description El servicio o una dependencia externa no está disponible. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    verify_audit_integrity_api_v1_bitacora_integridad_get: {
+        parameters: {
+            query?: {
+                /** @description Identificador de empresa. Los administradores de plataforma pueden indicarlo para seleccionar el alcance; los usuarios empresariales quedan limitados a su propia empresa. */
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditIntegritySchema"];
+                };
+            };
+            /** @description Token de acceso ausente, inválido o vencido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no tiene el permiso requerido, intenta operar fuera de su empresa o debe cambiar primero su contraseña. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description El servicio o una dependencia externa no está disponible. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    export_encrypted_audit_api_v1_bitacora_exportar_cifrada_get: {
+        parameters: {
+            query?: {
+                /** @description Identificador de empresa. Los administradores de plataforma pueden indicarlo para seleccionar el alcance; los usuarios empresariales quedan limitados a su propia empresa. */
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Token de acceso ausente, inválido o vencido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no tiene el permiso requerido, intenta operar fuera de su empresa o debe cambiar primero su contraseña. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3852,6 +7401,113 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    plantilla_api_v1_importaciones__kind__plantilla_get: {
+        parameters: {
+            query?: {
+                formato?: string;
+            };
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    previsualizar_api_v1_importaciones__kind__previsualizar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_previsualizar_api_v1_importaciones__kind__previsualizar_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirmar_api_v1_importaciones__kind__confirmar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                kind: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_confirmar_api_v1_importaciones__kind__confirmar_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
             /** @description Validation Error */
             422: {
@@ -4960,6 +8616,1413 @@ export interface operations {
             };
         };
     };
+    list_documents_api_v1_personal_empleados__empleado_id__documentos_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_document_api_v1_personal_empleados__empleado_id__documentos_post: {
+        parameters: {
+            query: {
+                tipo: string;
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_v1_personal_empleados__empleado_id__documentos_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_documents_api_v1_personal_mi_documentos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    upload_own_document_api_v1_personal_mi_documentos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_own_document_api_v1_personal_mi_documentos_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_document_api_v1_personal_empleados__empleado_id__documentos__documento_id__descarga_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+                documento_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    contracts_api_v1_personal_empleados__empleado_id__contratos_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_contract_api_v1_personal_empleados__empleado_id__contratos_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContractInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_contracts_api_v1_personal_mi_contratos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    download_own_document_api_v1_personal_mi_documentos__documento_id__descarga_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                documento_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_vacation_balance_api_v1_personal_empleados__empleado_id__vacaciones__gestion__put: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                empleado_id: string;
+                gestion: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VacationBalanceInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    absence_types_api_v1_personal_tipos_ausencia_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clock_in_api_v1_personal_mi_asistencia_entrada_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GPSInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clock_out_api_v1_personal_mi_asistencia_salida_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GPSInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_attendance_api_v1_personal_mi_asistencia_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    company_attendance_api_v1_personal_asistencias_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                empleado_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    team_attendance_api_v1_personal_mi_equipo_asistencias_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    my_absences_api_v1_personal_mi_ausencias_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    request_absence_api_v1_personal_mi_ausencias_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AbsenceInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    company_absences_api_v1_personal_ausencias_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                estado?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    team_absences_api_v1_personal_mi_equipo_ausencias_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    decide_absence_api_v1_personal_ausencias__solicitud_id__decision_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                solicitud_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AbsenceDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_correction_api_v1_personal_mi_asistencia_correcciones_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_correction_api_v1_personal_asistencia_correcciones__solicitud_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitud_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BossDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_overtime_api_v1_personal_mi_asistencia_horas_extra_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OvertimeInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_overtime_boss_api_v1_personal_asistencia_horas_extra__solicitud_id__jefe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitud_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BossDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_overtime_hr_api_v1_personal_asistencia_horas_extra__solicitud_id__rrhh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitud_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HRDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_adjustments_api_v1_personal_mi_asistencia_ajustes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    team_adjustments_api_v1_personal_mi_equipo_asistencia_ajustes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    pending_hr_overtime_api_v1_personal_asistencia_horas_extra_pendientes_rrhh_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    create_minimum_wage_api_v1_nomina_salario_minimo_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MinimumWageInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_legal_rates_api_v1_nomina_parametros_legales_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    create_legal_rate_api_v1_nomina_parametros_legales__codigo__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                codigo: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LegalRateInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    salary_structure_api_v1_nomina_estructura_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_salary_rule_api_v1_nomina_estructura_reglas_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SalaryRuleInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    periods_api_v1_nomina_periodos_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_period_api_v1_nomina_periodos_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PeriodInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_tax_withholding_api_v1_nomina_periodos__periodo_id__rc_iva_put: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaxWithholdingInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_tax_data_api_v1_nomina_periodos__periodo_id__rc_iva_datos_put: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TaxDataInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_proportional_pay_api_v1_nomina_periodos__periodo_id__haber_proporcional_put: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProportionalPayInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggest_proportional_pay_api_v1_nomina_periodos__periodo_id__haber_proporcional_sugerencia_get: {
+        parameters: {
+            query: {
+                empleado_id: string;
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    calculate_period_api_v1_nomina_periodos__periodo_id__calcular_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_period_api_v1_nomina_periodos__periodo_id__aprobar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    period_payslips_api_v1_nomina_periodos__periodo_id__boletas_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                periodo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_payslips_api_v1_nomina_mi_boletas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    my_payslip_detail_api_v1_nomina_mi_boletas__boleta_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boleta_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    payslip_detail_api_v1_nomina_boletas__boleta_id__get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                boleta_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     crear_postulacion_publica_api_v1_publico_postulaciones_post: {
         parameters: {
             query?: never;
@@ -4998,6 +10061,13 @@ export interface operations {
             };
             /** @description Datos invalidos, CV invalido o etapa inicial no configurada. */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El almacenamiento persistente de CV no esta disponible. */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5043,10 +10113,80 @@ export interface operations {
             };
         };
     };
+    consultar_entrevista_api_v1_publico_postulaciones__codigo__entrevista_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                codigo: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaVisible"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirmar_entrevista_api_v1_publico_postulaciones__codigo__entrevista_confirmar_post: {
+        parameters: {
+            query: {
+                entrevista_id: string;
+            };
+            header?: never;
+            path: {
+                codigo: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaVisible"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     listar_postulantes_api_v1_postulantes_get: {
         parameters: {
             query?: {
                 empresa_id?: string | null;
+                q?: string | null;
+                en_banco_talento?: boolean | null;
+                experiencia_min?: number | null;
+                habilidad_id?: string | null;
+                offset?: number;
+                limit?: number;
             };
             header?: never;
             path?: never;
@@ -5517,6 +10657,807 @@ export interface operations {
             };
         };
     };
+    vacantes_para_seleccion_api_v1_seleccion_vacantes_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VacanteSeleccionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    opciones_api_v1_entrevistas_opciones_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpcionesResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    agenda_api_v1_entrevistas_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                estado?: ("PROGRAMADA" | "CONFIRMADA" | "REALIZADA" | "CANCELADA") | null;
+                desde?: string | null;
+                hasta?: string | null;
+                postulacion_id?: string | null;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_entrevista_api_v1_entrevistas_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntrevistaRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    entrevista_api_v1_entrevistas__id__get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    editar_entrevista_api_v1_entrevistas__id__patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EntrevistaRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    estado_entrevista_api_v1_entrevistas__id__estado_patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstadoRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resultado_api_v1_entrevistas__id__resultado_patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResultadoRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    entrevistas_postulacion_api_v1_postulaciones__id__entrevistas_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistaResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluaciones_api_v1_postulaciones__id__evaluaciones_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluacionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_evaluacion_api_v1_postulaciones__id__evaluaciones_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvaluacionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluacionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluadores_api_v1_evaluaciones_opciones_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntrevistadorOpcion"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    editar_evaluacion_api_v1_evaluaciones__id__patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvaluacionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluacionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analisis_api_v1_postulaciones__id__analisis_cv_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalisisResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analizar_api_v1_postulaciones__id__analisis_cv_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalisisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ranking_api_v1_vacantes__id__ranking_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                estado?: string | null;
+                orden?: string;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RankingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    comparar_api_v1_vacantes__id__comparar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompararRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidatoResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    contratar_api_v1_postulaciones__id__contratar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContratarRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmpleadoResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    empleados_api_v1_empleados_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmpleadoResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    empleado_api_v1_empleados__id__get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmpleadoResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    banco_api_v1_postulantes__id__banco_talento_patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BancoRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostulanteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    asociar_api_v1_postulantes__id__postulaciones_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AsociarRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    historial_api_v1_postulaciones__id__historial_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventoResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_roles_api_v1_roles_get: {
         parameters: {
             query?: {
@@ -5892,6 +11833,646 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    catalogo_api_v1_reportes_catalogo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    interpretar_api_v1_reportes_interpretar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterpretarReporteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretarReporteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_api_v1_reportes_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    crear_api_v1_reportes_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrearReporte"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    actualizar_api_v1_reportes__report_id__patch: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                report_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActualizarReporte"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReporteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    vista_previa_api_v1_reportes_vista_previa_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                page?: number;
+                per_page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReporteConfig"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VistaPrevia"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    exportar_api_v1_reportes_exportar__formato__post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                formato: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReporteConfig"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enviar_api_v1_reportes_enviar_post: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnviarReporteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_backups_api_v1_respaldos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespaldoSchema"][];
+                };
+            };
+        };
+    };
+    create_backup_api_v1_respaldos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrearRespaldoSchema"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperacionRespaldoSchema"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_backup_api_v1_respaldos__respaldo_id__descargar_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                respaldo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_backup_api_v1_respaldos__respaldo_id__restaurar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                respaldo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RestaurarRespaldoSchema"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperacionRespaldoSchema"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_backup_api_v1_respaldos__respaldo_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                respaldo_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                empresa_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupConfigResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                empresa_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BackupConfigRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupConfigResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tenant_backups_api_v1_respaldos_empresa_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantBackupResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_tenant_backup_api_v1_respaldos_empresa_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantBackupRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantBackupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_tenant_backup_api_v1_respaldos_empresa_ultimo_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LatestBackupsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tenant_backup_api_v1_respaldos_empresa__backup_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                backup_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantBackupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_tenant_backup_api_v1_respaldos_empresa__backup_id__descargar_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                backup_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
@@ -6661,6 +13242,275 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_plans_api_v1_planes_get: {
+        parameters: {
+            query?: {
+                include_inactive?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_plan_api_v1_planes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_plan_api_v1_planes__plan_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_subscription_api_v1_suscripcion_get: {
+        parameters: {
+            query?: {
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_consumption_api_v1_suscripcion_consumo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsumptionResponse"];
+                };
+            };
+        };
+    };
+    assign_subscription_api_v1_suscripcion_empresas__empresa_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                empresa_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_checkout_api_v1_suscripcion_checkout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedirectResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_portal_api_v1_suscripcion_portal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedirectResponse"];
+                };
+            };
+        };
+    };
+    stripe_webhook_api_v1_webhooks_stripe_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "Stripe-Signature": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

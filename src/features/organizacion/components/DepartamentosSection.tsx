@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -167,11 +168,9 @@ export function DepartamentosSection({ departamentos, empresaId, loading, error,
       render: (item) => (
         <div className="row-actions">
           <Button variant="secondary" size="sm" onClick={() => openEdit(item)}>
-            Editar
+            <Pencil size={16} aria-hidden="true" /> Editar
           </Button>
-          <Button variant="danger-outline" size="sm" onClick={() => setDeleting(item)}>
-            Eliminar
-          </Button>
+          <button className="icon-button icon-button-danger" type="button" onClick={() => setDeleting(item)} title="Eliminar departamento" aria-label={`Eliminar ${item.nombre}`}><Trash2 size={17} aria-hidden="true" /></button>
         </div>
       ),
     },
@@ -183,7 +182,7 @@ export function DepartamentosSection({ departamentos, empresaId, loading, error,
       eyebrow="Estructura organizativa de la empresa activa"
       actions={
         <Button variant="primary" onClick={openCreate}>
-          + Nuevo departamento
+          <Plus size={17} aria-hidden="true" /> Nuevo departamento
         </Button>
       }
     >
@@ -250,7 +249,7 @@ export function DepartamentosSection({ departamentos, empresaId, loading, error,
               />
             </Field>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer' }}>
+            <label className="check-label">
               <input
                 type="checkbox"
                 checked={form.activo}
