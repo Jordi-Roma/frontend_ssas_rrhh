@@ -29,7 +29,7 @@ export function decidirAusencia(
     {
       method: 'POST',
       body: {
-        decision,
+        aprobar: decision === 'APROBAR',
         observacion,
         dias_habiles_vacacion: diasHabiles,
       },
