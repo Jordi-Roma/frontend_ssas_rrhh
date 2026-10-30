@@ -40,6 +40,7 @@ import { NotFoundPage } from '../pages/NotFoundPage'
 const ContratosPage = lazy(() => import('../../features/personal/pages/ContratosPage').then(module => ({ default: module.ContratosPage })))
 const ConfiguracionAusenciasPage = lazy(() => import('../../features/personal/pages/ConfiguracionAusenciasPage').then(module => ({ default: module.ConfiguracionAusenciasPage })))
 const FichaEmpleadoPage = lazy(() => import('../../features/personal/pages/FichaEmpleadoPage').then(module => ({ default: module.FichaEmpleadoPage })))
+const BandejaAusenciasPage = lazy(() => import('../../features/personal/pages/BandejaAusenciasPage').then(module => ({ default: module.BandejaAusenciasPage })))
 const BoletasPage = lazy(() => import('../../features/nomina/pages/BoletasPage').then(module => ({ default: module.BoletasPage })))
 const MisBoletasPage = lazy(() => import('../../features/nomina/pages/MisBoletasPage').then(module => ({ default: module.MisBoletasPage })))
 
@@ -108,6 +109,7 @@ export function AppRouter() {
 
         <Route path="personal/contratos" element={empresa(<ContratosPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
         <Route path="personal/empleados/:empleadoId" element={empresa(<FichaEmpleadoPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
+        <Route path="personal/ausencias/bandeja" element={empresa(<BandejaAusenciasPage />, undefined, ['ausencias:equipo', 'platform:ausencias:ver'])} />
         <Route path="personal/ausencias/configuracion" element={empresa(<ConfiguracionAusenciasPage />, undefined, ['ausencias:mi', 'platform:ausencias:mi'])} />
         <Route path="nomina/boletas" element={empresa(<BoletasPage />, undefined, ['boletas:ver', 'platform:boletas:ver'])} />
         <Route path="nomina/mis-boletas" element={<RequireRealm realm="tenant"><RequireAccess permisos={['boletas:mi']}><MisBoletasRoute /></RequireAccess></RequireRealm>} />

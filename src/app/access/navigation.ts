@@ -17,6 +17,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/personal/contratos', label: 'Contratos', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
   { to: '/personal/ficha', label: 'Ficha de empleado', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
   { to: '/personal/ausencias/configuracion', label: 'Configuración de ausencias', permisos: ['ausencias:mi', 'platform:ausencias:mi'], grupo: 'Personal' },
+  { to: '/personal/ausencias/bandeja', label: 'Bandeja de ausencias', permisos: ['ausencias:gestionar', 'platform:ausencias:gestionar'], grupo: 'Personal' },
   { to: '/nomina/boletas', label: 'Boletas de pago', permisos: ['boletas:ver', 'platform:boletas:ver'], grupo: 'Nómina' },
   { to: '/nomina/mis-boletas', label: 'Mis boletas', soloRealm: 'tenant', permisos: ['boletas:mi'], grupo: 'Cuenta' },
   { to: '/entrevistas', label: 'Entrevistas', modulo: 'RECLUTAMIENTO', permisos: ['entrevistas:ver', 'platform:entrevistas:ver'], grupo: 'Reclutamiento' },

@@ -30,6 +30,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   '/': House,
   '/personal/contratos': ScrollText,
   '/personal/ausencias/configuracion': CalendarDays,
+  '/personal/ausencias/bandeja': CalendarDays,
   '/nomina/boletas': CreditCard,
   '/nomina/mis-boletas': ScrollText,
   '/entrevistas': CalendarDays,
