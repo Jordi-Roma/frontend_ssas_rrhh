@@ -2645,7 +2645,7 @@ export interface paths {
         head?: never;
         /**
          * Update Tenant Backup Config
-         * @description Activa o desactiva la programación diaria de una empresa desde plataforma.
+         * @description Configura la copia diaria y su hora de Bolivia desde plataforma.
          */
         patch: operations["update_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__patch"];
         trace?: never;
@@ -3664,7 +3664,9 @@ export interface components {
         /** BackupConfigRequest */
         BackupConfigRequest: {
             /** Auto Habilitado */
-            auto_habilitado: boolean;
+            auto_habilitado?: boolean | null;
+            /** Hora Local */
+            hora_local?: string | null;
         };
         /** BackupConfigResponse */
         BackupConfigResponse: {
@@ -3672,6 +3674,12 @@ export interface components {
             empresa_id: string;
             /** Auto Habilitado */
             auto_habilitado: boolean;
+            /** Hora Local */
+            hora_local: string;
+            /** Zona Horaria */
+            zona_horaria: string;
+            /** Hora Configurable */
+            hora_configurable: boolean;
             /** Retencion Dias */
             retencion_dias: number;
             /** Servicio Habilitado */
@@ -5061,6 +5069,8 @@ export interface components {
             stripe_price_id?: string | null;
             /** Modulos */
             modulos?: string[];
+            /** Funciones */
+            funciones?: ("importacion_masiva" | "reportes_avanzados" | "analisis_cv_ia" | "reportes_ia_voz" | "horario_respaldo")[];
             /**
              * Activo
              * @default true
@@ -5090,6 +5100,8 @@ export interface components {
             stripe_price_id?: string | null;
             /** Modulos */
             modulos?: string[];
+            /** Funciones */
+            funciones?: ("importacion_masiva" | "reportes_avanzados" | "analisis_cv_ia" | "reportes_ia_voz" | "horario_respaldo")[];
             /**
              * Activo
              * @default true

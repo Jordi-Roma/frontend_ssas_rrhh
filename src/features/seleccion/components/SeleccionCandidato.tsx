@@ -9,7 +9,7 @@ import { analizarCV, getAnalisis, getEvaluaciones, getEntrevistasCandidato, type
 import { EvaluacionForm } from './EvaluacionForm'
 
 export function SeleccionCandidato({ postulacionId, empresaId, onChanged }: { postulacionId: string; empresaId?: string; onChanged: () => void }) {
-  const { can } = useAccess()
+  const { can, hasFeature } = useAccess()
   const verEvaluaciones = can('evaluaciones:ver', 'platform:evaluaciones:ver')
   const gestionarEvaluaciones = can('evaluaciones:gestionar', 'platform:evaluaciones:gestionar')
   const verEntrevistas = can('entrevistas:ver', 'platform:entrevistas:ver')
@@ -43,7 +43,8 @@ export function SeleccionCandidato({ postulacionId, empresaId, onChanged }: { po
   async function saved() { setEditing(undefined); setResultado(null); setReload(n => n + 1); onChanged() }
   const latest = analisis[0]
   return <section className="page-stack">
-    <div className="page-header"><h3>Análisis de CV</h3>{can('postulaciones:analizar_cv', 'platform:postulaciones:analizar_cv') && <Button size="sm" loading={processing} onClick={() => void ejecutar()}><BrainCircuit size={16} /> {latest ? 'Reanalizar CV' : 'Analizar CV'}</Button>}</div>
+    <div className="page-header"><h3>Análisis de CV</h3>{can('postulaciones:analizar_cv', 'platform:postulaciones:analizar_cv') && hasFeature('analisis_cv_ia') && <Button size="sm" loading={processing} onClick={() => void ejecutar()}><BrainCircuit size={16} /> {latest ? 'Reanalizar CV' : 'Analizar CV'}</Button>}</div>
+    {!hasFeature('analisis_cv_ia') && <Alert tone="info">El análisis de candidatos con IA no está incluido en el plan de esta empresa.</Alert>}
     {loading && <LoadingBlock message="Cargando selección…" />}
     {errors.proceso && <Alert tone="error">{errors.proceso}</Alert>}
     {errors.analisis ? <Alert tone="error">{errors.analisis}<Button variant="ghost" onClick={() => setReload(n => n + 1)}>Reintentar</Button></Alert> : latest ? <>

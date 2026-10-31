@@ -8,7 +8,7 @@ vi.mock('../../../app/context/CompanyScopeContext', () => ({
   useCompanyScope: () => ({ selectedCompanyId: 'company-a' }),
 }))
 vi.mock('../../../app/access/AccessProvider', () => ({
-  useAccess: () => ({ can: () => true }),
+  useAccess: () => ({ can: () => true, hasFeature: () => true }),
 }))
 vi.mock('../../auth/hooks/useAuth', () => ({
   useAuth: () => ({ user: { realm: 'tenant' } }),

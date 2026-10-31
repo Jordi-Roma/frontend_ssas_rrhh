@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
-import { DatabaseBackup, Download, RefreshCw } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { DatabaseBackup, Download, RefreshCw, Save } from 'lucide-react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { useAuth } from '../../auth/hooks/useAuth'
-import { Alert, Badge, Button, ConfirmDialog, EmptyState, PageHeader, Panel } from '../../../shared/components'
+import { Alert, Badge, Button, ConfirmDialog, EmptyState, Field, PageHeader, Panel } from '../../../shared/components'
 import { respaldosEmpresaApi, type ConfigRespaldosEmpresa, type RespaldoEmpresa, type UltimosRespaldos } from '../api/respaldosEmpresaApi'
 
 const dateFormatter = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short' })
@@ -34,25 +34,31 @@ export function RespaldosEmpresaPage() {
   const [items, setItems] = useState<RespaldoEmpresa[]>([])
   const [latest, setLatest] = useState<UltimosRespaldos | null>(null)
   const [config, setConfig] = useState<ConfigRespaldosEmpresa | null>(null)
+  const [scheduleTime, setScheduleTime] = useState('02:00')
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [paging, setPaging] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [hasMore, setHasMore] = useState(false)
   const [message, setMessage] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  const loadSequence = useRef(0)
 
   const load = useCallback(async (quiet = false) => {
+    const sequence = ++loadSequence.current
     if (!quiet) setLoading(true)
     try {
       const list = await respaldosEmpresaApi.list(empresaId)
+      const nextLatest = !platform || empresaId ? await respaldosEmpresaApi.latest(empresaId) : null
+      const nextConfig = platform && empresaId ? await respaldosEmpresaApi.config(empresaId) : null
+      if (sequence !== loadSequence.current) return
       setItems(list)
       setHasMore(list.length === PAGE_SIZE)
-      setLatest(!platform || empresaId ? await respaldosEmpresaApi.latest(empresaId) : null)
-      setConfig(platform && empresaId ? await respaldosEmpresaApi.config(empresaId) : null)
+      setLatest(nextLatest)
+      setConfig(nextConfig)
     } catch (error) {
-      setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudieron cargar los respaldos.' })
+      if (sequence === loadSequence.current) setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudieron cargar los respaldos.' })
     } finally {
-      if (!quiet) setLoading(false)
+      if (!quiet && sequence === loadSequence.current) setLoading(false)
     }
   }, [empresaId, platform])
 
@@ -68,6 +74,7 @@ export function RespaldosEmpresaPage() {
   }
 
   useEffect(() => { void load() }, [load])
+  useEffect(() => { setScheduleTime(config?.hora_local ?? '02:00') }, [config?.hora_local, empresaId])
   useEffect(() => {
     if (!items.some((item) => ['PENDIENTE', 'PROCESANDO'].includes(item.estado))) return
     const timer = window.setInterval(() => void load(true), 5000)
@@ -86,11 +93,11 @@ export function RespaldosEmpresaPage() {
     } finally { setBusy(false); setConfirming(false) }
   }
 
-  async function changeAuto(enabled: boolean) {
+  async function changeConfig(changes: { auto_habilitado?: boolean; hora_local?: string }) {
     if (!empresaId) return
     setBusy(true); setMessage(null)
     try {
-      setConfig(await respaldosEmpresaApi.updateConfig(empresaId, enabled))
+      setConfig(await respaldosEmpresaApi.updateConfig(empresaId, changes))
       setMessage({ tone: 'success', text: 'Programación actualizada.' })
     } catch (error) {
       setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo actualizar la programación.' })
@@ -106,9 +113,16 @@ export function RespaldosEmpresaPage() {
     />
     {message && <Alert tone={message.tone}>{message.text}</Alert>}
     {platform && !empresaId && <Alert tone="info">Selecciona una empresa arriba para ver su último respaldo o solicitar uno. El historial muestra todas.</Alert>}
-    {platform && empresaId && config && <Panel title="Programación automática">
+    {platform && empresaId && config?.empresa_id === empresaId && <Panel title="Programación automática">
       {!config.servicio_habilitado && <Alert tone="info">Los respaldos por empresa todavía no están habilitados en Railway.</Alert>}
-      <label><input type="checkbox" checked={config.auto_habilitado} disabled={busy || !can('platform:backup:configurar')} onChange={(event) => void changeAuto(event.target.checked)} /> Respaldo diario para esta empresa</label>
+      {!config.hora_configurable && <Alert tone="info">Este plan usa el horario automático de las 02:00 (Bolivia). La personalización está disponible en planes que la incluyan.</Alert>}
+      <label><input type="checkbox" checked={config.auto_habilitado} disabled={busy || !can('platform:backup:configurar')} onChange={(event) => void changeConfig({ auto_habilitado: event.target.checked })} /> Respaldo diario para esta empresa</label>
+      <div className="row-actions">
+        <Field label="Hora del respaldo" hint={`Zona horaria: ${config.zona_horaria}`}>
+          <input type="time" value={scheduleTime} disabled={busy || !config.hora_configurable || !can('platform:backup:configurar')} onChange={(event) => setScheduleTime(event.target.value)} />
+        </Field>
+        {config.hora_configurable && can('platform:backup:configurar') && <Button variant="secondary" loading={busy} disabled={!/^([01]\d|2[0-3]):[0-5]\d$/.test(scheduleTime) || scheduleTime === config.hora_local} onClick={() => void changeConfig({ hora_local: scheduleTime })}><Save size={16} aria-hidden="true" />Guardar hora</Button>}
+      </div>
       <p className="field-hint">Las copias automáticas se conservan {config.retencion_dias} días. Las manuales no caducan automáticamente.</p>
     </Panel>}
     {(!platform || empresaId) && <Panel title="Último respaldo">

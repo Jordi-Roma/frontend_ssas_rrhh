@@ -3,6 +3,8 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { ReportesPage } from './ReportesPage'
 import { reportesApi } from '../api/reportesApi'
 
+vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ hasFeature: () => true }) }))
+
 vi.mock('../../../app/context/CompanyScopeContext', () => ({
   useCompanyScope: () => ({ company: { id: 'company-a' } }),
 }))

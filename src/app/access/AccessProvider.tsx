@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import { modulosApi } from '../../features/empresas/api/modulosApi'
+import { suscripcionesApi, type PlanFeature } from '../../features/suscripciones/api/suscripcionesApi'
 import { useCompanyScope } from '../context/CompanyScopeContext'
 
 type AccessContextValue = {
@@ -12,6 +13,7 @@ type AccessContextValue = {
   /** Verdadero si el usuario tiene ALGUNO de los permisos indicados. */
   can: (...codigos: string[]) => boolean
   hasModulo: (codigo: string) => boolean
+  hasFeature: (codigo: PlanFeature) => boolean
   loadingModulos: boolean
 }
 
@@ -21,10 +23,22 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const { company } = useCompanyScope()
   const [companyModulos, setCompanyModulos] = useState<string[]>([])
+  const [planFeatures, setPlanFeatures] = useState<PlanFeature[]>([])
   const [loadingModulos, setLoadingModulos] = useState(false)
 
   const esPlataforma = user?.realm === 'platform'
   const companyId = company?.id ?? null
+  const userId = user?.id ?? null
+
+  useEffect(() => {
+    if (!userId || (esPlataforma && !companyId)) { setPlanFeatures([]); return }
+    let active = true
+    setPlanFeatures([])
+    suscripcionesApi.current(esPlataforma ? companyId ?? undefined : undefined)
+      .then(subscription => { if (active) setPlanFeatures(subscription.plan.funciones ?? []) })
+      .catch(() => { if (active) setPlanFeatures([]) })
+    return () => { active = false }
+  }, [esPlataforma, companyId, userId])
 
   // Un administrador de plataforma ve el menú de la empresa que tiene seleccionada,
   // no el suyo: sus módulos hay que consultarlos aparte.
@@ -56,14 +70,16 @@ export function AccessProvider({ children }: { children: ReactNode }) {
     const modulos = esPlataforma ? companyModulos : (user?.modulos ?? [])
     const permissionSet = new Set(permissions)
     const moduloSet = new Set(modulos)
+    const featureSet = new Set(planFeatures)
     return {
       permissions,
       modulos,
       can: (...codigos: string[]) => codigos.some((codigo) => permissionSet.has(codigo)),
       hasModulo: (codigo: string) => moduloSet.has(codigo),
+      hasFeature: (codigo: PlanFeature) => featureSet.has(codigo),
       loadingModulos,
     }
-  }, [user?.permissions, user?.modulos, esPlataforma, companyModulos, loadingModulos])
+  }, [user?.permissions, user?.modulos, esPlataforma, companyModulos, planFeatures, loadingModulos])
 
   return <AccessContext.Provider value={value}>{children}</AccessContext.Provider>
 }

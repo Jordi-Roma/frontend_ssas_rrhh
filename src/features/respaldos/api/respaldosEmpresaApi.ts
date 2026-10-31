@@ -21,6 +21,9 @@ export type UltimosRespaldos = {
 export type ConfigRespaldosEmpresa = {
   empresa_id: string
   auto_habilitado: boolean
+  hora_local: string
+  zona_horaria: string
+  hora_configurable: boolean
   retencion_dias: number
   servicio_habilitado: boolean
 }
@@ -38,8 +41,8 @@ export const respaldosEmpresaApi = {
     downloadFile(`${ROOT}/${encodeURIComponent(id)}/descargar`, `ssas-empresa-${id}.tar.gz`),
   config: (empresaId: string) =>
     apiRequest<ConfigRespaldosEmpresa>(`${ROOT}/configuracion/${encodeURIComponent(empresaId)}`),
-  updateConfig: (empresaId: string, autoHabilitado: boolean) =>
+  updateConfig: (empresaId: string, changes: { auto_habilitado?: boolean; hora_local?: string }) =>
     apiRequest<ConfigRespaldosEmpresa>(`${ROOT}/configuracion/${encodeURIComponent(empresaId)}`, {
-      method: 'PATCH', body: { auto_habilitado: autoHabilitado },
+      method: 'PATCH', body: changes,
     }),
 }

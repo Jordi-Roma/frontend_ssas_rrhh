@@ -23,7 +23,8 @@ export function ImportacionPage() {
 }
 
 function Importacion({ empresaId, requiresCompany }: { empresaId?: string; requiresCompany: boolean }) {
-  const { can } = useAccess()
+  const { can, hasFeature } = useAccess()
+  const canImport = hasFeature('importacion_masiva')
   const canImportUsers = can('usuarios:crear', 'platform:usuarios:gestionar')
   const canImportEmployees = can('empleados:importar', 'platform:empleados:importar')
   const [tipo, setTipo] = useState<TipoCatalogo>('departamentos')
@@ -35,14 +36,14 @@ function Importacion({ empresaId, requiresCompany }: { empresaId?: string; requi
 
   function reset(nextType: TipoCatalogo) { setTipo(nextType); setFile(null); setPreview(null); setMessage(null) }
   async function runPreview() {
-    if (!file) return
+    if (!file || !canImport) return
     setBusy(true); setMessage(null)
     try { setPreview(await importacionApi.preview(tipo, file, empresaId)) }
     catch (error) { setPreview(null); setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo previsualizar.' }) }
     finally { setBusy(false) }
   }
   async function confirm() {
-    if (!file || !preview || preview.errores) return
+    if (!canImport || !file || !preview || preview.errores) return
     setBusy(true); setMessage(null)
     try {
       const result = await importacionApi.confirm(tipo, file, preview.sha256, empresaId)
@@ -55,6 +56,7 @@ function Importacion({ empresaId, requiresCompany }: { empresaId?: string; requi
   return <section className="page-stack">
     <PageHeader title="Importar datos" eyebrow="Organización" description="Carga datos solo para la empresa seleccionada." />
     {requiresCompany && !empresaId && <Alert tone="info">Selecciona una empresa para importar sus datos.</Alert>}
+    {!canImport && <Alert tone="info">La importación masiva no está incluida en el plan de esta empresa.</Alert>}
     {message && <Alert tone={message.tone}>{message.text}</Alert>}
     <Panel title="Archivo de importación">
       <div className="toolbar" role="group" aria-label="Preparar importación">
@@ -67,7 +69,7 @@ function Importacion({ empresaId, requiresCompany }: { empresaId?: string; requi
       {tipo === 'empleados' && <Alert tone="info">El archivo contiene datos personales y bancarios. Usa fechas AAAA-MM-DD; en Excel, da formato Texto al código, CI, teléfono y número de cuenta para conservar ceros iniciales. La vista previa oculta CI, contactos y cuenta. No se crean cuentas de acceso ni se modifican empleados existentes. Guarda el archivo de forma privada y elimínalo después de importar.</Alert>}
       <div className="row-actions">
         <Button variant="secondary" onClick={() => void importacionApi.plantilla(tipo, formato, empresaId).catch(error => setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo descargar la plantilla.' }))}><Download size={16} />Descargar plantilla</Button>
-        <Button disabled={!file || busy || (requiresCompany && !empresaId)} loading={busy} onClick={() => void runPreview()}><Upload size={16} />Previsualizar</Button>
+        <Button disabled={!canImport || !file || busy || (requiresCompany && !empresaId)} loading={busy} onClick={() => void runPreview()}><Upload size={16} />Previsualizar</Button>
       </div>
     </Panel>
     {preview && <Panel title="Vista previa" count={`${preview.filas.length} filas`}>
@@ -75,7 +77,7 @@ function Importacion({ empresaId, requiresCompany }: { empresaId?: string; requi
       <div className="table-wrap"><table><thead><tr><th>Fila</th><th>Nombre</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>{preview.filas.map(row => <tr key={row.fila}>
         <td>{row.fila}</td><td>{tipo === 'empleados' ? `${row.datos.codigo} · ${row.datos.nombres} ${row.datos.apellido_paterno}` : <>{row.datos.nombre}{row.datos.apellido ? ` ${row.datos.apellido}` : ''}{row.datos.email ? ` · ${row.datos.email}` : ''}</>}</td><td><Badge tone={row.accion === 'error' ? 'danger' : row.accion === 'crear' ? 'success' : 'neutral'}>{row.accion}</Badge></td><td>{row.errores.join('; ') || '—'}</td>
       </tr>)}</tbody></table></div>
-      <Button disabled={busy || preview.errores > 0 || (requiresCompany && !empresaId)} loading={busy} onClick={() => void confirm()}>Confirmar importación</Button>
+      <Button disabled={!canImport || busy || preview.errores > 0 || (requiresCompany && !empresaId)} loading={busy} onClick={() => void confirm()}>Confirmar importación</Button>
     </Panel>}
   </section>
 }

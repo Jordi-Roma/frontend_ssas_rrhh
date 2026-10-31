@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, Eye, Filter as FilterIcon, Mic, Plus, Save, Square, Trash2 } from 'lucide-react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
+import { useAccess } from '../../../app/access/AccessProvider'
 import { Alert, Button, Field, PageHeader, Panel } from '../../../shared/components'
 import { reportesApi, saveBlob, type Filter, type Preview, type ReportConfig, type Source } from '../api/reportesApi'
 
@@ -25,6 +26,9 @@ type SpeechWindow = Window & {
 
 export function ReportesPage() {
   const { company } = useCompanyScope()
+  const { hasFeature } = useAccess()
+  const advanced = hasFeature('reportes_avanzados')
+  const ai = advanced && hasFeature('reportes_ia_voz')
   const [sources, setSources] = useState<Source[]>([])
   const [sourceCode, setSourceCode] = useState('')
   const [columns, setColumns] = useState<string[]>([])
@@ -66,7 +70,7 @@ export function ReportesPage() {
   const visiblePreview = previewFor === configKey ? preview : null
 
   useEffect(() => {
-    if (!autoPreview) return
+    if (!autoPreview || !advanced) return
     if (!config.columnas.length) { setPreview(null); setBusy(false); return }
     let canceled = false
     const timer = window.setTimeout(async () => {
@@ -83,9 +87,10 @@ export function ReportesPage() {
       }
     }, 350)
     return () => { canceled = true; window.clearTimeout(timer) }
-  }, [autoPreview, config, company?.id, configKey])
+  }, [autoPreview, advanced, config, company?.id, configKey])
 
   async function interpret(text: string) {
+    if (!ai) return
     const query = text.trim()
     if (query.length < 3) return setMessage('Escribe una consulta más específica.')
     setInterpreting(true); setAutoPreview(false); setBusy(false); setPreview(null); setMessage(null)
@@ -138,6 +143,7 @@ export function ReportesPage() {
   }
 
   async function runPreview() {
+    if (!advanced) return
     if (!columns.length) return setMessage('Selecciona al menos una columna.')
     setAutoPreview(false); setBusy(true); setMessage(null); setPreview(null)
     try { setPreview(await reportesApi.preview(config, company?.id)); setPreviewFor(configKey) }
@@ -146,6 +152,7 @@ export function ReportesPage() {
   }
 
   async function download(format: 'xlsx' | 'html' | 'pdf') {
+    if (!advanced) return
     setBusy(true); setMessage(null)
     try { saveBlob(await reportesApi.export(format, config, company?.id), `reporte.${format}`) }
     catch (error) { setMessage(error instanceof Error ? error.message : 'No se pudo exportar.') }
@@ -154,9 +161,10 @@ export function ReportesPage() {
 
   return <section className="page-stack">
     <PageHeader eyebrow="Análisis" title="Reportes personalizables" description="Consulta tus datos y ajusta el reporte antes de exportarlo." />
+    {!advanced && <Alert tone="info">Los reportes avanzados no están incluidos en el plan de esta empresa.</Alert>}
     {message && <Alert tone="info">{message}</Alert>}
     <Panel title="Constructor de reporte" eyebrow="Configuración">
-      <div className="report-query">
+      {ai ? <div className="report-query">
         <Field label="Consulta por voz o texto">
           <textarea rows={2} maxLength={500} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ej. Postulaciones de septiembre ordenadas por fecha" />
         </Field>
@@ -165,7 +173,7 @@ export function ReportesPage() {
           <Button onClick={() => void interpret(prompt)} loading={interpreting} disabled={listening || prompt.trim().length < 3}>Generar reporte</Button>
         </div>
         <small className="report-privacy">El navegador puede procesar el audio en su servicio de voz. Al generar, la transcripción se envía a Google Gemini; no se envían filas del reporte.</small>
-      </div>
+      </div> : advanced && <Alert tone="info">Los reportes por voz e IA no están incluidos en el plan de esta empresa. Puedes configurar el reporte manualmente.</Alert>}
       {interpreted && <p className="report-interpretation"><strong>Propuesta interpretada</strong> · {source?.nombre ?? sourceCode} · {columns.length} columnas · {filters.length} filtros</p>}
       <div className="form-grid">
         <Field label="Fuente"><select value={sourceCode} onChange={(e) => changeSource(e.target.value)}>{sources.map((item) => <option key={item.codigo} value={item.codigo}>{item.nombre}</option>)}</select></Field>
@@ -183,7 +191,7 @@ export function ReportesPage() {
         </div>)}
       </div>
       <div className="form-grid"><Field label="Ordenar por"><select value={orderField} onChange={(e) => setOrderField(e.target.value)}><option value="">Sin orden</option>{source?.columnas.map((column) => <option key={column}>{column}</option>)}</select></Field><Field label="Dirección"><select value={direction} onChange={(e) => setDirection(e.target.value as 'asc' | 'desc')}><option value="asc">Ascendente</option><option value="desc">Descendente</option></select></Field></div>
-      <div className="sticky-actions"><Button onClick={() => void runPreview()} loading={busy}><Eye size={17} aria-hidden="true" />Vista previa</Button><Button variant="secondary" disabled={!name.trim() || !columns.length} onClick={() => void reportesApi.create(name, config, company?.id).then(() => setMessage('Reporte guardado.')).catch((e: Error) => setMessage(e.message))}><Save size={17} aria-hidden="true" />Guardar definición</Button></div>
+      <div className="sticky-actions"><Button onClick={() => void runPreview()} disabled={!advanced} loading={busy}><Eye size={17} aria-hidden="true" />Vista previa</Button><Button variant="secondary" disabled={!advanced || !name.trim() || !columns.length} onClick={() => void reportesApi.create(name, config, company?.id).then(() => setMessage('Reporte guardado.')).catch((e: Error) => setMessage(e.message))}><Save size={17} aria-hidden="true" />Guardar definición</Button></div>
     </Panel>
     {busy && autoPreview && <p role="status">Actualizando vista previa...</p>}
     {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{column.replaceAll('_', ' ')}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table></div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}

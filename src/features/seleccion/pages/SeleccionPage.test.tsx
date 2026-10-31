@@ -7,7 +7,7 @@ import { getRanking, compararCandidatos, getVacantesSeleccion, type RankingCandi
 
 const scope = vi.hoisted(() => ({ selectedCompanyId: 'empresa-a', allowed: true }))
 vi.mock('../../../app/context/CompanyScopeContext', () => ({ useCompanyScope: () => scope }))
-vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ can: () => scope.allowed }) }))
+vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ can: () => scope.allowed, hasFeature: () => true }) }))
 vi.mock('../../tablero/api/tableroApi', () => ({ getEtapas: vi.fn().mockResolvedValue([]), getPostulaciones: vi.fn().mockResolvedValue([]) }))
 vi.mock('../../tablero/components/PostulanteDetalleModal', () => ({ PostulanteDetalleModal: () => null }))
 vi.mock('../api/seleccionApi', () => ({ getRanking: vi.fn(), compararCandidatos: vi.fn(), getVacantesSeleccion: vi.fn().mockResolvedValue([{ id: 'vacante', titulo: 'Ingeniería', habilidades: [] }, { id: 'vacante-b', titulo: 'Ventas', habilidades: [] }]), getAnalisis: vi.fn().mockResolvedValue([]) }))

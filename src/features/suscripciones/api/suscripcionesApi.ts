@@ -1,6 +1,14 @@
 import { apiRequest, buildQuery } from '../../../shared/api/httpClient'
 
-export type Plan = { id: string; nombre: string; descripcion: string | null; precio_mensual: string; moneda: string; max_usuarios: number; max_vacantes_activas: number; max_almacenamiento_mb: number; stripe_price_id: string | null; modulos: string[]; activo: boolean }
+export const PLAN_FEATURES = [
+  { code: 'importacion_masiva', label: 'Importación masiva' },
+  { code: 'reportes_avanzados', label: 'Reportes avanzados' },
+  { code: 'analisis_cv_ia', label: 'Análisis de candidatos con IA' },
+  { code: 'reportes_ia_voz', label: 'Reportes por voz e IA' },
+  { code: 'horario_respaldo', label: 'Elegir hora del respaldo automático' },
+] as const
+export type PlanFeature = typeof PLAN_FEATURES[number]['code']
+export type Plan = { id: string; nombre: string; descripcion: string | null; precio_mensual: string; moneda: string; max_usuarios: number; max_vacantes_activas: number; max_almacenamiento_mb: number; stripe_price_id: string | null; modulos: string[]; funciones: PlanFeature[]; activo: boolean }
 export type Subscription = { id: string; empresa_id: string; plan: Plan; estado: string; fecha_inicio: string; fecha_fin: string | null; periodo_prueba_hasta: string | null; cancelar_al_fin_periodo: boolean; fecha_ultimo_pago: string | null; fecha_proximo_cobro: string | null; stripe_customer_id: string | null; stripe_subscription_id: string | null }
 export type Consumption = { estado: string; usuarios: Usage; vacantes_activas: Usage; almacenamiento_mb: Usage }
 export type Usage = { usado: number; limite: number }
