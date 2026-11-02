@@ -10,14 +10,14 @@ vi.mock('../api/ausenciasApi', () => ({ getMisAusencias: vi.fn(), getTiposAusenc
 
 beforeEach(() => {
   vi.mocked(getMisAusencias).mockResolvedValue([])
-  vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'tipo-1', codigo: 'MED', nombre: 'Permiso médico', es_remunerado: true, descuenta_vacacion: false, requiere_documento: false }])
+  vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'tipo-1', codigo: 'MED', nombre: 'Permiso médico', es_remunerado: true, descuenta_vacacion: false, requiere_documento: false, activo: true, dias_maximos_anio: null }])
   vi.mocked(solicitarAusencia).mockResolvedValue({ id: 'sol-1', estado: 'PENDIENTE' })
   vi.mocked(subirComprobantePropio).mockResolvedValue({ id: 'documento-1' })
 })
 
 it('adjunta comprobante cuando el tipo de ausencia lo requiere', async () => {
   const user = userEvent.setup()
-  vi.mocked(getTiposAusencia).mockResolvedValueOnce([{ id: 'tipo-medico', codigo: 'LICENCIA_MEDICA', nombre: 'Licencia médica', es_remunerado: true, descuenta_vacacion: false, requiere_documento: true }])
+  vi.mocked(getTiposAusencia).mockResolvedValueOnce([{ id: 'tipo-medico', codigo: 'LICENCIA_MEDICA', nombre: 'Licencia médica', es_remunerado: true, descuenta_vacacion: false, requiere_documento: true, activo: true, dias_maximos_anio: null }])
   render(<MisAusenciasPage />)
   await user.selectOptions(await screen.findByLabelText('Tipo de ausencia'), 'tipo-medico')
   fireEvent.change(screen.getByLabelText('Desde'), { target: { value: '2026-11-03' } })

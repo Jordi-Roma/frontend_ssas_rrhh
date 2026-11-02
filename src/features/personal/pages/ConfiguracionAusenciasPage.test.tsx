@@ -5,17 +5,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '../../../shared/api/httpClient'
 import { getEmpleados } from '../../../shared/api/empleadosApi'
 import { empleado } from '../../../test/sprint3Fixtures'
-import { asignarSaldoVacaciones, getTiposAusencia } from '../api/ausenciasApi'
+import { asignarSaldoVacaciones, crearTipoAusencia, editarTipoAusencia, getTiposAusencia, getTiposAusenciaConfiguracion } from '../api/ausenciasApi'
 import { ConfiguracionAusenciasPage } from './ConfiguracionAusenciasPage'
 
 const scope = vi.hoisted(() => ({ selectedCompanyId: 'empresa-demo', loading: false, write: true }))
 vi.mock('../../../app/context/CompanyScopeContext', () => ({ useCompanyScope: () => scope }))
 vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ can: () => scope.write }), Can: ({ children }: { children: ReactNode }) => scope.write ? children : null }))
 vi.mock('../../../shared/api/empleadosApi', async original => ({ ...await original<typeof import('../../../shared/api/empleadosApi')>(), getEmpleados: vi.fn() }))
-vi.mock('../api/ausenciasApi', () => ({ getTiposAusencia: vi.fn(), asignarSaldoVacaciones: vi.fn() }))
+vi.mock('../api/ausenciasApi', () => ({ getTiposAusencia: vi.fn(), getTiposAusenciaConfiguracion: vi.fn(), crearTipoAusencia: vi.fn(), editarTipoAusencia: vi.fn(), asignarSaldoVacaciones: vi.fn() }))
 beforeEach(() => {
   vi.resetAllMocks(); scope.write = true; scope.selectedCompanyId = 'empresa-demo'
-  vi.mocked(getEmpleados).mockResolvedValue([empleado]); vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'tipo-demo', codigo: 'VAC', nombre: 'Vacaciones demo', es_remunerado: true, descuenta_vacacion: true, requiere_documento: false }])
+  vi.mocked(getEmpleados).mockResolvedValue([empleado]); const tipos = [{ id: 'tipo-demo', codigo: 'VAC', nombre: 'Vacaciones demo', es_remunerado: true, descuenta_vacacion: true, requiere_documento: false, activo: true, dias_maximos_anio: null }]
+  vi.mocked(getTiposAusencia).mockResolvedValue(tipos); vi.mocked(getTiposAusenciaConfiguracion).mockResolvedValue(tipos)
 })
 afterEach(cleanup)
 async function fillForm() {
@@ -25,11 +26,26 @@ async function fillForm() {
   await userEvent.type(screen.getByLabelText('Días asignados'), '2')
 }
 describe('Ausencias con alcance parcial explícito', () => {
-  it('consulta el catálogo real y explica su limitación, sin botones ficticios de edición', async () => {
+  it('muestra el catálogo y las acciones de gestión', async () => {
     render(<ConfiguracionAusenciasPage />)
     expect(await screen.findByText('Vacaciones demo')).toBeInTheDocument()
-    expect(screen.getByText(/Los tipos de ausencia se consultan en modo de solo lectura/)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Editar|Crear tipo|Eliminar/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Crear tipo' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument()
+  })
+  it('crea un tipo dentro de la empresa seleccionada', async () => {
+    render(<ConfiguracionAusenciasPage />)
+    await screen.findByText('Vacaciones demo')
+    await userEvent.click(screen.getByRole('button', { name: 'Crear tipo' }))
+    await userEvent.type(screen.getByLabelText(/Código/), 'LICENCIA_ESTUDIO')
+    await userEvent.type(screen.getByLabelText('Nombre'), 'Licencia de estudio')
+    await userEvent.click(screen.getAllByRole('button', { name: 'Crear tipo' })[1])
+    expect(crearTipoAusencia).toHaveBeenCalledWith('empresa-demo', expect.objectContaining({ codigo: 'LICENCIA_ESTUDIO', nombre: 'Licencia de estudio' }))
+  })
+  it('desactiva un tipo sin borrarlo', async () => {
+    render(<ConfiguracionAusenciasPage />)
+    await screen.findByText('Vacaciones demo')
+    await userEvent.click(screen.getByRole('button', { name: 'Desactivar' }))
+    expect(editarTipoAusencia).toHaveBeenCalledWith('empresa-demo', 'tipo-demo', expect.objectContaining({ activo: false }))
   })
   it('mantiene la gestión y los días ante un 409, sin mostrar un saldo no confirmado', async () => {
     vi.mocked(asignarSaldoVacaciones).mockRejectedValue(new ApiError('No se puede reducir el saldo por debajo de lo ya utilizado', 409))
@@ -46,10 +62,10 @@ describe('Ausencias con alcance parcial explícito', () => {
     await userEvent.clear(screen.getByLabelText('Gestión')); expect(screen.queryByText('Disponibles')).not.toBeInTheDocument()
   })
   it('distingue error de catálogo y estado vacío, con reintento', async () => {
-    vi.mocked(getTiposAusencia).mockRejectedValueOnce(new Error('Consulta no disponible')).mockResolvedValueOnce([])
+    vi.mocked(getTiposAusenciaConfiguracion).mockRejectedValueOnce(new Error('Consulta no disponible')).mockResolvedValueOnce([])
     render(<ConfiguracionAusenciasPage />); await screen.findByText('Consulta no disponible')
     await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
-    expect(await screen.findByText('No hay tipos de ausencia activos para esta empresa.')).toBeInTheDocument()
+    expect(await screen.findByText('No hay tipos de ausencia para esta empresa.')).toBeInTheDocument()
   })
   it('oculta todo el formulario de escritura a quien solo puede consultar', async () => {
     scope.write = false; render(<ConfiguracionAusenciasPage />); await screen.findByText('Vacaciones demo')

@@ -24,7 +24,7 @@ beforeEach(() => {
     estado: 'PENDIENTE',
   }])
   vi.mocked(decidirAusencia).mockResolvedValue({})
-  vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'vacacion-demo', codigo: 'VAC', nombre: 'Vacación', es_remunerado: true, descuenta_vacacion: true, requiere_documento: false }])
+  vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'vacacion-demo', codigo: 'VAC', nombre: 'Vacación', es_remunerado: true, descuenta_vacacion: true, requiere_documento: false, activo: true, dias_maximos_anio: null }])
 })
 afterEach(cleanup)
 

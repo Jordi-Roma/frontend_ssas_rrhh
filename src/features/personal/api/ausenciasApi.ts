@@ -8,7 +8,8 @@ function parseTipo(value: unknown) {
   const row = record(value)
   return { id: text(row.id), codigo: text(row.codigo), nombre: text(row.nombre),
     es_remunerado: boolean(row.es_remunerado), descuenta_vacacion: boolean(row.descuenta_vacacion),
-    requiere_documento: boolean(row.requiere_documento ?? false) }
+    requiere_documento: boolean(row.requiere_documento ?? false), activo: boolean(row.activo ?? true),
+    dias_maximos_anio: row.dias_maximos_anio == null ? null : numeric(row.dias_maximos_anio) }
 }
 
 function parseSaldo(value: unknown) {
@@ -17,6 +18,7 @@ function parseSaldo(value: unknown) {
 }
 
 export type TipoAusencia = ReturnType<typeof parseTipo>
+export type TipoAusenciaInput = Pick<TipoAusencia, 'codigo' | 'nombre' | 'es_remunerado' | 'descuenta_vacacion' | 'requiere_documento' | 'dias_maximos_anio'>
 export type SaldoVacaciones = ReturnType<typeof parseSaldo>
 export type MiAusencia = {
   id: string
@@ -35,6 +37,18 @@ export async function getTiposAusencia(empresaId?: string | null) {
   return list(await apiRequest<GetResponse<'/api/v1/personal/tipos-ausencia'>>(
     `/api/v1/personal/tipos-ausencia${buildQuery({ empresa_id: empresaId })}`,
   ), parseTipo)
+}
+
+export async function getTiposAusenciaConfiguracion(empresaId: string) {
+  return list(await apiRequest<unknown>(`/api/v1/personal/tipos-ausencia/configuracion${buildQuery({ empresa_id: empresaId })}`), parseTipo)
+}
+
+export async function crearTipoAusencia(empresaId: string, data: TipoAusenciaInput) {
+  return parseTipo(await apiRequest<unknown>(`/api/v1/personal/tipos-ausencia${buildQuery({ empresa_id: empresaId })}`, { method: 'POST', body: data }))
+}
+
+export async function editarTipoAusencia(empresaId: string, id: string, data: Omit<TipoAusenciaInput, 'codigo'> & { activo: boolean }) {
+  return parseTipo(await apiRequest<unknown>(`/api/v1/personal/tipos-ausencia/${encodeURIComponent(id)}${buildQuery({ empresa_id: empresaId })}`, { method: 'PUT', body: data }))
 }
 
 export function getMisAusencias() {
