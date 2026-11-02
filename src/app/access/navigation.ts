@@ -22,6 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/nomina/periodos', label: 'Periodos de nómina', permisos: ['nomina:gestionar', 'platform:nomina:gestionar'], grupo: 'Nómina' },
   { to: '/nomina/boletas', label: 'Boletas de pago', permisos: ['boletas:ver', 'platform:boletas:ver'], grupo: 'Nómina' },
   { to: '/nomina/mis-boletas', label: 'Mis boletas', soloRealm: 'tenant', permisos: ['boletas:mi'], grupo: 'Cuenta' },
+  { to: '/nomina/parametros-legales', label: 'Parámetros legales de nómina', soloRealm: 'platform', permisos: ['platform:nomina:parametros'], grupo: 'Plataforma' },
   { to: '/entrevistas', label: 'Entrevistas', modulo: 'RECLUTAMIENTO', permisos: ['entrevistas:ver', 'platform:entrevistas:ver'], grupo: 'Reclutamiento' },
   { to: '/seleccion', label: 'Selección', modulo: 'RECLUTAMIENTO', permisos: ['postulaciones:ver', 'platform:postulaciones:ver'], grupo: 'Reclutamiento' },
   {

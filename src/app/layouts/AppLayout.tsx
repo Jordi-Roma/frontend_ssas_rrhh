@@ -34,6 +34,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   '/personal/ausencias/bandeja': CalendarDays,
   '/nomina/boletas': CreditCard,
   '/nomina/periodos': CalendarDays,
+  '/nomina/parametros-legales': Settings2,
   '/nomina/mis-boletas': ScrollText,
   '/entrevistas': CalendarDays,
   '/seleccion': ListChecks,

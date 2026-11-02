@@ -45,6 +45,7 @@ const BandejaAusenciasPage = lazy(() => import('../../features/personal/pages/Ba
 const BoletasPage = lazy(() => import('../../features/nomina/pages/BoletasPage').then(module => ({ default: module.BoletasPage })))
 const MisBoletasPage = lazy(() => import('../../features/nomina/pages/MisBoletasPage').then(module => ({ default: module.MisBoletasPage })))
 const PeriodosNominaPage = lazy(() => import('../../features/nomina/pages/PeriodosNominaPage').then(module => ({ default: module.PeriodosNominaPage })))
+const ParametrosLegalesPage = lazy(() => import('../../features/nomina/pages/ParametrosLegalesPage').then(module => ({ default: module.ParametrosLegalesPage })))
 
 function ProtectedArea() {
   const { status, user } = useAuth()
@@ -117,6 +118,7 @@ export function AppRouter() {
         <Route path="personal/ausencias/bandeja" element={empresa(<BandejaAusenciasPage />, undefined, ['ausencias:aprobar', 'platform:ausencias:aprobar'])} />
         <Route path="personal/ausencias/configuracion" element={empresa(<ConfiguracionAusenciasPage />, undefined, ['ausencias:gestionar', 'platform:ausencias:gestionar'])} />
         <Route path="nomina/periodos" element={empresa(<PeriodosNominaPage />, undefined, ['nomina:gestionar', 'platform:nomina:gestionar'])} />
+        <Route path="nomina/parametros-legales" element={plataforma(<ParametrosLegalesPage />, ['platform:nomina:parametros'])} />
         <Route path="nomina/boletas" element={empresa(<BoletasPage />, undefined, ['boletas:ver', 'platform:boletas:ver'])} />
         <Route path="nomina/mis-boletas" element={<RequireRealm realm="tenant"><RequireAccess permisos={['boletas:mi']}><MisBoletasRoute /></RequireAccess></RequireRealm>} />
 
