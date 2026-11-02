@@ -20,7 +20,11 @@ vi.mock('../api/rolesAsignablesApi', () => ({
   rolesAsignablesApi: { list: vi.fn() },
 }))
 vi.mock('../api/usuariosApi', () => ({
-  usuariosApi: { list: vi.fn(), create: vi.fn() },
+  usuariosApi: { list: vi.fn(), create: vi.fn(), getEmployeeLink: vi.fn() },
+}))
+vi.mock('../../../shared/api/empleadosApi', () => ({
+  getEmpleados: vi.fn().mockResolvedValue([{ id: 'ficha-1', codigo: 'E001', nombres: 'Ana', apellido_paterno: 'Paz', estado: 'ACTIVO' }]),
+  nombreCompleto: (item: { nombres: string; apellido_paterno: string }) => `${item.nombres} ${item.apellido_paterno}`,
 }))
 
 beforeEach(() => {
@@ -67,4 +71,22 @@ it('keeps the company users page scoped to the selected company', async () => {
   ))
   expect(rolesAsignablesApi.list).toHaveBeenCalledWith('empresa-1')
   expect(screen.getByRole('heading', { name: 'Usuarios' })).toBeInTheDocument()
+})
+
+it('links an existing employee when creating an employee account', async () => {
+  const user = userEvent.setup()
+  vi.mocked(rolesAsignablesApi.list).mockResolvedValue([{ id: 'rol-empleado', name: 'Empleado', codigo: 'EMPLEADO' } as never])
+  render(<ListadoUsuariosPage scope="company" />)
+  await user.click(await screen.findByRole('button', { name: 'Nuevo usuario' }))
+  await user.type(screen.getByLabelText('Nombres'), 'Ana')
+  await user.type(screen.getByLabelText('Apellidos'), 'Paz')
+  await user.type(screen.getByLabelText('Correo electrónico'), 'ana@example.com')
+  await user.type(screen.getByLabelText(/^Nombre de usuario/), 'anapaz')
+  await user.click(await screen.findByRole('checkbox', { name: 'Empleado' }))
+  await user.selectOptions(await screen.findByLabelText('Empleado', { selector: 'select' }), 'ficha-1')
+  await user.type(screen.getByLabelText(/^Contraseña provisional/), 'ClaveSegura!123')
+  await user.click(screen.getByRole('button', { name: 'Crear usuario' }))
+  await waitFor(() => expect(usuariosApi.create).toHaveBeenCalledWith(
+    expect.objectContaining({ empresa_id: 'empresa-1', ficha_empleado: { empleado_id: 'ficha-1' } }),
+  ))
 })

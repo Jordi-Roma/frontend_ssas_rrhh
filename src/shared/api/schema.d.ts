@@ -2645,7 +2645,7 @@ export interface paths {
         head?: never;
         /**
          * Update Tenant Backup Config
-         * @description Configura la copia diaria y su hora de Bolivia desde plataforma.
+         * @description Plataforma configura la copia diaria; la empresa puede elegir su hora si el plan lo permite.
          */
         patch: operations["update_tenant_backup_config_api_v1_respaldos_empresa_configuracion__empresa_id__patch"];
         trace?: never;
@@ -2828,6 +2828,23 @@ export interface paths {
          * @description Actualiza únicamente los campos enviados y, cuando corresponda, reemplaza sus roles. Permisos: `usuarios:editar` o `platform:usuarios:gestionar`.
          */
         patch: operations["actualizar_usuario_api_v1_usuarios__usuario_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/usuarios/{usuario_id}/ficha-empleado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consultar ficha vinculada a un usuario */
+        get: operations["obtener_ficha_empleado_usuario_api_v1_usuarios__usuario_id__ficha_empleado_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/usuarios/{usuario_id}/activar": {
@@ -3443,6 +3460,7 @@ export interface components {
             telefono?: string | null;
             /** Role Ids */
             role_ids?: string[] | null;
+            ficha_empleado?: components["schemas"]["VinculoEmpleadoRequest"] | null;
         };
         /** ActualizarVacanteRequest */
         ActualizarVacanteRequest: {
@@ -4089,6 +4107,7 @@ export interface components {
             telefono?: string | null;
             /** Role Ids */
             role_ids: string[];
+            ficha_empleado?: components["schemas"]["VinculoEmpleadoRequest"] | null;
             /**
              * Email Verificado
              * @description Marca el correo como verificado. Por omisión es verdadero porque la cuenta la crea un administrador con contraseña provisional; ponlo en falso para obligar al titular a verificar su correo antes de poder iniciar sesión.
@@ -4909,6 +4928,26 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** NuevaFichaEmpleado */
+        NuevaFichaEmpleado: {
+            /** Codigo */
+            codigo: string;
+            /** Nombres */
+            nombres: string;
+            /** Apellido Paterno */
+            apellido_paterno: string;
+            /** Apellido Materno */
+            apellido_materno?: string | null;
+            /** Ci */
+            ci: string;
+            /** Ci Expedido */
+            ci_expedido: string;
+            /**
+             * Fecha Ingreso
+             * Format: date
+             */
+            fecha_ingreso: string;
         };
         /** OpcionesResponse */
         OpcionesResponse: {
@@ -5928,6 +5967,12 @@ export interface components {
         VerifyEmailSchema: {
             /** Token */
             token: string;
+        };
+        /** VinculoEmpleadoRequest */
+        VinculoEmpleadoRequest: {
+            /** Empleado Id */
+            empleado_id?: string | null;
+            nueva_ficha?: components["schemas"]["NuevaFichaEmpleado"] | null;
         };
         /** VistaPrevia */
         VistaPrevia: {
@@ -12927,6 +12972,61 @@ export interface operations {
             };
             /** @description Usuario no encontrado dentro del alcance. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description El servicio o una dependencia externa no está disponible. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    obtener_ficha_empleado_usuario_api_v1_usuarios__usuario_id__ficha_empleado_get: {
+        parameters: {
+            query?: {
+                /** @description Identificador de empresa. Los administradores de plataforma pueden indicarlo para seleccionar el alcance; los usuarios empresariales quedan limitados a su propia empresa. */
+                empresa_id?: string | null;
+            };
+            header?: never;
+            path: {
+                usuario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Token de acceso ausente, inválido o vencido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El usuario no tiene el permiso requerido, intenta operar fuera de su empresa o debe cambiar primero su contraseña. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

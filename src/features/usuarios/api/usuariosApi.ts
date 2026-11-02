@@ -5,6 +5,9 @@ type CreateUser = components['schemas']['CrearUsuarioRequest']
 type UpdateUser = components['schemas']['ActualizarUsuarioRequest']
 type User = components['schemas']['UsuarioResponse']
 type UserPage = components['schemas']['UsuarioPageResponse']
+export type FichaEmpleadoVinculo =
+  | { empleado_id: string }
+  | { nueva_ficha: { codigo: string; nombres: string; apellido_paterno: string; apellido_materno?: string | null; ci: string; ci_expedido: string; fecha_ingreso: string } }
 
 export type UsuariosQuery = {
   empresa_id?: string
@@ -35,11 +38,13 @@ export const usuariosApi = {
     ),
 
   get: (id: string, empresaId?: string) => apiRequest<User>(scoped(`/api/v1/usuarios/${id}`, empresaId)),
+  getEmployeeLink: (id: string, empresaId?: string) =>
+    apiRequest<{ empleado_id: string | null }>(scoped(`/api/v1/usuarios/${id}/ficha-empleado`, empresaId)),
 
   /** `empresa_id` va en el CUERPO. Ausente significa administrador de plataforma. */
-  create: (data: CreateUser) => apiRequest<User>('/api/v1/usuarios', { method: 'POST', body: data }),
+  create: (data: CreateUser & { ficha_empleado?: FichaEmpleadoVinculo }) => apiRequest<User>('/api/v1/usuarios', { method: 'POST', body: data }),
 
-  update: (id: string, data: UpdateUser, empresaId?: string) =>
+  update: (id: string, data: UpdateUser & { ficha_empleado?: FichaEmpleadoVinculo }, empresaId?: string) =>
     apiRequest<User>(scoped(`/api/v1/usuarios/${id}`, empresaId), { method: 'PATCH', body: data }),
 
   activate: (id: string, empresaId?: string) =>

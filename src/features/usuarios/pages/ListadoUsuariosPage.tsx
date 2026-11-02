@@ -20,6 +20,7 @@ import {
 import type { Column } from '../../../shared/components'
 import { rolesAsignablesApi } from '../api/rolesAsignablesApi'
 import { usuariosApi } from '../api/usuariosApi'
+import { FICHA_VACIA, FichaEmpleadoFields, fichaPayload, type FichaForm } from '../components/FichaEmpleadoFields'
 import { evaluarPassword, generarPassword, passwordEsValida } from '../utils/passwordPolicy'
 
 type User = components['schemas']['UsuarioResponse']
@@ -99,11 +100,16 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
 
   const [createForm, setCreateForm] = useState(FORM_VACIO)
   const [editForm, setEditForm] = useState({ ...FORM_VACIO, password: '' })
+  const [createFicha, setCreateFicha] = useState<FichaForm>(FICHA_VACIA)
+  const [editFicha, setEditFicha] = useState<FichaForm>(FICHA_VACIA)
+  const [linkedEmployeeId, setLinkedEmployeeId] = useState<string | null>(null)
+  const [loadingEmployeeLink, setLoadingEmployeeLink] = useState(false)
   const [nuevaClave, setNuevaClave] = useState('')
   const [exigirCambio, setExigirCambio] = useState(true)
 
   const empresaLectura = esVistaGlobal ? undefined : (company?.id ?? user?.empresaId ?? undefined)
   const empresaAlta = empresaLectura
+  const isEmployeeRole = (ids: string[]) => roles.some(rol => rol.codigo === 'EMPLEADO' && ids.includes(rol.id))
 
   const cargar = useCallback(async () => {
     setLoading(true)
@@ -191,6 +197,10 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
       setErrorFormulario('Revisa los requisitos de la contraseña antes de continuar.')
       return
     }
+    if (isEmployeeRole(createForm.role_ids) && !fichaPayload(createFicha)) {
+      setErrorFormulario('Selecciona una ficha existente o completa los datos de una ficha nueva.')
+      return
+    }
 
     setGuardando(true)
     try {
@@ -202,6 +212,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
         password: createForm.password,
         telefono: createForm.telefono.trim() || null,
         role_ids: createForm.role_ids,
+        ...(isEmployeeRole(createForm.role_ids) ? { ficha_empleado: fichaPayload(createFicha)! } : {}),
         // Por omisión la cuenta queda utilizable de inmediato: la crea un
         // administrador y la contraseña provisional obliga a cambiarla al entrar.
         email_verificado: !createForm.exigir_verificacion,
@@ -210,6 +221,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
       })
       setShowCreate(false)
       setCreateForm(FORM_VACIO)
+      setCreateFicha(FICHA_VACIA)
       setMensaje(
         esVistaGlobal
           ? 'Administrador de plataforma creado correctamente.'
@@ -230,6 +242,15 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
       .filter((rol) => usuario.roles?.includes(rol.name) || usuario.roles?.includes(rol.codigo))
       .map((rol) => rol.id)
     setEditando(usuario)
+    setEditFicha(FICHA_VACIA)
+    setLinkedEmployeeId(null)
+    if (usuario.empresa_id) {
+      setLoadingEmployeeLink(true)
+      void usuariosApi.getEmployeeLink(usuario.id, usuario.empresa_id)
+        .then(link => setLinkedEmployeeId(link.empleado_id))
+        .catch(cause => registrarError(cause, 'No se pudo consultar la ficha vinculada.'))
+        .finally(() => setLoadingEmployeeLink(false))
+    }
     setEditForm({
       nombre: usuario.nombre,
       apellido: usuario.apellido,
@@ -251,6 +272,11 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
       setErroresCampo({ role_ids: 'Selecciona al menos un rol.' })
       return
     }
+    if (loadingEmployeeLink) return
+    if (isEmployeeRole(editForm.role_ids) && !linkedEmployeeId && !fichaPayload(editFicha)) {
+      setErrorFormulario('Selecciona una ficha existente o completa los datos de una ficha nueva.')
+      return
+    }
     setGuardando(true)
     try {
       await usuariosApi.update(
@@ -262,6 +288,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
           username: editForm.username.trim(),
           telefono: editForm.telefono.trim() || null,
           role_ids: editForm.role_ids,
+          ...(isEmployeeRole(editForm.role_ids) && !linkedEmployeeId ? { ficha_empleado: fichaPayload(editFicha)! } : {}),
         },
         editando.empresa_id ?? undefined,
       )
@@ -559,6 +586,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
               onClick={() => {
                 limpiarErrores()
                 setCreateForm(FORM_VACIO)
+                setCreateFicha(FICHA_VACIA)
                 setShowCreate(true)
               }}
             >
@@ -665,6 +693,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
         >
           <form className="form-stack" onSubmit={(evento) => void crear(evento)}>
             {camposComunes(createForm, setCreateForm)}
+            {isEmployeeRole(createForm.role_ids) && <FichaEmpleadoFields empresaId={empresaAlta} value={createFicha} onChange={setCreateFicha} />}
 
             <Field
               label="Contraseña provisional"
@@ -738,6 +767,7 @@ export function ListadoUsuariosPage({ scope }: { scope: UserScope }) {
         >
           <form className="form-stack" onSubmit={(evento) => void actualizar(evento)}>
             {camposComunes(editForm, setEditForm)}
+            {isEmployeeRole(editForm.role_ids) && <FichaEmpleadoFields empresaId={editando.empresa_id} value={editFicha} onChange={setEditFicha} linkedId={linkedEmployeeId} loadingLink={loadingEmployeeLink} />}
             {errorFormulario !== null && <Alert tone="error">{errorFormulario}</Alert>}
             <div className="form-actions">
               <Button variant="secondary" onClick={() => setEditando(null)} disabled={guardando}>
