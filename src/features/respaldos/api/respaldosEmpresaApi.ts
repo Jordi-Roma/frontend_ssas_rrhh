@@ -28,6 +28,16 @@ export type ConfigRespaldosEmpresa = {
   servicio_habilitado: boolean
 }
 
+export type RestauracionPreview = {
+  empresa_id: string
+  respaldo_id: string
+  sha256: string
+  fecha_copia: string
+  tablas: Record<string, number>
+  archivos: number
+  restauracion_habilitada: boolean
+}
+
 const ROOT = '/api/v1/respaldos-empresa'
 
 export const respaldosEmpresaApi = {
@@ -39,6 +49,14 @@ export const respaldosEmpresaApi = {
     apiRequest<RespaldoEmpresa>(ROOT, { method: 'POST', body: { empresa_id: empresaId ?? null } }),
   download: (id: string) =>
     downloadFile(`${ROOT}/${encodeURIComponent(id)}/descargar`, `ssas-empresa-${id}.tar.gz`),
+  restorePreview: (id: string) =>
+    apiRequest<RestauracionPreview>(`${ROOT}/${encodeURIComponent(id)}/restauracion/preview`),
+  restore: (id: string, preview: RestauracionPreview, confirmacion: string) =>
+    apiRequest<{ empresa_id: string; respaldo_id: string; respaldo_previo_id: string }>(
+      `${ROOT}/${encodeURIComponent(id)}/restaurar`, {
+        method: 'POST',
+        body: { empresa_id: preview.empresa_id, sha256: preview.sha256, confirmacion },
+      }),
   config: (empresaId: string) =>
     apiRequest<ConfigRespaldosEmpresa>(`${ROOT}/configuracion/${encodeURIComponent(empresaId)}`),
   updateConfig: (empresaId: string, changes: { auto_habilitado?: boolean; hora_local?: string }) =>

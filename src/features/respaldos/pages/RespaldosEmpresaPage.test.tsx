@@ -16,7 +16,7 @@ vi.mock('../../auth/hooks/useAuth', () => ({
 }))
 vi.mock('../api/respaldosEmpresaApi', () => ({
   respaldosEmpresaApi: {
-    list: vi.fn(), latest: vi.fn(), config: vi.fn(), updateConfig: vi.fn(),
+    list: vi.fn(), latest: vi.fn(), config: vi.fn(), updateConfig: vi.fn(), restorePreview: vi.fn(), restore: vi.fn(),
   },
 }))
 
@@ -39,6 +39,32 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('Programacion de respaldos por empresa', () => {
+  it('previsualiza una copia y exige confirmación exacta antes de restaurar', async () => {
+    vi.mocked(respaldosEmpresaApi.list).mockResolvedValue([{
+      id: 'backup-1', empresa_id: 'empresa-demo', origen: 'MANUAL', estado: 'COMPLETADO',
+      fecha_creacion: '2026-10-30T12:00:00Z', fecha_inicio: null, fecha_finalizacion: null,
+      tamano_bytes: 1024, sha256: 'hash', mensaje_error: null,
+    }])
+    vi.mocked(respaldosEmpresaApi.restorePreview).mockResolvedValue({
+      empresa_id: 'empresa-demo', respaldo_id: 'backup-1', sha256: 'hash',
+      fecha_copia: '2026-10-30T12:00:00Z', tablas: { empleado: 2 }, archivos: 1,
+      restauracion_habilitada: true,
+    })
+    vi.mocked(respaldosEmpresaApi.restore).mockResolvedValue({
+      empresa_id: 'empresa-demo', respaldo_id: 'backup-1', respaldo_previo_id: 'safety-1',
+    })
+    render(<RespaldosEmpresaPage />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Previsualizar restauración' }))
+    expect(respaldosEmpresaApi.restorePreview).toHaveBeenCalledWith('backup-1')
+    const button = await screen.findByRole('button', { name: 'Restaurar empresa' })
+    expect(button).toBeDisabled()
+    await userEvent.type(screen.getByLabelText(/Escribe RESTAURAR/), 'RESTAURAR empresa-demo')
+    expect(button).toBeEnabled()
+    expect(respaldosEmpresaApi.restore).not.toHaveBeenCalled()
+    await userEvent.click(button)
+    expect(respaldosEmpresaApi.restore).toHaveBeenCalledWith('backup-1', expect.objectContaining({ empresa_id: 'empresa-demo', sha256: 'hash' }), 'RESTAURAR empresa-demo')
+    expect(await screen.findByText(/Copia de seguridad previa: safety-1/)).toBeInTheDocument()
+  })
   it('guarda la hora local solo para la empresa seleccionada', async () => {
     render(<RespaldosEmpresaPage />)
     expect(await screen.findByText('Programación automática')).toBeInTheDocument()

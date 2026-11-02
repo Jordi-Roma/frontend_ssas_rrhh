@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Clock3, DatabaseBackup, Download, RefreshCw, Save } from 'lucide-react'
+import { Clock3, DatabaseBackup, Download, RefreshCw, RotateCcw, Save } from 'lucide-react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { useAuth } from '../../auth/hooks/useAuth'
-import { Alert, Badge, Button, ConfirmDialog, EmptyState, Field, PageHeader, Panel } from '../../../shared/components'
-import { respaldosEmpresaApi, type ConfigRespaldosEmpresa, type RespaldoEmpresa, type UltimosRespaldos } from '../api/respaldosEmpresaApi'
+import { Alert, Badge, Button, ConfirmDialog, EmptyState, Field, Modal, PageHeader, Panel } from '../../../shared/components'
+import { respaldosEmpresaApi, type ConfigRespaldosEmpresa, type RespaldoEmpresa, type RestauracionPreview, type UltimosRespaldos } from '../api/respaldosEmpresaApi'
 
 const dateFormatter = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short' })
 const PAGE_SIZE = 25
@@ -32,6 +32,7 @@ export function RespaldosEmpresaPage() {
   const platform = user?.realm === 'platform'
   const empresaId = (platform ? company?.id : user?.empresaId) ?? undefined
   const canConfigure = can(platform ? 'platform:backup:configurar' : 'backup:configurar')
+  const canRestore = platform && can('platform:backup:configurar')
   const [items, setItems] = useState<RespaldoEmpresa[]>([])
   const [latest, setLatest] = useState<UltimosRespaldos | null>(null)
   const [config, setConfig] = useState<ConfigRespaldosEmpresa | null>(null)
@@ -42,6 +43,9 @@ export function RespaldosEmpresaPage() {
   const [confirming, setConfirming] = useState(false)
   const [hasMore, setHasMore] = useState(false)
   const [message, setMessage] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  const [preview, setPreview] = useState<RestauracionPreview | null>(null)
+  const [restoreConfirmation, setRestoreConfirmation] = useState('')
+  const [restoring, setRestoring] = useState(false)
   const loadSequence = useRef(0)
 
   const load = useCallback(async (quiet = false) => {
@@ -75,6 +79,7 @@ export function RespaldosEmpresaPage() {
   }
 
   useEffect(() => { void load() }, [load])
+  useEffect(() => { setPreview(null); setRestoreConfirmation('') }, [empresaId])
   useEffect(() => { setScheduleTime(config?.hora_local ?? '02:00') }, [config?.hora_local, empresaId])
   useEffect(() => {
     if (!items.some((item) => ['PENDIENTE', 'PROCESANDO'].includes(item.estado))) return
@@ -103,6 +108,29 @@ export function RespaldosEmpresaPage() {
     } catch (error) {
       setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo actualizar la programación.' })
     } finally { setBusy(false) }
+  }
+
+  async function prepareRestore(id: string) {
+    setRestoring(true); setMessage(null)
+    try {
+      setPreview(await respaldosEmpresaApi.restorePreview(id))
+      setRestoreConfirmation('')
+    } catch (error) {
+      setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo verificar el respaldo.' })
+    } finally { setRestoring(false) }
+  }
+
+  async function restore() {
+    if (!preview) return
+    setRestoring(true); setMessage(null)
+    try {
+      const result = await respaldosEmpresaApi.restore(preview.respaldo_id, preview, restoreConfirmation)
+      setMessage({ tone: 'success', text: `Empresa restaurada. Copia de seguridad previa: ${result.respaldo_previo_id}. Las sesiones de sus usuarios deben iniciarse de nuevo.` })
+      setPreview(null); setRestoreConfirmation('')
+      await load(true)
+    } catch (error) {
+      setMessage({ tone: 'error', text: error instanceof Error ? error.message : 'No se pudo restaurar la empresa.' })
+    } finally { setRestoring(false) }
   }
 
   return <section className="page-stack">
@@ -150,7 +178,7 @@ export function RespaldosEmpresaPage() {
           <td>{item.origen === 'AUTO' ? 'Automático' : 'Manual'}</td>
           <td>{size(item.tamano_bytes)}</td>
           <td><Badge tone={tone(item.estado)}>{item.estado}</Badge></td>
-          <td>{item.estado === 'COMPLETADO' && can(platform ? 'platform:backup:descargar' : 'backup:descargar') && <Button size="sm" variant="ghost" onClick={() => void respaldosEmpresaApi.download(item.id).catch((error: Error) => setMessage({ tone: 'error', text: error.message }))}><Download size={16} aria-hidden="true" />Descargar</Button>}</td>
+          <td><div className="row-actions">{item.estado === 'COMPLETADO' && can(platform ? 'platform:backup:descargar' : 'backup:descargar') && <Button size="sm" variant="ghost" onClick={() => void respaldosEmpresaApi.download(item.id).catch((error: Error) => setMessage({ tone: 'error', text: error.message }))}><Download size={16} aria-hidden="true" />Descargar</Button>}{item.estado === 'COMPLETADO' && canRestore && <Button size="sm" variant="secondary" loading={restoring} onClick={() => void prepareRestore(item.id)}><RotateCcw size={16} aria-hidden="true" />Previsualizar restauración</Button>}</div></td>
         </tr>)}
       </tbody></table></div>}
       {!loading && hasMore && <Button variant="secondary" loading={paging} onClick={() => void loadMore()}>Cargar más</Button>}
@@ -163,5 +191,11 @@ export function RespaldosEmpresaPage() {
       onCancel={() => setConfirming(false)}
       onConfirm={() => void create()}
     />}
+    {preview && <Modal title="Restaurar una empresa" size="lg" onClose={() => { if (!restoring) setPreview(null) }} footer={<><Button variant="secondary" disabled={restoring} onClick={() => setPreview(null)}>Cancelar</Button><Button variant="danger" loading={restoring} disabled={!preview.restauracion_habilitada || restoreConfirmation !== `RESTAURAR ${preview.empresa_id}`} onClick={() => void restore()}>Restaurar empresa</Button></>}>
+      <Alert tone="info">Se reemplazarán los datos de esta empresa por los de la copia del {date(preview.fecha_copia)}. Los datos de otras empresas y las suscripciones quedan fuera de esta operación. Antes de modificarla se guardará una copia de seguridad de su estado actual.</Alert>
+      <p>Registros: <strong>{Object.values(preview.tablas).reduce((total, count) => total + count, 0)}</strong> · Archivos: <strong>{preview.archivos}</strong></p>
+      {!preview.restauracion_habilitada && <Alert tone="info">La restauración está deshabilitada en el backend. Requiere habilitación tras las pruebas de aislamiento.</Alert>}
+      <Field label={`Escribe RESTAURAR ${preview.empresa_id} para confirmar`}><input value={restoreConfirmation} onChange={(event) => setRestoreConfirmation(event.target.value)} autoComplete="off" /></Field>
+    </Modal>}
   </section>
 }
