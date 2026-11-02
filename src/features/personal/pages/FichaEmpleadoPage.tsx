@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { getEmpleado } from '../../../shared/api/empleadosApi'
@@ -38,7 +38,8 @@ export function FichaEmpleadoPage() {
 }
 
 function DatosTab({ empleadoId, empresaId }: { empleadoId: string; empresaId: string }) {
-  const resource = useAsyncResource(() => getEmpleado(empleadoId, empresaId))
+  const load = useCallback(() => getEmpleado(empleadoId, empresaId), [empleadoId, empresaId])
+  const resource = useAsyncResource(load)
   if (resource.loading) return <LoadingBlock message="Cargando datos…" />
   if (resource.error) return <Alert tone="error">{resource.error}</Alert>
   if (!resource.data) return null
@@ -46,7 +47,8 @@ function DatosTab({ empleadoId, empresaId }: { empleadoId: string; empresaId: st
 }
 
 function ContratosTab({ empleadoId, empresaId }: { empleadoId: string; empresaId: string }) {
-  const resource = useAsyncResource(() => getContratos(empleadoId, empresaId))
+  const load = useCallback(() => getContratos(empleadoId, empresaId), [empleadoId, empresaId])
+  const resource = useAsyncResource(load)
   if (resource.loading) return <LoadingBlock message="Cargando contratos…" />
   if (resource.error) return <Alert tone="error">{resource.error}</Alert>
   return <ContratosTimeline contratos={resource.data ?? []} cargos={[]} />

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Download } from 'lucide-react'
 import { Can } from '../../../app/access/AccessProvider'
 import { Alert, Button, DataTable, Field, LoadingBlock } from '../../../shared/components'
@@ -6,7 +6,8 @@ import { useAsyncResource } from '../../../shared/hooks/useAsyncResource'
 import { descargarDocumento, getDocumentos, subirDocumento, type Documento } from '../api/documentosApi'
 
 export function DocumentosEmpleado({ empleadoId, empresaId }: { empleadoId: string; empresaId: string }) {
-  const resource = useAsyncResource(() => getDocumentos(empleadoId, empresaId))
+  const load = useCallback(() => getDocumentos(empleadoId, empresaId), [empleadoId, empresaId])
+  const resource = useAsyncResource(load)
   const [file, setFile] = useState<File | null>(null)
   const [tipo, setTipo] = useState('CI')
   const [uploading, setUploading] = useState(false)
