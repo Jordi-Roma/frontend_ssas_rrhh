@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Download } from 'lucide-react'
+import { Download, FileText, UploadCloud } from 'lucide-react'
 import { Can } from '../../../app/access/AccessProvider'
 import { Alert, Button, DataTable, Field, LoadingBlock } from '../../../shared/components'
 import { useAsyncResource } from '../../../shared/hooks/useAsyncResource'
@@ -34,8 +34,10 @@ export function DocumentosEmpleado({ empleadoId, empresaId }: { empleadoId: stri
   }
 
   return (
-    <div className="stack">
-      <Can permisos={['personal:gestionar', 'platform:personal:gestionar']}><form onSubmit={onSubmit} className="filters">
+    <div className="legajo-documents">
+      <Can permisos={['personal:gestionar', 'platform:personal:gestionar']}><form onSubmit={onSubmit} className="panel legajo-upload">
+        <div className="legajo-section-heading"><span className="legajo-section-icon"><UploadCloud size={20} aria-hidden="true" /></span><div><h2>Agregar documento</h2><p>PDF, JPG o PNG · máximo 10 MB</p></div></div>
+        <div className="legajo-upload-fields">
         <Field label="Tipo">
           <select value={tipo} onChange={e => setTipo(e.target.value)}>
             <option value="CI">Cédula de identidad</option>
@@ -46,10 +48,13 @@ export function DocumentosEmpleado({ empleadoId, empresaId }: { empleadoId: stri
         <Field label="Archivo">
           <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setFile(e.target.files?.[0] ?? null)} />
         </Field>
-        <Button type="submit" loading={uploading} disabled={!file}>Subir</Button>
+        </div>
+        <Button type="submit" loading={uploading} disabled={!file}><UploadCloud size={16} aria-hidden="true" />Subir documento</Button>
       </form></Can>
       {error && <Alert tone="error">{error}</Alert>}
-      {resource.loading ? <LoadingBlock /> : (
+      <div className="panel legajo-document-list"><div className="legajo-section-heading"><span className="legajo-section-icon"><FileText size={20} aria-hidden="true" /></span><div><h2>Documentos guardados</h2><p>Archivos asociados a este empleado</p></div></div>
+      {resource.error && <Alert tone="error">{resource.error}</Alert>}
+      {resource.loading ? <LoadingBlock message="Cargando documentos…" /> : !resource.error && resource.data?.length === 0 ? <p className="legajo-empty-documents">Todavía no hay documentos en este legajo.</p> : !resource.error && (
         <DataTable<Documento>
           rows={resource.data ?? []}
           rowKey={d => d.id}
@@ -61,6 +66,7 @@ export function DocumentosEmpleado({ empleadoId, empresaId }: { empleadoId: stri
           ]}
         />
       )}
+      </div>
     </div>
   )
 }

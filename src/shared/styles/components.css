@@ -907,6 +907,35 @@ td small {
   color: var(--brand);
 }
 
+/* Legajo del empleado */
+.legajo-selector { display: grid; gap: var(--space-5); }
+.legajo-selector-heading, .legajo-person-heading, .legajo-section-heading { display: flex; align-items: center; gap: var(--space-3); }
+.legajo-selector-heading h2, .legajo-person-heading h2, .legajo-section-heading h2 { margin: 0; color: var(--ink); }
+.legajo-selector-heading p, .legajo-person-heading p, .legajo-section-heading p { margin: .2rem 0 0; color: var(--muted); font-size: var(--text-sm); }
+.legajo-selector-icon, .legajo-section-icon { display: grid; place-items: center; flex: 0 0 2.8rem; height: 2.8rem; border-radius: 12px; background: var(--brand-50); color: var(--brand); }
+.legajo-selector .form-stack { max-width: 38rem; }
+.legajo-content, .legajo-documents { display: grid; gap: var(--space-5); min-width: 0; }
+.legajo-tabs { gap: var(--space-6); }
+.legajo-tabs .tab { display: inline-flex; align-items: center; gap: var(--space-2); padding-inline: var(--space-1); }
+.legajo-tab-content { min-width: 0; }
+.legajo-person-heading { flex-wrap: wrap; padding-bottom: var(--space-5); border-bottom: 1px solid var(--line); }
+.legajo-person-avatar { display: grid; place-items: center; flex: 0 0 3.5rem; height: 3.5rem; border-radius: 16px; background: var(--brand-50); color: var(--brand); }
+.legajo-eyebrow { color: var(--brand); font-size: var(--text-xs); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.legajo-status { margin-left: auto; padding: .35rem .8rem; border-radius: 999px; background: var(--brand-50); color: var(--brand); font-size: var(--text-xs); font-weight: 800; }
+.legajo-data-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin: var(--space-5) 0 0; }
+.legajo-data-grid > div { min-width: 0; }
+.legajo-data-grid dt { color: var(--muted); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.legajo-data-grid dd { margin: .4rem 0 0; color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
+.legajo-upload, .legajo-document-list { display: grid; gap: var(--space-5); }
+.legajo-upload-fields { display: grid; grid-template-columns: minmax(11rem, 1fr) minmax(15rem, 2fr); gap: var(--space-4); }
+.legajo-upload > button { justify-self: start; }
+.legajo-empty-documents { margin: 0; padding: var(--space-5); border: 1px dashed var(--line); border-radius: var(--radius-md); color: var(--muted); text-align: center; }
+@media (max-width: 640px) {
+  .legajo-data-grid, .legajo-upload-fields { grid-template-columns: 1fr; }
+  .legajo-status { margin-left: 0; }
+  .legajo-tabs { gap: var(--space-3); }
+}
+
 /* --- Misceláneos --- */
 .chip {
   display: inline-flex;

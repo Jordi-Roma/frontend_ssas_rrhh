@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { BriefcaseBusiness, FileText, UserRound } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { getEmpleado } from '../../../shared/api/empleadosApi'
@@ -20,19 +21,22 @@ export function FichaEmpleadoPage() {
   return (
     <div className="page-stack">
       <PageHeader title="Legajo del empleado" eyebrow="Personal" description="Consulta datos, contratos y documentos de cada empleado." />
-      <div className="filters"><EmpleadoPicker empresaId={selectedCompanyId} value={empleadoId ?? null} soloActivos={false} onChange={id => navigate(id ? `/personal/ficha/${id}` : '/personal/ficha')} /></div>
-      {!empleadoId ? <EmptyState title="Selecciona un empleado" message="Elegí una persona para abrir su legajo." /> : <>
-
-      <div className="tabs">
-        <button className={tab === 'datos' ? 'active' : ''} onClick={() => setTab('datos')}>Datos</button>
-        <button className={tab === 'contratos' ? 'active' : ''} onClick={() => setTab('contratos')}>Contratos</button>
-        <button className={tab === 'documentos' ? 'active' : ''} onClick={() => setTab('documentos')}>Documentos</button>
-      </div>
-
-      {tab === 'datos' && <DatosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
-      {tab === 'contratos' && <ContratosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
-      {tab === 'documentos' && <DocumentosEmpleado empleadoId={empleadoId} empresaId={selectedCompanyId} />}
-      </>}
+      <section className="panel legajo-selector" aria-label="Seleccionar empleado">
+        <div className="legajo-selector-heading"><span className="legajo-selector-icon"><UserRound size={22} aria-hidden="true" /></span><div><h2>Expediente personal</h2><p>Seleccioná un empleado para consultar su información.</p></div></div>
+        <EmpleadoPicker empresaId={selectedCompanyId} value={empleadoId ?? null} soloActivos={false} onChange={id => navigate(id ? `/personal/ficha/${id}` : '/personal/ficha')} />
+      </section>
+      {!empleadoId ? <EmptyState title="Selecciona un empleado" message="Elegí una persona para abrir su legajo." /> : <section className="legajo-content" aria-label="Contenido del legajo">
+        <div className="tabs legajo-tabs" role="tablist" aria-label="Secciones del legajo">
+          <button className={`tab${tab === 'datos' ? ' selected' : ''}`} role="tab" aria-selected={tab === 'datos'} onClick={() => setTab('datos')}><UserRound size={17} aria-hidden="true" />Datos personales</button>
+          <button className={`tab${tab === 'contratos' ? ' selected' : ''}`} role="tab" aria-selected={tab === 'contratos'} onClick={() => setTab('contratos')}><BriefcaseBusiness size={17} aria-hidden="true" />Contratos</button>
+          <button className={`tab${tab === 'documentos' ? ' selected' : ''}`} role="tab" aria-selected={tab === 'documentos'} onClick={() => setTab('documentos')}><FileText size={17} aria-hidden="true" />Documentos</button>
+        </div>
+        <div role="tabpanel" className="legajo-tab-content">
+          {tab === 'datos' && <DatosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
+          {tab === 'contratos' && <ContratosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
+          {tab === 'documentos' && <DocumentosEmpleado empleadoId={empleadoId} empresaId={selectedCompanyId} />}
+        </div>
+      </section>}
     </div>
   )
 }
