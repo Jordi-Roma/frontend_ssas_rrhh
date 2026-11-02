@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { Alert, Button, DataTable, EmptyState, Field, LoadingBlock, PageHeader } from '../../../shared/components'
@@ -16,8 +16,10 @@ export function BandejaAusenciasPage() {
 function Bandeja({ empresaId }: { empresaId: string }) {
   const { can } = useAccess()
   const canManage = can('ausencias:gestionar', 'platform:ausencias:gestionar')
-  const resource = useAsyncResource(() => canManage ? getAusenciasEmpresa(empresaId) : getAusenciasEquipo(empresaId))
-  const tipos = useAsyncResource(() => getTiposAusencia(empresaId))
+  const load = useCallback(() => canManage ? getAusenciasEmpresa(empresaId) : getAusenciasEquipo(empresaId), [canManage, empresaId])
+  const loadTipos = useCallback(() => getTiposAusencia(empresaId), [empresaId])
+  const resource = useAsyncResource(load)
+  const tipos = useAsyncResource(loadTipos)
   const [selected, setSelected] = useState<SolicitudAusencia | null>(null)
   const [observacion, setObservacion] = useState('')
   const [dias, setDias] = useState('')

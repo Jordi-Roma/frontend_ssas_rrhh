@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useCallback, useState, type FormEvent } from 'react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { Alert, Button, DataTable, EmptyState, Field, LoadingBlock, PageHeader, Panel } from '../../../shared/components'
 import { useAsyncResource } from '../../../shared/hooks/useAsyncResource'
@@ -12,7 +12,8 @@ export function PeriodosNominaPage() {
 }
 
 function Periodos({ empresaId }: { empresaId: string }) {
-  const resource = useAsyncResource(() => getPeriodos(empresaId))
+  const load = useCallback(() => getPeriodos(empresaId), [empresaId])
+  const resource = useAsyncResource(load)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [gestion, setGestion] = useState(new Date().getFullYear())
