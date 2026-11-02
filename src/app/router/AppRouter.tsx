@@ -109,6 +109,8 @@ export function AppRouter() {
         <Route path="ayuda" element={<AyudaPage />} />
 
         <Route path="personal/contratos" element={empresa(<ContratosPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
+        <Route path="personal/ficha" element={empresa(<FichaEmpleadoPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
+        <Route path="personal/ficha/:empleadoId" element={empresa(<FichaEmpleadoPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
         <Route path="personal/empleados/:empleadoId" element={empresa(<FichaEmpleadoPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
         <Route path="personal/ausencias/bandeja" element={empresa(<BandejaAusenciasPage />, undefined, ['ausencias:equipo', 'platform:ausencias:ver'])} />
         <Route path="personal/ausencias/configuracion" element={empresa(<ConfiguracionAusenciasPage />, undefined, ['ausencias:mi', 'platform:ausencias:mi'])} />

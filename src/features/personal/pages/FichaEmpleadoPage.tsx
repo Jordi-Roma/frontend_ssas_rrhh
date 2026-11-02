@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { getEmpleado } from '../../../shared/api/empleadosApi'
-import { Alert, EmptyState, LoadingBlock, PageHeader } from '../../../shared/components'
+import { Alert, EmpleadoPicker, EmptyState, LoadingBlock, PageHeader } from '../../../shared/components'
 import { useAsyncResource } from '../../../shared/hooks/useAsyncResource'
 import { DocumentosEmpleado } from '../components/DocumentosEmpleado'
 import { ContratosTimeline } from '../components/ContratosTimeline'
@@ -11,16 +11,17 @@ import { DatosEmpleado } from '../components/DatosEmpleado'
 
 export function FichaEmpleadoPage() {
   const { empleadoId } = useParams<{ empleadoId: string }>()
+  const navigate = useNavigate()
   const { selectedCompanyId } = useCompanyScope()
   const [tab, setTab] = useState<'datos' | 'contratos' | 'documentos'>('datos')
 
-  if (!empleadoId || !selectedCompanyId) {
-    return <EmptyState title="Empleado no seleccionado" message="Selecciona un empleado para ver su ficha." />
-  }
+  if (!selectedCompanyId) return <EmptyState title="Selecciona una empresa" message="Elige una empresa para consultar sus empleados." />
 
   return (
     <div className="page-stack">
-      <PageHeader title="Ficha del empleado" eyebrow="Personal" />
+      <PageHeader title="Legajo del empleado" eyebrow="Personal" description="Consulta datos, contratos y documentos de cada empleado." />
+      <div className="filters"><EmpleadoPicker empresaId={selectedCompanyId} value={empleadoId ?? null} soloActivos={false} onChange={id => navigate(id ? `/personal/ficha/${id}` : '/personal/ficha')} /></div>
+      {!empleadoId ? <EmptyState title="Selecciona un empleado" message="Elegí una persona para abrir su legajo." /> : <>
 
       <div className="tabs">
         <button className={tab === 'datos' ? 'active' : ''} onClick={() => setTab('datos')}>Datos</button>
@@ -31,6 +32,7 @@ export function FichaEmpleadoPage() {
       {tab === 'datos' && <DatosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
       {tab === 'contratos' && <ContratosTab empleadoId={empleadoId} empresaId={selectedCompanyId} />}
       {tab === 'documentos' && <DocumentosEmpleado empleadoId={empleadoId} empresaId={selectedCompanyId} />}
+      </>}
     </div>
   )
 }
