@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { AuthShell } from '../components/AuthShell'
 import { LoginForm } from '../components/LoginForm'
 import type { AuthRealm } from '../context/AuthContext'
@@ -7,9 +7,13 @@ import { useAuth } from '../hooks/useAuth'
 
 export function LoginPage() {
   const { login } = useAuth()
+  const location = useLocation()
   const [realm, setRealm] = useState<AuthRealm>('tenant')
   return (
     <AuthShell title="Bienvenido" description="Seleccioná tu tipo de acceso e ingresá tus credenciales.">
+      {location.state?.passwordChanged === true && (
+        <p className="success-message" role="status">Contraseña actualizada. Iniciá sesión con la nueva contraseña.</p>
+      )}
       <LoginForm realm={realm} onRealmChange={setRealm} onSubmit={login} />
       {realm === 'tenant' ? (
         <>

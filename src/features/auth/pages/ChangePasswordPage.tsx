@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { authApi } from '../api/authApi'
 import { useAuth } from '../hooks/useAuth'
 
 export function ChangePasswordPage() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [message, setMessage] = useState('')
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -12,9 +14,10 @@ export function ChangePasswordPage() {
     const next = String(form.get('new_password'))
     if (next !== String(form.get('confirmation'))) { setMessage('Las contraseñas no coinciden.'); return }
     try {
-      const result = await authApi.changePassword(user?.realm ?? 'tenant', String(form.get('current_password')), next)
-      setMessage(result.message)
-      event.currentTarget.reset()
+      await authApi.changePassword(user?.realm ?? 'tenant', String(form.get('current_password')), next)
+      // El backend revoca las sesiones al cambiar la clave.
+      try { await logout() } catch { /* La sesión local se limpia igualmente. */ }
+      navigate('/login', { replace: true, state: { passwordChanged: true } })
     } catch (error) { setMessage(error instanceof Error ? error.message : 'No se pudo cambiar la contraseña') }
   }
 
