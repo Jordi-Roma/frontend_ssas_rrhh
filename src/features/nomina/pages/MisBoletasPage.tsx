@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import { useAccess } from '../../../app/access/AccessProvider'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { Alert, Button, DataTable, PageHeader } from '../../../shared/components'
 import { useAsyncResource } from '../../../shared/hooks/useAsyncResource'
@@ -13,9 +12,7 @@ export function MisBoletasPage({ empresaId, nombreEmpleado }: { empresaId: strin
 
 function MisBoletas({ empresaId, nombreEmpleado }: { empresaId: string; nombreEmpleado: string }) {
   const { company } = useCompanyScope()
-  const { can } = useAccess()
-  const canReadPeriods = can('nomina:ver', 'platform:nomina:ver')
-  const loadPeriods = useCallback(() => canReadPeriods ? getPeriodos(empresaId) : Promise.resolve([]), [canReadPeriods, empresaId])
+  const loadPeriods = useCallback(() => getPeriodos(empresaId), [empresaId])
   const periodos = useAsyncResource(loadPeriods)
   const resource = useAsyncResource(getMisBoletas)
   const [selected, setSelected] = useState<MiResumenBoleta | null>(null)
@@ -25,6 +22,7 @@ function MisBoletas({ empresaId, nombreEmpleado }: { empresaId: string; nombreEm
   }
   return <div className="page-stack">
     <PageHeader title="Mis boletas" eyebrow="Mi cuenta" description="Consulta e imprime tus boletas de pago aprobadas." />
+    {resource.error?.includes('asociada a un empleado') && <Alert tone="info">Tu cuenta necesita estar vinculada a una ficha de empleado. Un administrador puede hacerlo en Usuarios → Editar → Ficha de empleado.</Alert>}
     {periodos.error && <Alert tone="error">No se pudieron consultar las fechas de los periodos. {periodos.error}<Button variant="secondary" onClick={periodos.reload}>Reintentar periodos</Button></Alert>}
     <DataTable<MiResumenBoleta> rows={resource.data ?? []} rowKey={item => item.id} loading={resource.loading} error={resource.error} onRetry={resource.reload} emptyMessage="Todavía no tienes boletas aprobadas." caption="Mis boletas aprobadas" columns={[
       { key: 'periodo', header: 'Periodo', render: item => periodoNombre(item.periodo_id) },

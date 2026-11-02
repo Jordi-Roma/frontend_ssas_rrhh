@@ -593,9 +593,10 @@ export function ConfiguracionEmpresaPage() {
       {tab === 'legales' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <Panel
-            title={editingPeriodoId ? 'Editar periodo de parámetros legales' : 'Registrar periodo de parámetros legales'}
+            title={editingPeriodoId ? 'Editar vigencia de parámetros legales' : 'Registrar vigencia de parámetros legales'}
             eyebrow="Vigencia y porcentajes de aportes y retenciones"
           >
+            <p className="text-muted">Estas vigencias son un registro histórico de porcentajes. El cálculo de nómina usa tasas legales verificadas por la administración de la plataforma. Para generar boletas, abre el mes correspondiente en <Link to="/nomina/periodos">Periodos de nómina</Link>.</p>
             <form onSubmit={handleGuardarPeriodo}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
                 <Field label="Vigencia desde *">

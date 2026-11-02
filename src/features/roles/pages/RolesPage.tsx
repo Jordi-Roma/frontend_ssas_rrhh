@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { KeyRound, Plus, Power, Save, Settings2 } from 'lucide-react'
 import type { components } from '../../../shared/api/schema'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
+import { useAuth } from '../../auth/hooks/useAuth'
 import { Alert, Badge, Button, ConfirmDialog, DataTable, EmptyState, Field, Modal, PageHeader, Panel, type Column } from '../../../shared/components'
 import { rolesApi } from '../api/rolesApi'
 
@@ -12,6 +13,7 @@ const permissionName = (permission: Permission) => `${humanizar(permission.opera
 
 export function RolesPage() {
   const { company } = useCompanyScope()
+  const { refreshUser } = useAuth()
   const [roles, setRoles] = useState<Role[]>([])
   const [permissions, setPermissions] = useState<Permission[]>([])
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)
@@ -75,7 +77,11 @@ export function RolesPage() {
     try {
       const updated = await rolesApi.assignPermissions(selectedRole.id, [...selectedPermissions], company?.id)
       setRoles((current) => current.map((role) => role.id === updated.id ? updated : role))
-      setSelectedRole(updated); setMessage(`Permisos de "${updated.name}" actualizados.`)
+      setSelectedRole(updated); setSelectedPermissions(new Set((updated.permissions ?? []).map(permission => permission.id)))
+      setMessage(`Permisos de "${updated.name}" actualizados.`)
+      void refreshUser().catch(() => {
+        setMessage(`Permisos de "${updated.name}" guardados. Actualiza la página para ver tus nuevos accesos.`)
+      })
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'No se pudieron guardar los permisos.')
     } finally { setSaving(false) }
@@ -109,7 +115,7 @@ export function RolesPage() {
     { key: 'permissions', header: 'Permisos', render: (role) => <Badge tone="neutral">{role.permissions?.length ?? 0} permisos</Badge> },
     { key: 'status', header: 'Estado', render: (role) => <Badge tone={role.is_active ? 'success' : 'warning'}>{role.is_active ? 'Activo' : 'Inactivo'}</Badge> },
     { key: 'actions', header: 'Acciones', align: 'right', render: (role) => <div className="row-actions">
-      <Button variant="secondary" size="sm" onClick={() => edit(role)} disabled={role.es_base} title={role.es_base ? 'Rol protegido por el sistema' : 'Configurar permisos'}><Settings2 size={16} aria-hidden="true" />{role.es_base ? 'Protegido' : 'Permisos'}</Button>
+      <Button variant="secondary" size="sm" onClick={() => edit(role)} title="Configurar permisos"><Settings2 size={16} aria-hidden="true" />Permisos</Button>
       {!role.es_base && <button className="icon-button icon-button-danger" type="button" onClick={() => setRoleToToggle(role)} title={role.is_active ? 'Desactivar rol' : 'Activar rol'} aria-label={`${role.is_active ? 'Desactivar' : 'Activar'} ${role.name}`}><Power size={17} aria-hidden="true" /></button>}
     </div> },
   ]

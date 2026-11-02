@@ -2,20 +2,18 @@ import { act, cleanup, render, screen, waitFor, within } from '@testing-library/
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from '../../../shared/api/httpClient'
-import { getEmpleado, getEmpleados } from '../../../shared/api/empleadosApi'
 import { boleta, empleado, empresa, periodo } from '../../../test/sprint3Fixtures'
 import { getBoleta, getBoletasDePeriodo, getPeriodos } from '../api/nominaApi'
 import { BoletasPage } from './BoletasPage'
 
 const scope = vi.hoisted(() => ({ selectedCompanyId: 'empresa-demo', loading: false, allowed: true }))
 vi.mock('../../../app/context/CompanyScopeContext', () => ({ useCompanyScope: () => ({ ...scope, company: empresa }) }))
-vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ can: () => scope.allowed }) }))
-vi.mock('../../../shared/api/empleadosApi', async original => ({ ...await original<typeof import('../../../shared/api/empleadosApi')>(), getEmpleados: vi.fn(), getEmpleado: vi.fn() }))
+vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ can: (...permissions: string[]) => scope.allowed && !permissions.includes('nomina:ver') && !permissions.includes('platform:nomina:ver') }) }))
 vi.mock('../api/nominaApi', async original => ({ ...await original<typeof import('../api/nominaApi')>(), getPeriodos: vi.fn(), getBoletasDePeriodo: vi.fn(), getBoleta: vi.fn() }))
 beforeEach(() => {
   vi.resetAllMocks(); scope.selectedCompanyId = 'empresa-demo'; scope.allowed = true
-  vi.mocked(getPeriodos).mockResolvedValue([periodo]); vi.mocked(getEmpleados).mockResolvedValue([empleado]); vi.mocked(getEmpleado).mockResolvedValue(empleado)
-  vi.mocked(getBoletasDePeriodo).mockResolvedValue([{ id: boleta.id, empleado_id: empleado.id, liquido_pagable: boleta.liquido_pagable }]); vi.mocked(getBoleta).mockResolvedValue(boleta)
+  vi.mocked(getPeriodos).mockResolvedValue([periodo])
+  vi.mocked(getBoletasDePeriodo).mockResolvedValue([{ id: boleta.id, empleado_id: empleado.id, liquido_pagable: boleta.liquido_pagable, empleado_codigo: empleado.codigo, empleado_nombre: 'Lucía Demo Ejemplo' }]); vi.mocked(getBoleta).mockResolvedValue(boleta)
 })
 afterEach(cleanup)
 async function selectPeriod() {
@@ -44,21 +42,11 @@ describe('Consulta de boletas por RRHH', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Ver boleta' }))
     expect(await screen.findByText('PROVISIONAL')).toBeInTheDocument()
   })
-  it('resuelve un empleado que no está en la primera página sin romper la fila', async () => {
-    vi.mocked(getEmpleados).mockResolvedValue([])
+  it('muestra el nombre del empleado desde el resumen de boleta', async () => {
     render(<BoletasPage />); await selectPeriod()
-    expect(screen.getByText(`Empleado · ref. ${empleado.id}`)).toBeInTheDocument()
+    expect(screen.getByText('Lucía Demo Ejemplo')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Ver boleta' }))
     await screen.findByText(/EMP-DEMO-01 — Lucía Demo Ejemplo/)
-    expect(getEmpleado).toHaveBeenCalledWith(empleado.id, 'empresa-demo')
-  })
-  it('pagina los empleados con offset y conserva la lista de boletas', async () => {
-    vi.mocked(getEmpleados).mockResolvedValueOnce(Array.from({ length: 50 }, (_, index) => ({ ...empleado, id: `empleado-${index}`, codigo: `EMP-${index}` }))).mockResolvedValueOnce([empleado])
-    render(<BoletasPage />); await selectPeriod()
-    await userEvent.click(screen.getByRole('button', { name: 'Cargar más empleados' }))
-    expect(await screen.findByText('EMP-DEMO-01')).toBeInTheDocument()
-    expect(getEmpleados).toHaveBeenLastCalledWith('empresa-demo', 50, 50)
-    expect(getBoletasDePeriodo).toHaveBeenCalledTimes(1)
   })
   it('distingue un fallo de periodos de un listado vacío y permite reintentar', async () => {
     vi.mocked(getPeriodos).mockRejectedValueOnce(new ApiError('Sin permiso de nómina', 403)).mockResolvedValueOnce([])

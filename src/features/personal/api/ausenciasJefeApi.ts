@@ -3,17 +3,21 @@ import { apiRequest, buildQuery } from '../../../shared/api/httpClient'
 export type SolicitudAusencia = {
   id: string
   empleado_id: string
-  tipo_ausencia: string
+  tipo_ausencia_id: string
   fecha_inicio: string
   fecha_fin: string
   estado: string
-  observacion?: string | null
-  dias_habiles_vacacion?: number | null
 }
 
 export function getAusenciasEquipo(empresaId?: string | null) {
   return apiRequest<SolicitudAusencia[]>(
     `/api/v1/personal/mi/equipo/ausencias${buildQuery({ empresa_id: empresaId })}`,
+  )
+}
+
+export function getAusenciasEmpresa(empresaId?: string | null) {
+  return apiRequest<SolicitudAusencia[]>(
+    `/api/v1/personal/ausencias${buildQuery({ empresa_id: empresaId })}`,
   )
 }
 

@@ -25,7 +25,8 @@ export function parseBoleta(value: unknown) {
 
 function parseResumen(value: unknown) {
   const row = record(value)
-  return { id: text(row.id), empleado_id: text(row.empleado_id), liquido_pagable: decimal(row.liquido_pagable) }
+  return { id: text(row.id), empleado_id: text(row.empleado_id), liquido_pagable: decimal(row.liquido_pagable),
+    empleado_codigo: text(row.empleado_codigo), empleado_nombre: text(row.empleado_nombre) }
 }
 
 function parseMiResumen(value: unknown) {

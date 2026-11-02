@@ -7,7 +7,8 @@ export type AsignarSaldo = components['schemas']['VacationBalanceInput']
 function parseTipo(value: unknown) {
   const row = record(value)
   return { id: text(row.id), codigo: text(row.codigo), nombre: text(row.nombre),
-    es_remunerado: boolean(row.es_remunerado), descuenta_vacacion: boolean(row.descuenta_vacacion) }
+    es_remunerado: boolean(row.es_remunerado), descuenta_vacacion: boolean(row.descuenta_vacacion),
+    requiere_documento: boolean(row.requiere_documento ?? false) }
 }
 
 function parseSaldo(value: unknown) {
@@ -17,12 +18,37 @@ function parseSaldo(value: unknown) {
 
 export type TipoAusencia = ReturnType<typeof parseTipo>
 export type SaldoVacaciones = ReturnType<typeof parseSaldo>
+export type MiAusencia = {
+  id: string
+  tipo_ausencia_id: string
+  fecha_inicio: string
+  fecha_fin: string
+  dias_solicitados: number
+  dias_descontados: number | null
+  estado: string
+  observacion_jefe: string | null
+}
+export type NuevaAusencia = { tipo_ausencia_id: string; fecha_inicio: string; fecha_fin: string; motivo: string; documento_id?: string }
 type SaldoResponse = paths['/api/v1/personal/empleados/{empleado_id}/vacaciones/{gestion}']['put']['responses'][200]['content']['application/json']
 
 export async function getTiposAusencia(empresaId?: string | null) {
   return list(await apiRequest<GetResponse<'/api/v1/personal/tipos-ausencia'>>(
     `/api/v1/personal/tipos-ausencia${buildQuery({ empresa_id: empresaId })}`,
   ), parseTipo)
+}
+
+export function getMisAusencias() {
+  return apiRequest<MiAusencia[]>('/api/v1/personal/mi/ausencias')
+}
+
+export function solicitarAusencia(data: NuevaAusencia) {
+  return apiRequest<{ id: string; estado: string }>('/api/v1/personal/mi/ausencias', { method: 'POST', body: data })
+}
+
+export function subirComprobantePropio(file: File) {
+  const form = new FormData()
+  form.append('archivo', file)
+  return apiRequest<{ id: string }>('/api/v1/personal/mi/documentos', { method: 'POST', formData: form })
 }
 
 export async function asignarSaldoVacaciones(empleadoId: string, gestion: number, data: AsignarSaldo, empresaId?: string | null) {

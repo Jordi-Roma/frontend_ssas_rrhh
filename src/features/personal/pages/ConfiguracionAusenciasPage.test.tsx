@@ -15,7 +15,7 @@ vi.mock('../../../shared/api/empleadosApi', async original => ({ ...await origin
 vi.mock('../api/ausenciasApi', () => ({ getTiposAusencia: vi.fn(), asignarSaldoVacaciones: vi.fn() }))
 beforeEach(() => {
   vi.resetAllMocks(); scope.write = true; scope.selectedCompanyId = 'empresa-demo'
-  vi.mocked(getEmpleados).mockResolvedValue([empleado]); vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'tipo-demo', codigo: 'VAC', nombre: 'Vacaciones demo', es_remunerado: true, descuenta_vacacion: true }])
+  vi.mocked(getEmpleados).mockResolvedValue([empleado]); vi.mocked(getTiposAusencia).mockResolvedValue([{ id: 'tipo-demo', codigo: 'VAC', nombre: 'Vacaciones demo', es_remunerado: true, descuenta_vacacion: true, requiere_documento: false }])
 })
 afterEach(cleanup)
 async function fillForm() {

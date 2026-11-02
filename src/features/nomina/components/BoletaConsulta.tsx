@@ -15,9 +15,9 @@ export function BoletaConsulta({ boletaId, empresaId, empresa, empleado, nombreE
   const load = useCallback(() => propia ? getMiBoleta(boletaId) : getBoleta(boletaId, empresaId), [propia, boletaId, empresaId])
   const resource = useAsyncResource(load)
   const loadEmployee = useCallback(async () => {
-    if (propia || empleado || !resource.data) return empleado ?? null
+    if (propia || empleado || nombreEmpleado || !resource.data) return empleado ?? null
     return getEmpleado(resource.data.empleado_id, empresaId)
-  }, [propia, empleado, resource.data, empresaId])
+  }, [propia, empleado, nombreEmpleado, resource.data, empresaId])
   const employeeResource = useAsyncResource(loadEmployee)
   return createPortal(<div className="payslip-overlay"><Modal title="Consulta de boleta" size="lg" onClose={onClose} footer={<><Button variant="secondary" onClick={onClose}>Cerrar</Button><Button disabled={!resource.data || (!propia && employeeResource.loading)} onClick={() => window.print()}><Printer size={16} aria-hidden="true" />Imprimir</Button></>}>
     {resource.loading && <LoadingBlock message="Cargando boleta…" />}

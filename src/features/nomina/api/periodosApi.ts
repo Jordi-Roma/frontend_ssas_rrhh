@@ -13,6 +13,13 @@ export function getPeriodos(empresaId?: string | null) {
   )
 }
 
+export function abrirPeriodo(gestion: number, mes: number, empresaId?: string | null) {
+  return apiRequest<Periodo>(
+    `/api/v1/nomina/periodos${buildQuery({ empresa_id: empresaId })}`,
+    { method: 'POST', body: { gestion, mes } },
+  )
+}
+
 export function calcularPeriodo(periodoId: string, empresaId?: string | null) {
   return apiRequest(
     `/api/v1/nomina/periodos/${encodeURIComponent(periodoId)}/calcular${buildQuery({ empresa_id: empresaId })}`,
