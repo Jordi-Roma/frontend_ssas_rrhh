@@ -33,3 +33,20 @@ export function aprobarPeriodo(periodoId: string, empresaId?: string | null) {
     { method: 'POST' },
   )
 }
+
+export type DatosTributarios = {
+  empleado_id: string
+  f110_credito: number
+  saldo_favor_anterior: number
+  mantenimiento_valor: number
+  saldo_siete_rg: number
+  f110_siete_rg: number
+  referencia_planilla: string
+}
+
+export function registrarDatosTributarios(periodoId: string, datos: DatosTributarios, empresaId?: string | null) {
+  return apiRequest(
+    `/api/v1/nomina/periodos/${encodeURIComponent(periodoId)}/rc-iva/datos${buildQuery({ empresa_id: empresaId })}`,
+    { method: 'PUT', body: datos },
+  )
+}
