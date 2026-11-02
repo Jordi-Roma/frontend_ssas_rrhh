@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { DatabaseBackup, Download, RefreshCw, Save } from 'lucide-react'
+import { Clock3, DatabaseBackup, Download, RefreshCw, Save } from 'lucide-react'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { useAuth } from '../../auth/hooks/useAuth'
@@ -30,7 +30,8 @@ export function RespaldosEmpresaPage() {
   const { can } = useAccess()
   const { company, companies } = useCompanyScope()
   const platform = user?.realm === 'platform'
-  const empresaId = platform ? company?.id : undefined
+  const empresaId = (platform ? company?.id : user?.empresaId) ?? undefined
+  const canConfigure = can(platform ? 'platform:backup:configurar' : 'backup:configurar')
   const [items, setItems] = useState<RespaldoEmpresa[]>([])
   const [latest, setLatest] = useState<UltimosRespaldos | null>(null)
   const [config, setConfig] = useState<ConfigRespaldosEmpresa | null>(null)
@@ -49,7 +50,7 @@ export function RespaldosEmpresaPage() {
     try {
       const list = await respaldosEmpresaApi.list(empresaId)
       const nextLatest = !platform || empresaId ? await respaldosEmpresaApi.latest(empresaId) : null
-      const nextConfig = platform && empresaId ? await respaldosEmpresaApi.config(empresaId) : null
+      const nextConfig = empresaId && canConfigure ? await respaldosEmpresaApi.config(empresaId) : null
       if (sequence !== loadSequence.current) return
       setItems(list)
       setHasMore(list.length === PAGE_SIZE)
@@ -60,7 +61,7 @@ export function RespaldosEmpresaPage() {
     } finally {
       if (!quiet && sequence === loadSequence.current) setLoading(false)
     }
-  }, [empresaId, platform])
+  }, [empresaId, platform, canConfigure])
 
   async function loadMore() {
     setPaging(true)
@@ -113,17 +114,25 @@ export function RespaldosEmpresaPage() {
     />
     {message && <Alert tone={message.tone}>{message.text}</Alert>}
     {platform && !empresaId && <Alert tone="info">Selecciona una empresa arriba para ver su último respaldo o solicitar uno. El historial muestra todas.</Alert>}
-    {platform && empresaId && config?.empresa_id === empresaId && <Panel title="Programación automática">
+    {empresaId && config?.empresa_id === empresaId && <Panel title="Programación automática">
       {!config.servicio_habilitado && <Alert tone="info">Los respaldos por empresa todavía no están habilitados en Railway.</Alert>}
-      {!config.hora_configurable && <Alert tone="info">Este plan usa el horario automático de las 02:00 (Bolivia). La personalización está disponible en planes que la incluyan.</Alert>}
-      <label><input type="checkbox" checked={config.auto_habilitado} disabled={busy || !can('platform:backup:configurar')} onChange={(event) => void changeConfig({ auto_habilitado: event.target.checked })} /> Respaldo diario para esta empresa</label>
-      <div className="row-actions">
-        <Field label="Hora del respaldo" hint={`Zona horaria: ${config.zona_horaria}`}>
-          <input type="time" value={scheduleTime} disabled={busy || !config.hora_configurable || !can('platform:backup:configurar')} onChange={(event) => setScheduleTime(event.target.value)} />
-        </Field>
-        {config.hora_configurable && can('platform:backup:configurar') && <Button variant="secondary" loading={busy} disabled={!/^([01]\d|2[0-3]):[0-5]\d$/.test(scheduleTime) || scheduleTime === config.hora_local} onClick={() => void changeConfig({ hora_local: scheduleTime })}><Save size={16} aria-hidden="true" />Guardar hora</Button>}
+      <div className="backup-schedule">
+        <div className="backup-schedule-intro">
+          <span className="backup-schedule-icon"><Clock3 size={21} aria-hidden="true" /></span>
+          <div>
+            <strong>{config.auto_habilitado ? 'Copia diaria activa' : 'Copia diaria pausada'}</strong>
+            <p>{config.hora_configurable ? 'Elegí la hora de la copia automática de tu empresa.' : 'Este plan usa el horario predeterminado de las 02:00.'}</p>
+            {platform && <label className="backup-schedule-toggle"><input type="checkbox" checked={config.auto_habilitado} disabled={busy || !canConfigure} onChange={(event) => void changeConfig({ auto_habilitado: event.target.checked })} /> Activar copia diaria</label>}
+          </div>
+        </div>
+        <div className="backup-schedule-controls">
+          <Field label="Hora del respaldo" hint="Horario de Bolivia">
+            <input type="time" value={scheduleTime} disabled={busy || !config.hora_configurable || !canConfigure} onChange={(event) => setScheduleTime(event.target.value)} />
+          </Field>
+          {config.hora_configurable && <Button variant="secondary" loading={busy} disabled={!/^([01]\d|2[0-3]):[0-5]\d$/.test(scheduleTime) || scheduleTime === config.hora_local} onClick={() => void changeConfig({ hora_local: scheduleTime })}><Save size={16} aria-hidden="true" />Guardar hora</Button>}
+        </div>
       </div>
-      <p className="field-hint">Las copias automáticas se conservan {config.retencion_dias} días. Las manuales no caducan automáticamente.</p>
+      <p className="backup-schedule-footnote">Las copias automáticas se conservan {config.retencion_dias} días. Las manuales no caducan automáticamente.</p>
     </Panel>}
     {(!platform || empresaId) && <Panel title="Último respaldo">
       <p>Exitoso: <strong>{date(latest?.ultimo_exitoso?.fecha_finalizacion)}</strong></p>
