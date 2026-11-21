@@ -151,7 +151,7 @@ export function ReportesPage() {
     finally { setBusy(false) }
   }
 
-  async function download(format: 'xlsx' | 'html' | 'pdf') {
+  async function download(format: 'xlsx' | 'html' | 'pdf' | 'csv') {
     if (!advanced) return
     setBusy(true); setMessage(null)
     try { saveBlob(await reportesApi.export(format, config, company?.id), `reporte.${format}`) }
@@ -194,6 +194,6 @@ export function ReportesPage() {
       <div className="sticky-actions"><Button onClick={() => void runPreview()} disabled={!advanced} loading={busy}><Eye size={17} aria-hidden="true" />Vista previa</Button><Button variant="secondary" disabled={!advanced || !name.trim() || !columns.length} onClick={() => void reportesApi.create(name, config, company?.id).then(() => setMessage('Reporte guardado.')).catch((e: Error) => setMessage(e.message))}><Save size={17} aria-hidden="true" />Guardar definición</Button></div>
     </Panel>
     {busy && autoPreview && <p role="status">Actualizando vista previa...</p>}
-    {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{column.replaceAll('_', ' ')}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table></div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}
+    {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{column.replaceAll('_', ' ')}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table></div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('csv')}><Download size={16} aria-hidden="true" />CSV</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}
   </section>
 }

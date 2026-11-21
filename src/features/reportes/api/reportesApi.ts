@@ -19,7 +19,7 @@ export const reportesApi = {
     apiRequest<Preview>(`/api/v1/reportes/vista-previa${scope(empresaId)}`, { method: 'POST', body: config }),
   create: (nombre: string, config: ReportConfig, empresaId?: string) =>
     apiRequest(`/api/v1/reportes${scope(empresaId)}`, { method: 'POST', body: { nombre, ...config } }),
-  export: (format: 'xlsx' | 'html' | 'pdf', config: ReportConfig, empresaId?: string) =>
+  export: (format: 'xlsx' | 'html' | 'pdf' | 'csv', config: ReportConfig, empresaId?: string) =>
     apiRequest<Blob>(`/api/v1/reportes/exportar/${format}${scope(empresaId)}`, {
       method: 'POST', body: config, responseType: 'blob',
     }),

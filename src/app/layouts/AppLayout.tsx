@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react'
 import {
-  Award, BarChart3, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
+  Award, BarChart3, BookOpen, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
   CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
   ListChecks, LockKeyhole, Menu, ScrollText, Settings2, ShieldCheck, UserRound,
   Users, UsersRound, X,
@@ -21,6 +21,7 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
   Empresa: Building2,
   Administración: ShieldCheck,
   Análisis: BarChart3,
+  Capacitación: BookOpen,
   Cuenta: UserRound,
   Personal: UsersRound,
   Nómina: CreditCard,
@@ -53,6 +54,9 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   '/bitacora': ScrollText,
   '/respaldos-empresa': DatabaseBackup,
   '/reportes': BarChart3,
+  '/indicadores': BarChart3,
+  '/capacitacion/cursos': BookOpen,
+  '/capacitacion/seguimiento': ListChecks,
   '/suscripcion': CreditCard,
   '/perfil': UserRound,
   '/ayuda': CircleHelp,

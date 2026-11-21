@@ -46,6 +46,9 @@ const BoletasPage = lazy(() => import('../../features/nomina/pages/BoletasPage')
 const MisBoletasPage = lazy(() => import('../../features/nomina/pages/MisBoletasPage').then(module => ({ default: module.MisBoletasPage })))
 const PeriodosNominaPage = lazy(() => import('../../features/nomina/pages/PeriodosNominaPage').then(module => ({ default: module.PeriodosNominaPage })))
 const ParametrosLegalesPage = lazy(() => import('../../features/nomina/pages/ParametrosLegalesPage').then(module => ({ default: module.ParametrosLegalesPage })))
+const CursosPage = lazy(() => import('../../features/capacitacion/pages/CursosPage').then(module => ({ default: module.CursosPage })))
+const SeguimientoCursosPage = lazy(() => import('../../features/capacitacion/pages/SeguimientoCursosPage').then(module => ({ default: module.SeguimientoCursosPage })))
+const IndicadoresPage = lazy(() => import('../../features/indicadores/pages/IndicadoresPage').then(module => ({ default: module.IndicadoresPage })))
 
 function ProtectedArea() {
   const { status, user } = useAuth()
@@ -121,6 +124,9 @@ export function AppRouter() {
         <Route path="nomina/parametros-legales" element={plataforma(<ParametrosLegalesPage />, ['platform:nomina:parametros'])} />
         <Route path="nomina/boletas" element={empresa(<BoletasPage />, undefined, ['boletas:ver', 'platform:boletas:ver'])} />
         <Route path="nomina/mis-boletas" element={<RequireRealm realm="tenant"><RequireAccess permisos={['boletas:mi']}><MisBoletasRoute /></RequireAccess></RequireRealm>} />
+        <Route path="capacitacion/cursos" element={empresa(<CursosPage />, undefined, ['capacitacion:ver', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
+        <Route path="capacitacion/seguimiento" element={empresa(<SeguimientoCursosPage />, undefined, ['capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
+        <Route path="indicadores" element={empresa(<IndicadoresPage />, undefined, ['indicadores:ver', 'platform:indicadores:ver'])} />
 
         <Route path="empresas" element={plataforma(<AltaEmpresaPage />, ['platform:empresas:ver'])} />
         <Route

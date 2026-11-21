@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReportesPage } from './ReportesPage'
-import { reportesApi } from '../api/reportesApi'
+import { reportesApi, saveBlob } from '../api/reportesApi'
 
 vi.mock('../../../app/access/AccessProvider', () => ({ useAccess: () => ({ hasFeature: () => true }) }))
 
@@ -38,6 +38,17 @@ afterEach(() => {
 })
 
 describe('reportes por voz o texto', () => {
+  it('exporta CSV desde la vista previa con el alcance de la empresa', async () => {
+    vi.mocked(reportesApi.export).mockResolvedValue(new Blob(['postulante\nAna'], { type: 'text/csv' }))
+    render(<ReportesPage />)
+    await screen.findByRole('option', { name: 'Postulaciones' })
+    fireEvent.click(screen.getByLabelText('postulante'))
+    fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }))
+    await screen.findByText('Ana')
+    fireEvent.click(screen.getByRole('button', { name: 'CSV' }))
+    await waitFor(() => expect(reportesApi.export).toHaveBeenCalledWith('csv', expect.objectContaining({ fuente: 'postulaciones', columnas: ['postulante'] }), 'company-a'))
+    expect(saveBlob).toHaveBeenCalledWith(expect.any(Blob), 'reporte.csv')
+  })
   it('shows the transcription and automatically previews the interpreted report', async () => {
     render(<ReportesPage />)
     fireEvent.change(screen.getByLabelText('Consulta por voz o texto'), {

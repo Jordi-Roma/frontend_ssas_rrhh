@@ -103,6 +103,9 @@ export const NAV_ITEMS: NavItem[] = [
     permisos: ['reportes:ver', 'platform:reportes:gestionar'],
     grupo: 'Análisis',
   },
+  { to: '/indicadores', label: 'Indicadores', permisos: ['indicadores:ver', 'platform:indicadores:ver'], grupo: 'Análisis' },
+  { to: '/capacitacion/cursos', label: 'Cursos', permisos: ['capacitacion:ver', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
+  { to: '/capacitacion/seguimiento', label: 'Asignación y seguimiento', permisos: ['capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
   {
     to: '/respaldos',
     label: 'Backup / Restore',
