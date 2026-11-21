@@ -11,7 +11,7 @@ vi.mock('../../../app/context/CompanyScopeContext', () => ({ useCompanyScope: ()
 vi.mock('../../../shared/api/empleadosApi', async original => ({ ...await original<typeof import('../../../shared/api/empleadosApi')>(), getEmpleados: vi.fn() }))
 vi.mock('../../../shared/api/organizacionCatalogosApi', () => ({ getDepartamentos: vi.fn() }))
 vi.mock('../api/capacitacionApi', () => ({ capacitacionApi: { cursos: vi.fn(), inscripciones: vi.fn(), asignar: vi.fn(), calificar: vi.fn() } }))
-const course: Curso = { id: 'curso-1', titulo: 'Seguridad laboral', descripcion: '', categoria: 'Seguridad', duracion_horas: 1, es_obligatorio: true, imagen_url: null, instructor: null, nota_minima: 70, estado: 'PUBLICADO' }
+const course: Curso = { id: 'curso-1', titulo: 'Seguridad laboral', descripcion: '', categoria: 'Seguridad', duracion_horas: 1, es_obligatorio: true, imagen_url: null, instructor: null, nota_minima: 70, habilidad_id: null, estado: 'PUBLICADO' }
 const enrollment: Inscripcion = { id: 'inscripcion-1', curso_id: 'curso-1', empleado_id: 'empleado-1', progreso: 100, calificacion: null, estado: 'COMPLETADO', aprobado: false, fecha_limite: null, inscrito_en: '2026-11-17T10:00:00Z' }
 beforeEach(() => { vi.resetAllMocks(); vi.mocked(capacitacionApi.cursos).mockResolvedValue([course]); vi.mocked(getDepartamentos).mockResolvedValue([{ id: 'departamento-1', nombre: 'Ventas' } as Awaited<ReturnType<typeof getDepartamentos>>[number]]); vi.mocked(getEmpleados).mockResolvedValue([]); vi.mocked(capacitacionApi.inscripciones).mockResolvedValue([]) })
 afterEach(cleanup)

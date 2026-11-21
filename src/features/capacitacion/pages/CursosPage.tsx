@@ -4,11 +4,12 @@ import { BookOpen, Plus, Trash2, Upload } from 'lucide-react'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { downloadFile } from '../../../shared/api/httpClient'
+import { listarHabilidades, type Habilidad } from '../../habilidades/api/habilidadesApi'
 import { Alert, Button, EmptyState, Field, PageHeader, Panel } from '../../../shared/components'
 import { capacitacionApi, type Curso, type CursoInput, type Leccion, type LeccionInput, type LeccionTipo } from '../api/capacitacionApi'
 import './sprint4.css'
 
-const emptyCourse: CursoInput = { titulo: '', descripcion: '', categoria: '', duracion_horas: null, es_obligatorio: false, imagen_url: null, instructor: '', nota_minima: 70 }
+const emptyCourse: CursoInput = { titulo: '', descripcion: '', categoria: '', duracion_horas: null, es_obligatorio: false, imagen_url: null, instructor: '', nota_minima: 70, habilidad_id: null }
 const emptyLesson: LeccionInput = { titulo: '', tipo: 'VIDEO', orden: 1, duracion_minutos: null, contenido_url: null, contenido_texto: null }
 const types: LeccionTipo[] = ['VIDEO', 'DOCUMENTO', 'MANUAL', 'QUIZ', 'ENLACE']
 const errorText = (cause: unknown) => cause instanceof Error ? cause.message : 'No se pudo completar la operación.'
@@ -24,6 +25,10 @@ export function CursosPage() {
   const { can } = useAccess()
   const canManage = can('capacitacion:gestionar', 'platform:capacitacion:gestionar')
   const [courses, setCourses] = useState<Curso[]>([])
+  const [skills, setSkills] = useState<Habilidad[]>([])
+  const [skillsLoading, setSkillsLoading] = useState(false)
+  const [skillsError, setSkillsError] = useState<string | null>(null)
+  const [skillsRevision, setSkillsRevision] = useState(0)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [lessons, setLessons] = useState<Leccion[]>([])
   const [courseForm, setCourseForm] = useState<CursoInput>(emptyCourse)
@@ -50,8 +55,17 @@ export function CursosPage() {
 
   useEffect(() => { void loadCourses() }, [loadCourses])
   useEffect(() => {
+    let active = true
+    if (!selectedCompanyId || !canManage) return
+    setSkills([]); setSkillsLoading(true); setSkillsError(null)
+    listarHabilidades(selectedCompanyId).then(items => { if (active) setSkills(items) })
+      .catch(cause => { if (active) setSkillsError(errorText(cause)) })
+      .finally(() => { if (active) setSkillsLoading(false) })
+    return () => { active = false }
+  }, [selectedCompanyId, canManage, skillsRevision])
+  useEffect(() => {
     if (!selected) { setCourseForm(emptyCourse); setLessons([]); return }
-    setCourseForm({ titulo: selected.titulo, descripcion: selected.descripcion, categoria: selected.categoria, duracion_horas: selected.duracion_horas, es_obligatorio: selected.es_obligatorio, imagen_url: selected.imagen_url, instructor: selected.instructor, nota_minima: selected.nota_minima })
+    setCourseForm({ titulo: selected.titulo, descripcion: selected.descripcion, categoria: selected.categoria, duracion_horas: selected.duracion_horas, es_obligatorio: selected.es_obligatorio, imagen_url: selected.imagen_url, instructor: selected.instructor, nota_minima: selected.nota_minima, habilidad_id: selected.habilidad_id ?? null })
     setEditingLessonId(null); setFile(null); setQuestions([emptyQuestion()]); setLessonForm({ ...emptyLesson, orden: 1 })
     let active = true
     setLessons([])
@@ -132,11 +146,15 @@ export function CursosPage() {
         {canManage && (!selected || selected.estado === 'BORRADOR') && <Panel title={selected ? 'Editar curso' : 'Nuevo curso'} eyebrow="Información general">
           <div className="form-grid"><Field label="Título *"><input maxLength={200} value={courseForm.titulo} onChange={e => setCourseForm(v => ({ ...v, titulo: e.target.value }))} /></Field><Field label="Categoría"><input maxLength={100} value={courseForm.categoria ?? ''} onChange={e => setCourseForm(v => ({ ...v, categoria: e.target.value }))} /></Field><Field label="Instructor"><input maxLength={160} value={courseForm.instructor ?? ''} onChange={e => setCourseForm(v => ({ ...v, instructor: e.target.value }))} /></Field><Field label="Duración (horas)"><input type="number" min="0" step="0.5" value={courseForm.duracion_horas ?? ''} onChange={e => setCourseForm(v => ({ ...v, duracion_horas: e.target.value ? Number(e.target.value) : null }))} /></Field><Field label="Nota mínima"><input type="number" min="0" max="100" value={courseForm.nota_minima} onChange={e => setCourseForm(v => ({ ...v, nota_minima: Number(e.target.value) }))} /></Field></div>
           <Field label="Descripción"><textarea rows={3} value={courseForm.descripcion ?? ''} onChange={e => setCourseForm(v => ({ ...v, descripcion: e.target.value }))} /></Field>
+          <Field label="Habilidad que acredita"><select value={courseForm.habilidad_id ?? ''} disabled={skillsLoading || skillsError !== null} onChange={e => setCourseForm(v => ({ ...v, habilidad_id: e.target.value || null }))}><option value="">Ninguna</option>{courseForm.habilidad_id && !skills.some(item => item.id === courseForm.habilidad_id) && <option value={courseForm.habilidad_id}>Habilidad asociada (no disponible en catálogo)</option>}{skills.filter(item => item.activo || item.id === courseForm.habilidad_id).map(item => <option key={item.id} value={item.id}>{item.nombre}{item.activo ? '' : ' (inactiva)'}</option>)}</select></Field>
+          {skillsLoading && <p role="status">Cargando habilidades…</p>}
+          {skillsError && <Alert tone="error">No se pudo cargar el catálogo de habilidades: {skillsError} <Button size="sm" variant="secondary" onClick={() => setSkillsRevision(value => value + 1)}>Reintentar</Button></Alert>}
           <label className="check-label"><input type="checkbox" checked={courseForm.es_obligatorio} onChange={e => setCourseForm(v => ({ ...v, es_obligatorio: e.target.checked }))} />Obligatorio</label>
           <div className="form-actions"><Button loading={busy} onClick={() => void saveCourse()}>{selected ? 'Guardar cambios' : 'Crear curso'}</Button>{selected && <Button variant="danger-outline" disabled={busy} onClick={() => void removeCourse()}><Trash2 size={15} />Eliminar borrador</Button>}</div>
         </Panel>}
         {selected && <Panel title={selected.titulo} eyebrow={selected.estado === 'PUBLICADO' ? 'Curso publicado' : 'Lecciones'} actions={selected.estado === 'BORRADOR' && canManage ? <Button size="sm" disabled={busy || lessons.length === 0} onClick={() => void publish()}>Publicar curso</Button> : selected.estado === 'PUBLICADO' && canManage ? <Link to="/capacitacion/seguimiento">Asignar curso →</Link> : undefined}>
           {selected.estado === 'PUBLICADO' && <p className="text-muted">{selected.descripcion || 'Sin descripción.'} {selected.es_obligatorio ? '· Obligatorio' : ''}</p>}
+          {selected.habilidad_id && <p className="text-muted">Habilidad que acredita: {skills.find(item => item.id === selected.habilidad_id)?.nombre ?? `Ref. ${selected.habilidad_id}`}</p>}
           {lessons.length === 0 ? <EmptyState title="Sin lecciones" message="Agrega al menos una lección para publicar el curso." /> : <ol className="sprint4-lesson-list">{lessons.map(item => <li key={item.id}><span className="sprint4-lesson-number">{item.orden}</span><span><strong>{item.titulo}</strong><small>{item.tipo} {item.duracion_minutos != null ? `· ${item.duracion_minutos} min` : ''}</small></span>{item.contenido_url && (item.contenido_url.startsWith('/api/') ? <Button size="sm" variant="secondary" onClick={() => void downloadFile(`${item.contenido_url}${selectedCompanyId ? `?empresa_id=${encodeURIComponent(selectedCompanyId)}` : ''}`, `${item.titulo}.${item.tipo === 'VIDEO' ? 'mp4' : 'pdf'}`).catch(cause => setError(errorText(cause)))}>Material</Button> : <a href={item.contenido_url} target="_blank" rel="noreferrer">Abrir recurso</a>)}{canManage && selected.estado === 'BORRADOR' && <div className="row-actions"><Button size="sm" variant="quiet" onClick={() => { setEditingLessonId(item.id); setLessonForm({ titulo: item.titulo, tipo: item.tipo, orden: item.orden, duracion_minutos: item.duracion_minutos, contenido_url: item.contenido_url, contenido_texto: item.contenido_texto }); setQuestions(item.tipo === 'QUIZ' ? readQuestions(item.contenido_texto) : [emptyQuestion()]); setFile(null) }}>Editar</Button><Button size="sm" variant="danger-outline" disabled={busy} onClick={() => void removeLesson(item.id)}>Eliminar</Button></div>}</li>)}</ol>}
         </Panel>}
         {selected?.estado === 'BORRADOR' && canManage && <Panel title={editingLessonId ? 'Editar lección' : 'Agregar lección'} eyebrow="Contenido del curso">

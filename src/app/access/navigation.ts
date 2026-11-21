@@ -105,6 +105,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   { to: '/indicadores', label: 'Indicadores', permisos: ['indicadores:ver', 'platform:indicadores:ver'], grupo: 'Análisis' },
   { to: '/capacitacion/cursos', label: 'Cursos', permisos: ['capacitacion:ver', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
+  { to: '/capacitacion/mis-habilidades', label: 'Perfil de habilidades', permisos: ['capacitacion:aprender', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
   { to: '/capacitacion/seguimiento', label: 'Asignación y seguimiento', permisos: ['capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
   {
     to: '/respaldos',
@@ -134,6 +135,7 @@ export const NAV_ITEMS: NavItem[] = [
     grupo: 'Cuenta',
   },
   { to: '/perfil', label: 'Mi perfil', grupo: 'Cuenta' },
+  { to: '/notificaciones', label: 'Notificaciones', grupo: 'Cuenta' },
   { to: '/ayuda', label: 'Ayuda', grupo: 'Cuenta' },
   { to: '/cambiar-clave', label: 'Cambiar contraseña', grupo: 'Cuenta' },
 ]

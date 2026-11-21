@@ -1,7 +1,7 @@
 import { Suspense, useState } from 'react'
 import {
   Award, BarChart3, BookOpen, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
-  CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
+  Bell, CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
   ListChecks, LockKeyhole, Menu, ScrollText, Settings2, ShieldCheck, UserRound,
   Users, UsersRound, X,
 } from 'lucide-react'
@@ -56,9 +56,11 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   '/reportes': BarChart3,
   '/indicadores': BarChart3,
   '/capacitacion/cursos': BookOpen,
+  '/capacitacion/mis-habilidades': Award,
   '/capacitacion/seguimiento': ListChecks,
   '/suscripcion': CreditCard,
   '/perfil': UserRound,
+  '/notificaciones': Bell,
   '/ayuda': CircleHelp,
   '/cambiar-clave': LockKeyhole,
 }

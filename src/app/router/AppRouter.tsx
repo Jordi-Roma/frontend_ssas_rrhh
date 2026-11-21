@@ -49,6 +49,8 @@ const ParametrosLegalesPage = lazy(() => import('../../features/nomina/pages/Par
 const CursosPage = lazy(() => import('../../features/capacitacion/pages/CursosPage').then(module => ({ default: module.CursosPage })))
 const SeguimientoCursosPage = lazy(() => import('../../features/capacitacion/pages/SeguimientoCursosPage').then(module => ({ default: module.SeguimientoCursosPage })))
 const IndicadoresPage = lazy(() => import('../../features/indicadores/pages/IndicadoresPage').then(module => ({ default: module.IndicadoresPage })))
+const PerfilHabilidadesPage = lazy(() => import('../../features/capacitacion/pages/PerfilHabilidadesPage').then(module => ({ default: module.PerfilHabilidadesPage })))
+const NotificacionesPage = lazy(() => import('../../features/notificaciones/pages/NotificacionesPage').then(module => ({ default: module.NotificacionesPage })))
 
 function ProtectedArea() {
   const { status, user } = useAuth()
@@ -111,6 +113,7 @@ export function AppRouter() {
         <Route index element={<DashboardPage />} />
         <Route path="cambiar-clave" element={<ChangePasswordPage />} />
         <Route path="perfil" element={<MiPerfilPage />} />
+        <Route path="notificaciones" element={<NotificacionesPage />} />
         <Route path="ayuda" element={<AyudaPage />} />
 
         <Route path="personal/contratos" element={empresa(<ContratosPage />, undefined, ['personal:ver', 'platform:personal:ver'])} />
@@ -125,6 +128,7 @@ export function AppRouter() {
         <Route path="nomina/boletas" element={empresa(<BoletasPage />, undefined, ['boletas:ver', 'platform:boletas:ver'])} />
         <Route path="nomina/mis-boletas" element={<RequireRealm realm="tenant"><RequireAccess permisos={['boletas:mi']}><MisBoletasRoute /></RequireAccess></RequireRealm>} />
         <Route path="capacitacion/cursos" element={empresa(<CursosPage />, undefined, ['capacitacion:ver', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
+        <Route path="capacitacion/mis-habilidades" element={empresa(<PerfilHabilidadesPage />, undefined, ['capacitacion:aprender', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
         <Route path="capacitacion/seguimiento" element={empresa(<SeguimientoCursosPage />, undefined, ['capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
         <Route path="indicadores" element={empresa(<IndicadoresPage />, undefined, ['indicadores:ver', 'platform:indicadores:ver'])} />
 
