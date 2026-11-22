@@ -43,6 +43,31 @@ afterEach(() => {
 })
 
 describe('reportes por voz o texto', () => {
+  it('loads additional rows without changing the report filters', async () => {
+    vi.mocked(reportesApi.preview)
+      .mockResolvedValueOnce({ columnas: ['postulante'], items: Array.from({ length: 25 }, (_, i) => ({ postulante: `Persona ${i}` })), total: 26, page: 1, per_page: 25 })
+      .mockResolvedValueOnce({ columnas: ['postulante'], items: [{ postulante: 'Persona 25' }], total: 26, page: 2, per_page: 25 })
+    render(<ReportesPage />)
+    await screen.findByRole('option', { name: 'Postulaciones' })
+    fireEvent.click(screen.getByLabelText('postulante'))
+    fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver más filas' }))
+    await screen.findByText('Persona 25')
+    expect(reportesApi.preview).toHaveBeenLastCalledWith(expect.objectContaining({ fuente: 'postulaciones' }), 'company-a', 2)
+  })
+  it('opens a payroll idea with monthly chart and relevant columns', async () => {
+    vi.mocked(reportesApi.catalog).mockResolvedValue([
+      { codigo: 'boletas', nombre: 'Boletas', columnas: ['periodo', 'empleado', 'liquido_pagable', 'es_muestra', 'fecha_periodo'] },
+    ])
+    render(<ReportesPage />)
+    fireEvent.click(await screen.findByRole('button', { name: /Nómina por mes/ }))
+    await waitFor(() => expect(reportesApi.preview).toHaveBeenCalledWith(
+      expect.objectContaining({ fuente: 'boletas', columnas: ['periodo', 'empleado', 'liquido_pagable', 'es_muestra'] }), 'company-a',
+    ))
+    await waitFor(() => expect(reportesApi.chart).toHaveBeenCalledWith(
+      expect.objectContaining({ fuente: 'boletas' }), 'fecha_periodo', 'liquido_pagable', 'company-a',
+    ))
+  })
   it('muestra gráficos con el total agregado y permite cambiar de barras a anillo', async () => {
     render(<ReportesPage />)
     await screen.findByRole('option', { name: 'Postulaciones' })
@@ -51,7 +76,7 @@ describe('reportes por voz o texto', () => {
     await waitFor(() => expect(reportesApi.chart).toHaveBeenCalledWith(
       expect.objectContaining({ fuente: 'postulaciones' }), 'postulante', null, 'company-a',
     ))
-    expect(await screen.findByText('ACTIVA')).toBeInTheDocument()
+    expect((await screen.findAllByText('ACTIVA')).length).toBeGreaterThan(0)
     fireEvent.change(screen.getByLabelText('Tipo de gráfico'), { target: { value: 'donut' } })
     expect(screen.getByRole('img', { name: /ACTIVA: 45/ })).toBeInTheDocument()
   })

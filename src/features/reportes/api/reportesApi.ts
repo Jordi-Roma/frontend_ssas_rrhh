@@ -16,8 +16,8 @@ export const reportesApi = {
     apiRequest<Interpretation>(`/api/v1/reportes/interpretar${scope(empresaId)}`, {
       method: 'POST', body: { texto }, timeoutMs: 35_000,
     }),
-  preview: (config: ReportConfig, empresaId?: string) =>
-    apiRequest<Preview>(`/api/v1/reportes/vista-previa${scope(empresaId)}`, { method: 'POST', body: config }),
+  preview: (config: ReportConfig, empresaId?: string, page = 1) =>
+    apiRequest<Preview>(`/api/v1/reportes/vista-previa${page === 1 ? scope(empresaId) : buildQuery({ empresa_id: empresaId, page })}`, { method: 'POST', body: config }),
   chart: (config: ReportConfig, campo: string, metrica: string | null, empresaId?: string) =>
     apiRequest<ChartSummary>(`/api/v1/reportes/grafico${scope(empresaId)}`, { method: 'POST', body: { ...config, campo, metrica } }),
   create: (nombre: string, config: ReportConfig, empresaId?: string) =>

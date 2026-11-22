@@ -30,3 +30,18 @@
 .report-chart-line-labels span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .report-chart-caption { color: #718378; font-size: .78rem; margin-top: 24px; border-top: 1px solid #e4ece5; padding-top: 13px; }
 @media (max-width: 650px) { .report-chart-donut-layout { grid-template-columns: 1fr; justify-items: center; } .report-chart-legend { width: 100%; } .report-chart-line svg { height: 190px; } }
+.report-ideas-intro { color: #60756a; margin: 0 0 18px; line-height: 1.6; }
+.report-ideas-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.report-idea { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 8px; min-height: 155px; padding: 19px; border: 1px solid #d8e9df; border-radius: 17px; background: linear-gradient(145deg, #fff, #f7fbf8); cursor: pointer; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.report-idea:hover, .report-idea:focus-visible { transform: translateY(-3px); border-color: #7cb69a; box-shadow: 0 13px 24px rgba(20, 70, 47, .1); outline: none; }
+.report-idea-index { color: #16805c; font-size: .7rem; letter-spacing: .12em; font-weight: 850; }
+.report-idea strong { font-size: 1.05rem; color: #183e2d; }
+.report-idea small { font-size: .79rem; color: #65776c; line-height: 1.45; }
+.report-idea-action { margin-top: auto; font-size: .78rem; font-weight: 800; color: #126347; }
+.report-insights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 4px 0 20px; }
+.report-insights > div { display: flex; flex-direction: column; gap: 9px; min-width: 0; padding: 17px 19px; border-radius: 16px; background: #eff7f1; border: 1px solid #dcebe0; }
+.report-insights span { color: #60776a; font-size: .76rem; font-weight: 700; }
+.report-insights strong { color: #164932; font-size: clamp(1.05rem, 2vw, 1.45rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 850px) { .report-ideas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .report-ideas-grid, .report-insights { grid-template-columns: 1fr; } }
+.report-preview-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 14px 0 6px; color: #64776a; font-size: .82rem; }

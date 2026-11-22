@@ -8,6 +8,24 @@ import { ReportChart, type ChartKind } from './ReportChart'
 
 const EMPTY_FILTER: Filter = { campo: '', operador: 'igual', valor: '' }
 
+const REPORT_IDEAS: { source: string; title: string; description: string; columns: string[]; group: string; metric?: string; kind: ChartKind }[] = [
+  { source: 'boletas', title: 'Nómina por mes', description: 'Líquido pagable y evolución mensual', columns: ['periodo', 'empleado', 'liquido_pagable', 'es_muestra'], group: 'fecha_periodo', metric: 'liquido_pagable', kind: 'line' },
+  { source: 'ausencias', title: 'Ausencias por área', description: 'Solicitudes agrupadas por departamento', columns: ['departamento', 'estado', 'dias_solicitados'], group: 'departamento', kind: 'bars' },
+  { source: 'empleados', title: 'Plantilla activa', description: 'Distribución de empleados por área', columns: ['codigo', 'nombre', 'departamento', 'estado'], group: 'departamento', kind: 'donut' },
+  { source: 'capacitaciones', title: 'Avance de cursos', description: 'Inscripciones y estados de formación', columns: ['curso', 'empleado', 'estado', 'progreso'], group: 'estado', kind: 'bars' },
+  { source: 'contratos', title: 'Contratos y salarios', description: 'Salarios básicos por departamento', columns: ['empleado', 'departamento', 'salario_basico', 'estado'], group: 'departamento', metric: 'salario_basico', kind: 'bars' },
+  { source: 'postulaciones', title: 'Selección', description: 'Postulaciones según su estado', columns: ['postulante', 'vacante', 'estado', 'puntaje'], group: 'estado', kind: 'donut' },
+]
+const COLUMN_LABELS: Record<string, string> = {
+  es_muestra: 'Origen', liquido_pagable: 'Líquido pagable (Bs)',
+  total_ganado: 'Total ganado (Bs)', total_descuentos: 'Descuentos (Bs)',
+  salario_basico: 'Salario básico (Bs)', dias_solicitados: 'Días solicitados',
+}
+const columnLabel = (column: string) => COLUMN_LABELS[column] ?? column.replaceAll('_', ' ')
+const cellValue = (column: string, value: unknown) => column === 'es_muestra'
+  ? value ? 'Muestra' : 'Registro'
+  : value == null ? '—' : typeof value === 'boolean' ? value ? 'Sí' : 'No' : String(value)
+
 type SpeechResult = { transcript: string }
 type SpeechEvent = { resultIndex: number; results: ArrayLike<ArrayLike<SpeechResult>> }
 type SpeechRecognition = {
@@ -46,6 +64,7 @@ export function ReportesPage() {
   const [chartError, setChartError] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [interpreting, setInterpreting] = useState(false)
   const [listening, setListening] = useState(false)
   const [prompt, setPrompt] = useState('')
@@ -76,12 +95,13 @@ export function ReportesPage() {
   const configKey = JSON.stringify([company?.id, config])
   const visiblePreview = previewFor === configKey ? preview : null
   const groupField = source?.columnas.includes(chartField) ? chartField : source?.columnas.includes('estado') ? 'estado' : source?.columnas.includes('activo') ? 'activo' : source?.columnas[0] ?? ''
-  const numericFields = sourceCode === 'vacantes' ? ['cantidad_vacantes'] : sourceCode === 'postulaciones' ? ['puntaje'] : sourceCode === 'ausencias' ? ['dias_solicitados'] : []
+  const numericFields = ({ vacantes: ['cantidad_vacantes'], postulaciones: ['puntaje'], ausencias: ['dias_solicitados'], contratos: ['salario_basico'], boletas: ['total_ganado', 'total_descuentos', 'liquido_pagable'], capacitaciones: ['progreso', 'calificacion'] } as Record<string, string[]>)[sourceCode] ?? []
   const metricField = numericFields.includes(chartMetric) ? chartMetric : ''
   const isDateField = groupField.startsWith('fecha_') || groupField === 'ultimo_acceso'
   const selectedKind = chartKind === 'line' && !isDateField ? 'bars' : chartKind
   const chartKey = JSON.stringify([configKey, groupField, metricField])
   const visibleChart = visiblePreview && chartFor === chartKey ? chart : null
+  const leadingGroup = visibleChart?.grupos.reduce((best, item) => !best || Number(item.value) > Number(best.value) ? item : best, null as ChartSummary['grupos'][number] | null)
 
   useEffect(() => {
     if (!visiblePreview || !groupField || !advanced) return
@@ -170,6 +190,17 @@ export function ReportesPage() {
     setPreview(null); setBusy(false); setInterpreted(false); setChart(null); setChartMetric('')
   }
 
+  function chooseIdea(idea: typeof REPORT_IDEAS[number]) {
+    const available = sources.find(item => item.codigo === idea.source)
+    if (!available) return
+    setSourceCode(idea.source)
+    setColumns(idea.columns.filter(column => available.columnas.includes(column)))
+    setFilters([]); setOrderField(''); setDirection('asc')
+    setChartField(idea.group); setChartMetric(idea.metric ?? ''); setChartKind(idea.kind)
+    setName(idea.title); setInterpreted(false); setMessage(null)
+    setPreview(null); setChart(null); setAutoPreview(true)
+  }
+
   async function runPreview() {
     if (!advanced) return
     if (!columns.length) return setMessage('Selecciona al menos una columna.')
@@ -177,6 +208,16 @@ export function ReportesPage() {
     try { setPreview(await reportesApi.preview(config, company?.id)); setPreviewFor(configKey) }
     catch (error) { setMessage(error instanceof Error ? error.message : 'No se pudo generar la vista previa.') }
     finally { setBusy(false) }
+  }
+
+  async function loadMore() {
+    if (!visiblePreview || loadingMore || visiblePreview.items.length >= visiblePreview.total) return
+    setLoadingMore(true)
+    try {
+      const next = await reportesApi.preview(config, company?.id, Math.floor(visiblePreview.items.length / visiblePreview.per_page) + 1)
+      if (previewFor === configKey) setPreview({ ...visiblePreview, items: [...visiblePreview.items, ...next.items] })
+    } catch (error) { setMessage(error instanceof Error ? error.message : 'No se pudieron cargar más filas.') }
+    finally { setLoadingMore(false) }
   }
 
   async function download(format: 'xlsx' | 'html' | 'pdf' | 'csv') {
@@ -191,6 +232,12 @@ export function ReportesPage() {
     <PageHeader eyebrow="Análisis" title="Reportes personalizables" description="Consulta tus datos y ajusta el reporte antes de exportarlo." />
     {!advanced && <Alert tone="info">Los reportes avanzados no están incluidos en el plan de esta empresa.</Alert>}
     {message && <Alert tone="info">{message}</Alert>}
+    {advanced && <Panel title="Explorar indicadores" eyebrow="Análisis rápido">
+      <p className="report-ideas-intro">Elige una vista para ver datos y gráficos de tu empresa. Después puedes ajustar columnas, filtros y medidas.</p>
+      <div className="report-ideas-grid">{REPORT_IDEAS.filter(idea => sources.some(item => item.codigo === idea.source)).map((idea, index) => <button type="button" className="report-idea" key={idea.source} onClick={() => chooseIdea(idea)}>
+        <span className="report-idea-index">0{index + 1}</span><strong>{idea.title}</strong><small>{idea.description}</small><span className="report-idea-action">Explorar →</span>
+      </button>)}</div>
+    </Panel>}
     <Panel title="Constructor de reporte" eyebrow="Configuración">
       {ai ? <div className="report-query">
         <Field label="Consulta por voz o texto">
@@ -222,6 +269,11 @@ export function ReportesPage() {
       <div className="sticky-actions"><Button onClick={() => void runPreview()} disabled={!advanced} loading={busy}><Eye size={17} aria-hidden="true" />Vista previa</Button><Button variant="secondary" disabled={!advanced || !name.trim() || !columns.length} onClick={() => void reportesApi.create(name, config, company?.id).then(() => setMessage('Reporte guardado.')).catch((e: Error) => setMessage(e.message))}><Save size={17} aria-hidden="true" />Guardar definición</Button></div>
     </Panel>
     {visiblePreview && <Panel title="Gráficos del reporte" eyebrow="Visualización" count={`${visiblePreview.total} registros`}>
+      {visibleChart && <div className="report-insights">
+        <div><span>Registros analizados</span><strong>{visibleChart.total.toLocaleString('es-BO')}</strong></div>
+        <div><span>{metricField ? 'Total de la medida' : 'Grupos identificados'}</span><strong>{metricField ? Number(visibleChart.total_valor).toLocaleString('es-BO', { maximumFractionDigits: 2 }) : visibleChart.grupos.length}</strong></div>
+        <div><span>Grupo principal</span><strong title={leadingGroup?.label}>{leadingGroup?.label ?? '—'}</strong></div>
+      </div>}
       <div className="report-chart-options">
         <Field label="Agrupar por"><select value={groupField} onChange={event => setChartField(event.target.value)}>{source?.columnas.map(column => <option value={column} key={column}>{column.replaceAll('_', ' ')}</option>)}</select></Field>
         <Field label="Mostrar"><select value={metricField} onChange={event => setChartMetric(event.target.value)}><option value="">Cantidad de registros</option>{numericFields.map(column => <option value={column} key={column}>Suma de {column.replaceAll('_', ' ')}</option>)}</select></Field>
@@ -231,6 +283,6 @@ export function ReportesPage() {
       {visibleChart ? <ReportChart data={visibleChart} kind={selectedKind} title={`${metricField ? 'Suma de ' + metricField.replaceAll('_', ' ') : 'Registros'} por ${groupField.replaceAll('_', ' ')}`} /> : !chartError && <p role="status">Preparando gráfico…</p>}
     </Panel>}
     {busy && autoPreview && <p role="status">Actualizando vista previa...</p>}
-    {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{column.replaceAll('_', ' ')}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table></div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('csv')}><Download size={16} aria-hidden="true" />CSV</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}
+    {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{columnLabel(column)}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{cellValue(column, row[column])}</td>)}</tr>)}</tbody></table></div><div className="report-preview-footer"><span>Mostrando {visiblePreview.items.length} de {visiblePreview.total} registros</span>{visiblePreview.items.length < visiblePreview.total && <Button variant="secondary" loading={loadingMore} onClick={() => void loadMore()}>Ver más filas</Button>}</div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('csv')}><Download size={16} aria-hidden="true" />CSV</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}
   </section>
 }
