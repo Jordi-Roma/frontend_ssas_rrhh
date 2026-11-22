@@ -104,6 +104,7 @@ export const NAV_ITEMS: NavItem[] = [
     grupo: 'Análisis',
   },
   { to: '/indicadores', label: 'Indicadores', permisos: ['indicadores:ver', 'platform:indicadores:ver'], grupo: 'Análisis' },
+  { to: '/reportes/finanzas', label: 'Finanzas de suscripciones', soloRealm: 'platform', permisos: ['platform:reportes:gestionar'], grupo: 'Análisis' },
   { to: '/capacitacion/cursos', label: 'Cursos', permisos: ['capacitacion:ver', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
   { to: '/capacitacion/mis-habilidades', label: 'Perfil de habilidades', permisos: ['capacitacion:aprender', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },
   { to: '/capacitacion/seguimiento', label: 'Asignación y seguimiento', permisos: ['capacitacion:gestionar', 'platform:capacitacion:gestionar'], grupo: 'Capacitación' },

@@ -49,6 +49,7 @@ const ParametrosLegalesPage = lazy(() => import('../../features/nomina/pages/Par
 const CursosPage = lazy(() => import('../../features/capacitacion/pages/CursosPage').then(module => ({ default: module.CursosPage })))
 const SeguimientoCursosPage = lazy(() => import('../../features/capacitacion/pages/SeguimientoCursosPage').then(module => ({ default: module.SeguimientoCursosPage })))
 const IndicadoresPage = lazy(() => import('../../features/indicadores/pages/IndicadoresPage').then(module => ({ default: module.IndicadoresPage })))
+const FinanzasPage = lazy(() => import('../../features/reportes/pages/FinanzasPage').then(module => ({ default: module.FinanzasPage })))
 const PerfilHabilidadesPage = lazy(() => import('../../features/capacitacion/pages/PerfilHabilidadesPage').then(module => ({ default: module.PerfilHabilidadesPage })))
 const NotificacionesPage = lazy(() => import('../../features/notificaciones/pages/NotificacionesPage').then(module => ({ default: module.NotificacionesPage })))
 
@@ -131,6 +132,7 @@ export function AppRouter() {
         <Route path="capacitacion/mis-habilidades" element={empresa(<PerfilHabilidadesPage />, undefined, ['capacitacion:aprender', 'capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
         <Route path="capacitacion/seguimiento" element={empresa(<SeguimientoCursosPage />, undefined, ['capacitacion:gestionar', 'platform:capacitacion:gestionar'])} />
         <Route path="indicadores" element={empresa(<IndicadoresPage />, undefined, ['indicadores:ver', 'platform:indicadores:ver'])} />
+        <Route path="reportes/finanzas" element={plataforma(<FinanzasPage />, ['platform:reportes:gestionar'])} />
 
         <Route path="empresas" element={plataforma(<AltaEmpresaPage />, ['platform:empresas:ver'])} />
         <Route
