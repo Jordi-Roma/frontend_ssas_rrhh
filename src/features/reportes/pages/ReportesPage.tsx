@@ -3,7 +3,8 @@ import { Download, Eye, Filter as FilterIcon, Mic, Plus, Save, Square, Trash2 } 
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { useAccess } from '../../../app/access/AccessProvider'
 import { Alert, Button, Field, PageHeader, Panel } from '../../../shared/components'
-import { reportesApi, saveBlob, type Filter, type Preview, type ReportConfig, type Source } from '../api/reportesApi'
+import { reportesApi, saveBlob, type ChartSummary, type Filter, type Preview, type ReportConfig, type Source } from '../api/reportesApi'
+import { ReportChart, type ChartKind } from './ReportChart'
 
 const EMPTY_FILTER: Filter = { campo: '', operador: 'igual', valor: '' }
 
@@ -37,6 +38,12 @@ export function ReportesPage() {
   const [direction, setDirection] = useState<'asc' | 'desc'>('asc')
   const [preview, setPreview] = useState<Preview | null>(null)
   const [previewFor, setPreviewFor] = useState('')
+  const [chartField, setChartField] = useState('estado')
+  const [chartMetric, setChartMetric] = useState('')
+  const [chartKind, setChartKind] = useState<ChartKind>('bars')
+  const [chart, setChart] = useState<ChartSummary | null>(null)
+  const [chartFor, setChartFor] = useState('')
+  const [chartError, setChartError] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [interpreting, setInterpreting] = useState(false)
@@ -68,6 +75,24 @@ export function ReportesPage() {
   }), [sourceCode, columns, filters, orderField, direction])
   const configKey = JSON.stringify([company?.id, config])
   const visiblePreview = previewFor === configKey ? preview : null
+  const groupField = source?.columnas.includes(chartField) ? chartField : source?.columnas.includes('estado') ? 'estado' : source?.columnas.includes('activo') ? 'activo' : source?.columnas[0] ?? ''
+  const numericFields = sourceCode === 'vacantes' ? ['cantidad_vacantes'] : sourceCode === 'postulaciones' ? ['puntaje'] : []
+  const metricField = numericFields.includes(chartMetric) ? chartMetric : ''
+  const isDateField = groupField.startsWith('fecha_') || groupField === 'ultimo_acceso'
+  const selectedKind = chartKind === 'line' && !isDateField ? 'bars' : chartKind
+  const chartKey = JSON.stringify([configKey, groupField, metricField])
+  const visibleChart = visiblePreview && chartFor === chartKey ? chart : null
+
+  useEffect(() => {
+    if (!visiblePreview || !groupField || !advanced) return
+    let canceled = false
+    setChart(null)
+    setChartError(null)
+    reportesApi.chart(config, groupField, metricField || null, company?.id)
+      .then(result => { if (!canceled) { setChart(result); setChartFor(chartKey); setChartError(null) } })
+      .catch(error => { if (!canceled) { setChart(null); setChartError(error instanceof Error ? error.message : 'No se pudo generar el gráfico.') } })
+    return () => { canceled = true }
+  }, [visiblePreview, groupField, metricField, chartKey, advanced, config, company?.id])
 
   useEffect(() => {
     if (!autoPreview || !advanced) return
@@ -139,7 +164,7 @@ export function ReportesPage() {
 
   function changeSource(code: string) {
     setSourceCode(code); setColumns([]); setFilters([]); setOrderField('')
-    setPreview(null); setBusy(false); setInterpreted(false)
+    setPreview(null); setBusy(false); setInterpreted(false); setChart(null); setChartMetric('')
   }
 
   async function runPreview() {
@@ -193,6 +218,15 @@ export function ReportesPage() {
       <div className="form-grid"><Field label="Ordenar por"><select value={orderField} onChange={(e) => setOrderField(e.target.value)}><option value="">Sin orden</option>{source?.columnas.map((column) => <option key={column}>{column}</option>)}</select></Field><Field label="Dirección"><select value={direction} onChange={(e) => setDirection(e.target.value as 'asc' | 'desc')}><option value="asc">Ascendente</option><option value="desc">Descendente</option></select></Field></div>
       <div className="sticky-actions"><Button onClick={() => void runPreview()} disabled={!advanced} loading={busy}><Eye size={17} aria-hidden="true" />Vista previa</Button><Button variant="secondary" disabled={!advanced || !name.trim() || !columns.length} onClick={() => void reportesApi.create(name, config, company?.id).then(() => setMessage('Reporte guardado.')).catch((e: Error) => setMessage(e.message))}><Save size={17} aria-hidden="true" />Guardar definición</Button></div>
     </Panel>
+    {visiblePreview && <Panel title="Gráficos del reporte" eyebrow="Visualización" count={`${visiblePreview.total} registros`}>
+      <div className="report-chart-options">
+        <Field label="Agrupar por"><select value={groupField} onChange={event => setChartField(event.target.value)}>{source?.columnas.map(column => <option value={column} key={column}>{column.replaceAll('_', ' ')}</option>)}</select></Field>
+        <Field label="Mostrar"><select value={metricField} onChange={event => setChartMetric(event.target.value)}><option value="">Cantidad de registros</option>{numericFields.map(column => <option value={column} key={column}>Suma de {column.replaceAll('_', ' ')}</option>)}</select></Field>
+        <Field label="Tipo de gráfico"><select value={selectedKind} onChange={event => setChartKind(event.target.value as ChartKind)}><option value="bars">Barras</option><option value="donut">Anillo</option>{isDateField && <option value="line">Línea mensual</option>}</select></Field>
+      </div>
+      {chartError && <Alert tone="error">{chartError}</Alert>}
+      {visibleChart ? <ReportChart data={visibleChart} kind={selectedKind} title={`${metricField ? 'Suma de ' + metricField.replaceAll('_', ' ') : 'Registros'} por ${groupField.replaceAll('_', ' ')}`} /> : !chartError && <p role="status">Preparando gráfico…</p>}
+    </Panel>}
     {busy && autoPreview && <p role="status">Actualizando vista previa...</p>}
     {visiblePreview && <Panel title="Vista previa" count={`${visiblePreview.total} registros`}><div className="table-wrap"><table><thead><tr>{visiblePreview.columnas.map((column) => <th key={column}>{column.replaceAll('_', ' ')}</th>)}</tr></thead><tbody>{visiblePreview.items.map((row, index) => <tr key={index}>{visiblePreview.columnas.map((column) => <td key={column}>{String(row[column] ?? '')}</td>)}</tr>)}</tbody></table></div><div className="form-actions"><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('xlsx')}><Download size={16} aria-hidden="true" />Excel</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('csv')}><Download size={16} aria-hidden="true" />CSV</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('html')}><Download size={16} aria-hidden="true" />HTML</Button><Button variant="secondary" disabled={busy || interpreting} onClick={() => void download('pdf')}><Download size={16} aria-hidden="true" />PDF</Button></div></Panel>}
   </section>

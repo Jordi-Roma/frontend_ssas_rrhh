@@ -10,7 +10,7 @@ vi.mock('../../../app/context/CompanyScopeContext', () => ({
 }))
 vi.mock('../api/reportesApi', () => ({
   reportesApi: {
-    catalog: vi.fn(), interpret: vi.fn(), preview: vi.fn(), create: vi.fn(), export: vi.fn(),
+    catalog: vi.fn(), interpret: vi.fn(), preview: vi.fn(), chart: vi.fn(), create: vi.fn(), export: vi.fn(),
   },
   saveBlob: vi.fn(),
 }))
@@ -31,6 +31,11 @@ beforeEach(() => {
     columnas: config.columnas, items: [{ postulante: 'Ana', fecha_postulacion: '2026-09-15' }],
     total: 1, page: 1, per_page: 25,
   })
+  vi.mocked(reportesApi.chart).mockReset().mockResolvedValue({
+    campo: 'estado', metrica: null, total: 75, total_valor: 75,
+    grupos: [{ label: 'ACTIVA', count: 45, value: 45 }, { label: 'RETIRADA', count: 30, value: 30 }],
+    limite_meses: false,
+  })
 })
 afterEach(() => {
   cleanup()
@@ -38,6 +43,18 @@ afterEach(() => {
 })
 
 describe('reportes por voz o texto', () => {
+  it('muestra gráficos con el total agregado y permite cambiar de barras a anillo', async () => {
+    render(<ReportesPage />)
+    await screen.findByRole('option', { name: 'Postulaciones' })
+    fireEvent.click(screen.getByLabelText('postulante'))
+    fireEvent.click(screen.getByRole('button', { name: 'Vista previa' }))
+    await waitFor(() => expect(reportesApi.chart).toHaveBeenCalledWith(
+      expect.objectContaining({ fuente: 'postulaciones' }), 'postulante', null, 'company-a',
+    ))
+    expect(await screen.findByText('ACTIVA')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Tipo de gráfico'), { target: { value: 'donut' } })
+    expect(screen.getByRole('img', { name: /ACTIVA: 45/ })).toBeInTheDocument()
+  })
   it('exporta CSV desde la vista previa con el alcance de la empresa', async () => {
     vi.mocked(reportesApi.export).mockResolvedValue(new Blob(['postulante\nAna'], { type: 'text/csv' }))
     render(<ReportesPage />)
