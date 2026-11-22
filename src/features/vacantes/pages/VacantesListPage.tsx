@@ -19,6 +19,7 @@ import {
 import type { Column } from '../../../shared/components'
 import {
   cerrarVacante,
+  getCandidatosInternos,
   eliminarVacante,
   getVacantes,
   pausarVacante,
@@ -27,6 +28,7 @@ import {
   type EstadoVacante,
   type PaginatedVacantes,
   type VacanteListItem,
+  type SugerenciasInternas,
 } from '../api/vacantesApi'
 
 /** Acciones del ciclo de vida de una vacante que exigen confirmación. */
@@ -115,6 +117,17 @@ export function VacantesListPage() {
   const [ejecutando, setEjecutando] = useState(false)
   const [errorAccion, setErrorAccion] = useState<string | null>(null)
   const [errorPublicacion, setErrorPublicacion] = useState<string | null>(null)
+  const [internalVacancy, setInternalVacancy] = useState<VacanteListItem | null>(null)
+  const [suggestions, setSuggestions] = useState<SugerenciasInternas | null>(null)
+  const [suggestionError, setSuggestionError] = useState<string | null>(null)
+  const [suggestionLoading, setSuggestionLoading] = useState(false)
+
+  async function showInternal(vacante: VacanteListItem) {
+    setInternalVacancy(vacante); setSuggestions(null); setSuggestionError(null); setSuggestionLoading(true)
+    try { setSuggestions(await getCandidatosInternos(vacante.id, company?.id)) }
+    catch (cause) { setSuggestionError(cause instanceof Error ? cause.message : 'No se pudieron consultar los perfiles.') }
+    finally { setSuggestionLoading(false) }
+  }
 
   const cargar = useCallback(async () => {
     setLoading(true)
@@ -260,6 +273,9 @@ export function VacantesListPage() {
               {vacante.postulantes_count != null ? ` (${vacante.postulantes_count})` : ''}
             </Link>
           </Can>
+          <Can permisos={['empleados:ver', 'platform:vacantes:gestionar']}>
+            <Button variant="secondary" size="sm" onClick={() => void showInternal(vacante)}>Talento interno</Button>
+          </Can>
 
           {(vacante.estado === 'BORRADOR' || vacante.estado === 'PAUSADA') && (
             <Can permisos={PERM_EDITAR}>
@@ -344,6 +360,21 @@ export function VacantesListPage() {
       />
 
       {mensaje !== null && <Alert tone="success">{mensaje}</Alert>}
+
+      {internalVacancy && <Panel title={`Talento interno · ${internalVacancy.titulo}`} eyebrow="Coincidencia de habilidades">
+        <p>Comparación orientativa por habilidades registradas y pesos de la vacante. El nivel requerido se revisa por separado antes de contactar a una persona.</p>
+        <Button variant="secondary" size="sm" onClick={() => setInternalVacancy(null)}>Cerrar</Button>
+        {suggestionLoading && <p role="status">Buscando perfiles…</p>}
+        {suggestionError && <Alert tone="error">{suggestionError}</Alert>}
+        {suggestions && !suggestions.evaluables && <Alert tone="info">Agrega habilidades requeridas a la vacante para comparar perfiles.</Alert>}
+        {suggestions?.evaluables && suggestions.candidatos.length === 0 && <Alert tone="info">Todavía no hay empleados activos para comparar.</Alert>}
+        {suggestions?.candidatos.map(candidate => <div className="internal-candidate" key={candidate.empleado_id}>
+          <div><strong>{candidate.nombre}</strong><small> · {candidate.codigo}</small></div>
+          <strong>{candidate.afinidad}%</strong>
+          <p>Coinciden: {candidate.coinciden.join(', ') || 'ninguna'}</p>
+          <p>Faltan: {candidate.faltan.join(', ') || 'ninguna'}{candidate.obligatorias_pendientes.length > 0 ? ` · Obligatorias: ${candidate.obligatorias_pendientes.join(', ')}` : ''}</p>
+        </div>)}
+      </Panel>}
 
       <div className="card-grid">
         {METRICAS.map((metrica) => (

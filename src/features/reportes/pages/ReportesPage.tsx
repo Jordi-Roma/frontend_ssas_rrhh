@@ -76,7 +76,7 @@ export function ReportesPage() {
   const configKey = JSON.stringify([company?.id, config])
   const visiblePreview = previewFor === configKey ? preview : null
   const groupField = source?.columnas.includes(chartField) ? chartField : source?.columnas.includes('estado') ? 'estado' : source?.columnas.includes('activo') ? 'activo' : source?.columnas[0] ?? ''
-  const numericFields = sourceCode === 'vacantes' ? ['cantidad_vacantes'] : sourceCode === 'postulaciones' ? ['puntaje'] : []
+  const numericFields = sourceCode === 'vacantes' ? ['cantidad_vacantes'] : sourceCode === 'postulaciones' ? ['puntaje'] : sourceCode === 'ausencias' ? ['dias_solicitados'] : []
   const metricField = numericFields.includes(chartMetric) ? chartMetric : ''
   const isDateField = groupField.startsWith('fecha_') || groupField === 'ultimo_acceso'
   const selectedKind = chartKind === 'line' && !isDateField ? 'bars' : chartKind
@@ -130,6 +130,9 @@ export function ReportesPage() {
       setFilters(result.config.filtros)
       setOrderField(result.config.orden[0]?.campo ?? '')
       setDirection(result.config.orden[0]?.direccion ?? 'asc')
+      setChartField(result.grafico_campo ?? 'estado')
+      setChartMetric(result.grafico_metrica ?? '')
+      setChartKind(result.grafico_tipo ?? 'bars')
       setInterpreted(true)
       setAutoPreview(true)
     } catch (error) {
@@ -191,7 +194,7 @@ export function ReportesPage() {
     <Panel title="Constructor de reporte" eyebrow="Configuración">
       {ai ? <div className="report-query">
         <Field label="Consulta por voz o texto">
-          <textarea rows={2} maxLength={500} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ej. Postulaciones de septiembre ordenadas por fecha" />
+          <textarea rows={2} maxLength={500} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ej. Gráfico mensual de postulaciones de los últimos tres meses" />
         </Field>
         <div className="report-query-actions">
           {voiceSupported && <Button variant="secondary" onClick={toggleListening} disabled={interpreting} aria-label={listening ? 'Detener dictado' : 'Dictar consulta'} title={listening ? 'Detener dictado' : 'Dictar consulta'}>{listening ? <Square size={16} aria-hidden="true" /> : <Mic size={17} aria-hidden="true" />}{listening ? 'Detener' : 'Dictar'}</Button>}

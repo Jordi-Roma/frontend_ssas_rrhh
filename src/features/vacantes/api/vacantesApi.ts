@@ -61,6 +61,13 @@ export type VacanteListItem = Vacante & {
   postulantes_count: number | null
 }
 
+export type CandidatoInterno = { empleado_id: string; nombre: string; codigo: string; afinidad: number; coinciden: string[]; faltan: string[]; obligatorias_pendientes: string[] }
+export type SugerenciasInternas = { vacante_id: string; evaluables: boolean; candidatos: CandidatoInterno[] }
+
+export function getCandidatosInternos(id: string, empresaId?: string) {
+  return apiRequest<SugerenciasInternas>(scopedPath(`/api/v1/vacantes/${encodeURIComponent(id)}/candidatos-internos`, empresaId))
+}
+
 export type VacanteFormData = CrearVacanteRequest
 
 export type VacantesFilters = {

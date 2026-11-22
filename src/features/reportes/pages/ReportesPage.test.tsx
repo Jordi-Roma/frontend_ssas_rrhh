@@ -80,6 +80,22 @@ describe('reportes por voz o texto', () => {
     expect(screen.getByText(/Propuesta interpretada/)).toBeInTheDocument()
   })
 
+  it('applies the chart proposed by the interpreter', async () => {
+    vi.mocked(reportesApi.interpret).mockResolvedValue({
+      config, aclaracion: null, grafico_campo: 'fecha_postulacion',
+      grafico_metrica: null, grafico_tipo: 'line',
+    })
+    render(<ReportesPage />)
+    fireEvent.change(screen.getByLabelText('Consulta por voz o texto'), {
+      target: { value: 'Gráfico mensual de postulaciones' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Generar reporte' }))
+    await waitFor(() => expect(reportesApi.chart).toHaveBeenCalledWith(
+      expect.objectContaining({ fuente: 'postulaciones' }), 'fecha_postulacion', null, 'company-a',
+    ))
+    expect(screen.getByLabelText('Tipo de gráfico')).toHaveValue('line')
+  })
+
   it('hides the old preview while edited filters are recalculated', async () => {
     render(<ReportesPage />)
     fireEvent.change(screen.getByLabelText('Consulta por voz o texto'), {

@@ -6,7 +6,7 @@ export type ReportConfig = { fuente: string; columnas: string[]; filtros: Filter
 export type Source = { codigo: string; nombre: string; columnas: string[] }
 export type Preview = { columnas: string[]; items: Record<string, unknown>[]; total: number; page: number; per_page: number }
 export type ChartSummary = { campo: string; metrica: string | null; total: number; total_valor: number; grupos: { label: string; count: number; value: number }[]; limite_meses: boolean }
-export type Interpretation = { config: ReportConfig | null; aclaracion: string | null }
+export type Interpretation = { config: ReportConfig | null; aclaracion: string | null; grafico_campo?: string | null; grafico_metrica?: string | null; grafico_tipo?: 'bars' | 'donut' | 'line' | null }
 
 const scope = (empresaId?: string) => buildQuery({ empresa_id: empresaId })
 

@@ -1726,3 +1726,15 @@ tbody tr { transition: background-color 0.15s ease; }
   .info-value { text-align: left; overflow-wrap: anywhere; }
   .file-field input[type='file'] { max-width: 100%; }
 }
+.internal-candidate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .35rem 1rem;
+  margin-top: .75rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid #d9e8df;
+  border-radius: 14px;
+  background: linear-gradient(120deg, #f5fbf7, #fff);
+}
+.internal-candidate strong:last-child { color: #167454; }
+.internal-candidate p { grid-column: 1 / -1; margin: 0; color: #53645b; }
