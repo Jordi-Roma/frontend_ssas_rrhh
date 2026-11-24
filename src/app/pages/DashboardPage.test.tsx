@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, expect, it, vi } from 'vitest'
 import { DashboardPage } from './DashboardPage'
@@ -31,4 +31,27 @@ it('muestra la composición global al administrador de plataforma', async () => 
   render(<MemoryRouter><DashboardPage /></MemoryRouter>)
   expect(await screen.findByRole('img', { name: 'Activas: 6; Suspendidas: 1' })).toBeInTheDocument()
   expect(screen.getByText('Usuarios registrados')).toBeInTheDocument()
+})
+
+it('destaca una acción de otra sesión cuando llegan datos nuevos', async () => {
+  const initial = {
+    alcance: 'EMPRESA' as const, empresa_id: 'e1',
+    empresa: { usuarios_activos: 8, usuarios_inactivos: 2, vacantes_por_estado: { PUBLICADA: 3 }, postulaciones_por_etapa: { Entrevista: 5 }, departamentos: 2, cargos: 4 },
+    plataforma: null, bitacora_reciente: [],
+  }
+  vi.mocked(getDashboardResumen).mockResolvedValueOnce(initial).mockResolvedValueOnce({
+    ...initial, empresa: { ...initial.empresa, usuarios_activos: 9 },
+    bitacora_reciente: [{ id: 'evento-1', modulo: 'usuarios', accion: 'crear_usuario', nivel: 'INFO', descripcion: 'Usuario creado', actor: 'Franco', fecha: '2026-11-24T14:00:00Z' }],
+  })
+  vi.useFakeTimers()
+  try {
+    render(<MemoryRouter><DashboardPage /></MemoryRouter>)
+    await act(async () => { await Promise.resolve() })
+    expect(screen.queryByText('Actualización recibida')).not.toBeInTheDocument()
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(screen.getByText('Actualización recibida')).toBeInTheDocument()
+    expect(screen.getByText('Franco: crear usuario (usuarios)')).toBeInTheDocument()
+    expect(screen.getByText('Nuevo')).toBeInTheDocument()
+    expect(screen.getByText('Usuarios activos').closest('article')).toHaveClass('dashboard-stat-updated')
+  } finally { vi.useRealTimers() }
 })

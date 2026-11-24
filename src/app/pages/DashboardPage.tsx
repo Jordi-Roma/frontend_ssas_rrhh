@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Activity, ArrowRight, BriefcaseBusiness, Building2, FileText, LayoutDashboard, UsersRound } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,17 @@ import './dashboard.css'
 
 type Dashboard = components['schemas']['ResumenDashboardResponse']
 type Metric = { label: string; value: number | undefined; icon: LucideIcon; note: string }
+type DashboardChange = { eventIds: string[]; metricIndexes: number[]; message: string }
+
+function metricValues(summary: Dashboard): number[] {
+  if (summary.alcance === 'PLATAFORMA') {
+    const item = summary.plataforma
+    return [item?.empresas_activas ?? 0, item?.usuarios_totales ?? 0, item?.vacantes_publicadas ?? 0, item?.postulaciones_del_mes ?? 0]
+  }
+  const item = summary.empresa
+  return [item?.usuarios_activos ?? 0, item?.vacantes_por_estado.PUBLICADA ?? 0,
+    Object.values(item?.postulaciones_por_etapa ?? {}).reduce((sum, value) => sum + value, 0), item?.cargos ?? 0]
+}
 
 function Distribution({ title, subtitle, values, empty }: {
   title: string; subtitle: string; values: { label: string; value: number }[]; empty: string
@@ -47,6 +58,9 @@ export function DashboardPage() {
   const [data, setData] = useState<Dashboard | null>(null)
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [change, setChange] = useState<DashboardChange | null>(null)
+  const previous = useRef<Dashboard | null>(null)
+  const clearChangeTimer = useRef<number | null>(null)
 
   useEffect(() => {
     let active = true
@@ -56,7 +70,24 @@ export function DashboardPage() {
       inFlight = true
       try {
         const result = await getDashboardResumen()
-        if (active) { setData(result); setError(''); setLastUpdated(new Date()) }
+        if (active) {
+          const before = previous.current
+          if (before) {
+            const oldIds = new Set((before.bitacora_reciente ?? []).map(item => item.id))
+            const newEvents = (result.bitacora_reciente ?? []).filter(item => !oldIds.has(item.id))
+            const oldMetrics = metricValues(before)
+            const metricIndexes = metricValues(result).flatMap((value, index) => value !== oldMetrics[index] ? [index] : [])
+            if (newEvents.length || metricIndexes.length) {
+              const newest = newEvents[0]
+              setChange({ eventIds: newEvents.map(item => item.id), metricIndexes,
+                message: newest ? `${newest.actor ?? 'Un usuario'}: ${newest.accion.replaceAll('_', ' ')} (${newest.modulo})` : 'Se actualizaron los indicadores del dashboard.' })
+              if (clearChangeTimer.current !== null) window.clearTimeout(clearChangeTimer.current)
+              clearChangeTimer.current = window.setTimeout(() => setChange(null), 10000)
+            }
+          }
+          previous.current = result
+          setData(result); setError(''); setLastUpdated(new Date())
+        }
       } catch (cause) {
         if (active) setError(cause instanceof Error ? cause.message : 'No se pudo cargar el dashboard.')
       } finally { inFlight = false }
@@ -71,6 +102,7 @@ export function DashboardPage() {
       window.clearInterval(interval)
       window.removeEventListener('focus', refreshWhenVisible)
       document.removeEventListener('visibilitychange', refreshWhenVisible)
+      if (clearChangeTimer.current !== null) window.clearTimeout(clearChangeTimer.current)
     }
   }, [])
 
@@ -96,11 +128,12 @@ export function DashboardPage() {
   return <section className="dashboard-page" aria-labelledby="dashboard-title">
     <header className="dashboard-hero"><div><p className="dashboard-overline">CENTRO DE CONTROL</p><h1 id="dashboard-title">Dashboard</h1><p>{isPlatform ? 'Una vista de la actividad de toda la plataforma.' : 'Una vista clara de la actividad de tu empresa.'}</p></div><div className="dashboard-live" role="status"><span className="dashboard-live-dot" />{lastUpdated ? `Actualizado ${lastUpdated.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}` : 'Cargando datos'}</div></header>
     {error && <p className="dashboard-error" role="alert">{error}{data && ' Se muestran los últimos datos recibidos.'}</p>}
+    {change && <div className="dashboard-change" role="status"><span className="dashboard-change-icon"><Activity size={18} aria-hidden="true" /></span><div><strong>Actualización recibida</strong><p>{change.message}</p></div><span className="dashboard-change-now">Ahora</span></div>}
     <div className="dashboard-welcome"><div><span>RESUMEN GENERAL</span><h2>Hola, {user?.name ?? 'bienvenido'}</h2><p>{isPlatform ? 'Sigue las empresas, usuarios y postulaciones desde un solo lugar.' : 'Consulta el estado de usuarios, vacantes y postulaciones en tiempo real.'}</p></div><Activity size={48} strokeWidth={1.3} aria-hidden="true" /></div>
-    <div className="dashboard-metrics">{metrics.map(({ label, value, icon: Icon, note }) => <article className="dashboard-stat" key={label}><div className="dashboard-stat-icon"><Icon size={21} strokeWidth={1.8} aria-hidden="true" /></div><span>{label}</span><strong>{value === undefined ? '—' : value.toLocaleString('es-BO')}</strong><small>{note}</small></article>)}</div>
+    <div className="dashboard-metrics">{metrics.map(({ label, value, icon: Icon, note }, index) => <article className={`dashboard-stat${change?.metricIndexes.includes(index) ? ' dashboard-stat-updated' : ''}`} key={label}><div className="dashboard-stat-icon"><Icon size={21} strokeWidth={1.8} aria-hidden="true" /></div><span>{label}</span><strong>{value === undefined ? '—' : value.toLocaleString('es-BO')}</strong><small>{note}</small></article>)}</div>
     <div className="dashboard-chart-grid">
       {isPlatform ? <><ShareChart title="Estado de empresas" first={plataforma?.empresas_activas ?? 0} second={plataforma?.empresas_suspendidas ?? 0} firstLabel="Activas" secondLabel="Suspendidas" /><section className="dashboard-panel dashboard-overview"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">PLATAFORMA</p><h2>Estado general</h2><span>Indicadores complementarios</span></div></div><div className="dashboard-overview-list"><div><Building2 size={19} /><span>Empresas suspendidas</span><strong>{plataforma?.empresas_suspendidas ?? '—'}</strong></div><div><Building2 size={19} /><span>Empresas eliminadas</span><strong>{plataforma?.empresas_eliminadas ?? '—'}</strong></div><div><FileText size={19} /><span>Postulaciones este mes</span><strong>{plataforma?.postulaciones_del_mes ?? '—'}</strong></div></div><Link to="/empresas" className="dashboard-panel-link">Ver empresas <ArrowRight size={16} /></Link></section></> : <><Distribution title="Vacantes por estado" subtitle="Situación de las oportunidades" values={vacancies} empty="Todavía no hay vacantes registradas." /><Distribution title="Postulaciones por etapa" subtitle="Avance del proceso de selección" values={stages} empty="Todavía no hay postulaciones registradas." /><ShareChart title="Estado de usuarios" first={empresa?.usuarios_activos ?? 0} second={empresa?.usuarios_inactivos ?? 0} firstLabel="Activos" secondLabel="Inactivos" /><section className="dashboard-panel dashboard-overview"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">ORGANIZACIÓN</p><h2>Estructura de la empresa</h2><span>Datos registrados</span></div></div><div className="dashboard-overview-list"><div><Building2 size={19} /><span>Departamentos</span><strong>{empresa?.departamentos ?? '—'}</strong></div><div><BriefcaseBusiness size={19} /><span>Cargos</span><strong>{empresa?.cargos ?? '—'}</strong></div><div><UsersRound size={19} /><span>Usuarios totales</span><strong>{empresa ? empresa.usuarios_activos + empresa.usuarios_inactivos : '—'}</strong></div></div></section></>}
     </div>
-    <section className="dashboard-panel dashboard-activity"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">MOVIMIENTO RECIENTE</p><h2>Actividad reciente</h2><span>Últimos eventos registrados</span></div><span className="dashboard-activity-count">{data?.bitacora_reciente?.length ?? 0} eventos</span></div>{data?.bitacora_reciente?.length ? <div className="dashboard-timeline">{data.bitacora_reciente.map(item => <article key={item.id}><span className="dashboard-timeline-icon"><Activity size={16} aria-hidden="true" /></span><div><strong>{item.accion.replaceAll('_', ' ')}</strong><p>{item.modulo} · {item.actor ?? 'Sistema'}</p></div><time dateTime={item.fecha}>{new Date(item.fecha).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })}</time></article>)}</div> : <div className="dashboard-empty">{data ? 'Aún no hay actividad reciente.' : 'Cargando actividad…'}</div>}</section>
+    <section className="dashboard-panel dashboard-activity"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">MOVIMIENTO RECIENTE</p><h2>Actividad reciente</h2><span>Últimos eventos registrados</span></div><span className="dashboard-activity-count">{data?.bitacora_reciente?.length ?? 0} eventos</span></div>{data?.bitacora_reciente?.length ? <div className="dashboard-timeline">{data.bitacora_reciente.map(item => <article className={change?.eventIds.includes(item.id) ? 'dashboard-event-new' : ''} key={item.id}><span className="dashboard-timeline-icon"><Activity size={16} aria-hidden="true" /></span><div><strong>{item.accion.replaceAll('_', ' ')}</strong><p>{item.modulo} · {item.actor ?? 'Sistema'}</p></div><time dateTime={item.fecha}>{new Date(item.fecha).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })}</time>{change?.eventIds.includes(item.id) && <span className="dashboard-new-tag">Nuevo</span>}</article>)}</div> : <div className="dashboard-empty">{data ? 'Aún no hay actividad reciente.' : 'Cargando actividad…'}</div>}</section>
   </section>
 }
