@@ -52,6 +52,29 @@ function ShareChart({ title, first, second, firstLabel, secondLabel }: {
   </section>
 }
 
+function TrendChart({ title, kind, rows, ready }: {
+  title: string; kind: 'vacantes' | 'postulaciones';
+  rows: components['schemas']['TendenciaMensual'][]; ready: boolean
+}) {
+  const values = rows.map(row => row[kind])
+  const max = Math.max(1, ...values)
+  const total = values.reduce((sum, value) => sum + value, 0)
+  const points = values.map((value, index) => ({ x: 35 + index * 106, y: 174 - value / max * 128, value }))
+  const line = points.map(point => `${point.x},${point.y}`).join(' ')
+  const labels = rows.map(row => new Intl.DateTimeFormat('es-BO', { month: 'short' }).format(new Date(`${row.mes}-01T12:00:00Z`)))
+
+  return <section className="dashboard-panel dashboard-trend-panel">
+    <div className="dashboard-panel-heading"><div><p className="dashboard-overline">ÚLTIMOS SEIS MESES</p><h2>{title}</h2><span>{kind === 'vacantes' ? 'Vacantes registradas por mes' : 'Postulaciones recibidas por mes'}</span></div><strong className="dashboard-panel-total">{total} total</strong></div>
+    {!ready ? <div className="dashboard-empty">Cargando tendencias…</div> : total === 0 ? <div className="dashboard-empty">No hay {kind} en los últimos seis meses.</div> : <div className="dashboard-trend-chart" role="img" aria-label={`${title}: ${rows.map((row, index) => `${labels[index]} ${row[kind]}`).join(', ')}`}>
+      <svg viewBox="0 0 600 196" preserveAspectRatio="none" aria-hidden="true">
+        {[46, 89, 132, 174].map(y => <line className="dashboard-grid-line" key={y} x1="18" y1={y} x2="582" y2={y} />)}
+        {kind === 'postulaciones' ? <><polygon className="dashboard-area" points={`35,174 ${line} 565,174`} /><polyline className="dashboard-line" points={line} />{points.map((point, index) => <circle className="dashboard-line-point" key={index} cx={point.x} cy={point.y} r="5"><title>{labels[index]}: {point.value}</title></circle>)}</> : points.map((point, index) => <rect className="dashboard-column" key={index} x={point.x - 19} y={point.y} width="38" height={174 - point.y} rx="7"><title>{labels[index]}: {point.value}</title></rect>)}
+      </svg>
+      <div className="dashboard-trend-labels">{labels.map((label, index) => <span key={rows[index].mes}>{label}<strong>{values[index]}</strong></span>)}</div>
+    </div>}
+  </section>
+}
+
 export function DashboardPage() {
   const { user } = useAuth()
   const isPlatform = user?.realm === 'platform'
@@ -111,6 +134,7 @@ export function DashboardPage() {
   const vacancies = Object.entries(empresa?.vacantes_por_estado ?? {}).map(([label, value]) => ({ label, value }))
   const stages = Object.entries(empresa?.postulaciones_por_etapa ?? {}).map(([label, value]) => ({ label, value }))
   const applications = stages.reduce((sum, item) => sum + item.value, 0)
+  const trends = data?.tendencias ?? []
   const metrics: Metric[] = isPlatform
     ? [
         { label: 'Empresas activas', value: plataforma?.empresas_activas, icon: Building2, note: 'Operando en la plataforma' },
@@ -134,6 +158,7 @@ export function DashboardPage() {
     <div className="dashboard-chart-grid">
       {isPlatform ? <><ShareChart title="Estado de empresas" first={plataforma?.empresas_activas ?? 0} second={plataforma?.empresas_suspendidas ?? 0} firstLabel="Activas" secondLabel="Suspendidas" /><section className="dashboard-panel dashboard-overview"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">PLATAFORMA</p><h2>Estado general</h2><span>Indicadores complementarios</span></div></div><div className="dashboard-overview-list"><div><Building2 size={19} /><span>Empresas suspendidas</span><strong>{plataforma?.empresas_suspendidas ?? '—'}</strong></div><div><Building2 size={19} /><span>Empresas eliminadas</span><strong>{plataforma?.empresas_eliminadas ?? '—'}</strong></div><div><FileText size={19} /><span>Postulaciones este mes</span><strong>{plataforma?.postulaciones_del_mes ?? '—'}</strong></div></div><Link to="/empresas" className="dashboard-panel-link">Ver empresas <ArrowRight size={16} /></Link></section></> : <><Distribution title="Vacantes por estado" subtitle="Situación de las oportunidades" values={vacancies} empty="Todavía no hay vacantes registradas." /><Distribution title="Postulaciones por etapa" subtitle="Avance del proceso de selección" values={stages} empty="Todavía no hay postulaciones registradas." /><ShareChart title="Estado de usuarios" first={empresa?.usuarios_activos ?? 0} second={empresa?.usuarios_inactivos ?? 0} firstLabel="Activos" secondLabel="Inactivos" /><section className="dashboard-panel dashboard-overview"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">ORGANIZACIÓN</p><h2>Estructura de la empresa</h2><span>Datos registrados</span></div></div><div className="dashboard-overview-list"><div><Building2 size={19} /><span>Departamentos</span><strong>{empresa?.departamentos ?? '—'}</strong></div><div><BriefcaseBusiness size={19} /><span>Cargos</span><strong>{empresa?.cargos ?? '—'}</strong></div><div><UsersRound size={19} /><span>Usuarios totales</span><strong>{empresa ? empresa.usuarios_activos + empresa.usuarios_inactivos : '—'}</strong></div></div></section></>}
     </div>
+    <div className="dashboard-chart-grid"><TrendChart title="Evolución de postulaciones" kind="postulaciones" rows={trends} ready={data !== null} /><TrendChart title="Evolución de vacantes" kind="vacantes" rows={trends} ready={data !== null} /></div>
     <section className="dashboard-panel dashboard-activity"><div className="dashboard-panel-heading"><div><p className="dashboard-overline">MOVIMIENTO RECIENTE</p><h2>Actividad reciente</h2><span>Últimos eventos registrados</span></div><span className="dashboard-activity-count">{data?.bitacora_reciente?.length ?? 0} eventos</span></div>{data?.bitacora_reciente?.length ? <div className="dashboard-timeline">{data.bitacora_reciente.map(item => <article className={change?.eventIds.includes(item.id) ? 'dashboard-event-new' : ''} key={item.id}><span className="dashboard-timeline-icon"><Activity size={16} aria-hidden="true" /></span><div><strong>{item.accion.replaceAll('_', ' ')}</strong><p>{item.modulo} · {item.actor ?? 'Sistema'}</p></div><time dateTime={item.fecha}>{new Date(item.fecha).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' })}</time>{change?.eventIds.includes(item.id) && <span className="dashboard-new-tag">Nuevo</span>}</article>)}</div> : <div className="dashboard-empty">{data ? 'Aún no hay actividad reciente.' : 'Cargando actividad…'}</div>}</section>
   </section>
 }

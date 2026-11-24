@@ -13,12 +13,17 @@ it('muestra los gráficos de la empresa con los totales recibidos', async () => 
   vi.mocked(getDashboardResumen).mockResolvedValue({
     alcance: 'EMPRESA', empresa_id: 'e1',
     empresa: { usuarios_activos: 8, usuarios_inactivos: 2, vacantes_por_estado: { PUBLICADA: 3, PAUSADA: 1 }, postulaciones_por_etapa: { Entrevista: 5 }, departamentos: 2, cargos: 4 },
-    plataforma: null, bitacora_reciente: [],
+    plataforma: null, bitacora_reciente: [], tendencias: [
+      { mes: '2026-10', vacantes: 2, postulaciones: 4 },
+      { mes: '2026-11', vacantes: 3, postulaciones: 5 },
+    ],
   })
   render(<MemoryRouter><DashboardPage /></MemoryRouter>)
   expect(await screen.findByRole('img', { name: 'Activos: 8; Inactivos: 2' })).toBeInTheDocument()
   expect(screen.getByRole('img', { name: 'PUBLICADA: 3' })).toBeInTheDocument()
   expect(screen.getByRole('img', { name: 'Entrevista: 5' })).toBeInTheDocument()
+  expect(screen.getByRole('img', { name: /Evolución de postulaciones:.*oct.*4.*nov.*5/ })).toBeInTheDocument()
+  expect(screen.getByRole('img', { name: /Evolución de vacantes:.*oct.*2.*nov.*3/ })).toBeInTheDocument()
 })
 
 it('muestra la composición global al administrador de plataforma', async () => {

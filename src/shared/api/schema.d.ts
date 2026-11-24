@@ -5464,6 +5464,8 @@ export interface components {
             plataforma?: components["schemas"]["ResumenPlataforma"] | null;
             /** Bitacora Reciente */
             bitacora_reciente?: components["schemas"]["BitacoraResumen"][];
+            /** Tendencias */
+            tendencias?: components["schemas"]["TendenciaMensual"][];
         };
         /** ResumenEmpresa */
         ResumenEmpresa: {
@@ -5498,6 +5500,15 @@ export interface components {
             vacantes_publicadas: number;
             /** Postulaciones Del Mes */
             postulaciones_del_mes: number;
+        };
+        /** TendenciaMensual */
+        TendenciaMensual: {
+            /** Mes */
+            mes: string;
+            /** Vacantes */
+            vacantes: number;
+            /** Postulaciones */
+            postulaciones: number;
         };
         /** RoleSchema */
         RoleSchema: {

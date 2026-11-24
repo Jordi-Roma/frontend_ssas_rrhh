@@ -23,6 +23,17 @@
 .dashboard-stat > strong { margin: 4px 0; color: var(--ink); font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.15; letter-spacing: -.04em; }
 .dashboard-stat > small { margin-top: auto; color: var(--muted); font-size: .7rem; }
 .dashboard-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.dashboard-trend-panel { min-height: 300px; }
+.dashboard-trend-chart { margin-top: 23px; }
+.dashboard-trend-chart svg { display: block; width: 100%; height: 190px; overflow: visible; }
+.dashboard-grid-line { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 5; }
+.dashboard-area { fill: var(--brand-100); opacity: .85; }
+.dashboard-line { fill: none; stroke: var(--brand-700); stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+.dashboard-line-point { fill: var(--paper); stroke: var(--brand-700); stroke-width: 3; }
+.dashboard-column { fill: var(--brand-700); opacity: .86; transition: opacity .2s ease; }
+.dashboard-column:hover { opacity: 1; }
+.dashboard-trend-labels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; color: var(--muted); font-size: .69rem; text-align: center; text-transform: capitalize; }
+.dashboard-trend-labels span { display: grid; gap: 4px; }.dashboard-trend-labels strong { color: var(--ink); font-size: .75rem; }
 .dashboard-panel { min-width: 0; border: 1px solid var(--line); border-radius: 20px; padding: clamp(18px, 2.5vw, 25px); background: var(--paper); box-shadow: var(--shadow-sm); }
 .dashboard-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
 .dashboard-panel-heading h2 { margin: 0 0 5px; color: var(--ink); font-size: 1.12rem; letter-spacing: -.02em; }
