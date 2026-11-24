@@ -13,7 +13,7 @@ export type NavItem = {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Inicio' },
+  { to: '/', label: 'Dashboard' },
   { to: '/personal/contratos', label: 'Contratos', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
   { to: '/personal/ficha', label: 'Ficha de empleado', permisos: ['personal:ver', 'platform:personal:ver'], grupo: 'Personal' },
   { to: '/personal/ausencias/mi', label: 'Mis ausencias', soloRealm: 'tenant', permisos: ['ausencias:mi'], grupo: 'Personal' },

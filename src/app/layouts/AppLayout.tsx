@@ -1,7 +1,7 @@
 import { Suspense, useState } from 'react'
 import {
   Award, BarChart3, BookOpen, BriefcaseBusiness, Building2, CalendarDays, ChevronDown,
-  Bell, CircleHelp, CreditCard, DatabaseBackup, FileUp, House, KeyRound, LayoutGrid,
+  Bell, CircleHelp, CreditCard, DatabaseBackup, FileUp, LayoutDashboard, KeyRound, LayoutGrid,
   ListChecks, LockKeyhole, Menu, ScrollText, Settings2, ShieldCheck, UserRound,
   Users, UsersRound, X,
 } from 'lucide-react'
@@ -28,7 +28,7 @@ const GROUP_ICONS: Record<string, LucideIcon> = {
 }
 
 const NAV_ICONS: Record<string, LucideIcon> = {
-  '/': House,
+  '/': LayoutDashboard,
   '/personal/contratos': ScrollText,
   '/personal/ausencias/configuracion': CalendarDays,
   '/personal/ausencias/mi': CalendarDays,
@@ -86,7 +86,7 @@ export function AppLayout() {
   }
 
   // El menú es consecuencia de los módulos habilitados y de los permisos efectivos:
-  // no hay ninguna entrada fija salvo Inicio y la cuenta.
+  // no hay ninguna entrada fija salvo Dashboard y la cuenta.
   function visible(item: NavItem): boolean {
     if (item.soloRealm !== undefined && item.soloRealm !== user?.realm) return false
     if (item.modulo !== undefined) {

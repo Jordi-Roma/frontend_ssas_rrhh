@@ -48,7 +48,7 @@ it('keeps the selected section open after navigating', async () => {
   renderLayout('/')
   const user = userEvent.setup()
 
-  expect(screen.getByRole('link', { name: 'Inicio' })).toBeVisible()
+  expect(screen.getByRole('link', { name: 'Dashboard' })).toBeVisible()
   await user.click(screen.getByRole('button', { name: 'Cuenta' }))
   await user.click(screen.getByRole('link', { name: 'Mi perfil' }))
 
