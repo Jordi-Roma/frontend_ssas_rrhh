@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { indicadoresApi, type Indicadores } from '../api/indicadoresApi'
@@ -25,4 +25,21 @@ it('distingue un error de un período sin datos', async () => {
   expect(await screen.findByText('Servicio no disponible')).toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
   expect(await screen.findByText('No hay empleados por departamento para esta fecha.')).toBeInTheDocument()
+})
+it('refresca los indicadores sin recargar ni vaciar la pantalla', async () => {
+  vi.mocked(indicadoresApi.obtener)
+    .mockResolvedValueOnce(data)
+    .mockResolvedValueOnce({ ...data, rotacion: { ...data.rotacion, porcentaje: 10 } })
+  vi.useFakeTimers()
+  try {
+    render(<MemoryRouter><IndicadoresPage /></MemoryRouter>)
+    await act(async () => { await Promise.resolve() })
+    expect(screen.getByText('5.0%')).toBeInTheDocument()
+    await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+    expect(screen.getByText('10.0%')).toBeInTheDocument()
+    expect(screen.queryByText('Calculando indicadores…')).not.toBeInTheDocument()
+    expect(indicadoresApi.obtener).toHaveBeenCalledTimes(2)
+  } finally {
+    vi.useRealTimers()
+  }
 })

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCompanyScope } from '../../../app/context/CompanyScopeContext'
 import { Alert, Button, EmptyState, Field, PageHeader, Panel } from '../../../shared/components'
@@ -29,14 +29,38 @@ export function IndicadoresPage() {
   const [error, setError] = useState<string | null>(null)
   const [revision, setRevision] = useState(0)
 
-  const load = useCallback(async () => {
+  useEffect(() => {
     if (!selectedCompanyId) return
-    setLoading(true); setError(null); setData(null)
-    try { setData(await indicadoresApi.obtener(selectedCompanyId, applied.desde, applied.hasta)) }
-    catch (cause) { setError(cause instanceof Error ? cause.message : 'No se pudieron cargar los indicadores.') }
-    finally { setLoading(false) }
+    let active = true
+    let inFlight = false
+    setLoading(true)
+    setError(null)
+    setData(null)
+    const refresh = async (initial = false) => {
+      if (!active || inFlight || (!initial && document.visibilityState === 'hidden')) return
+      inFlight = true
+      try {
+        const result = await indicadoresApi.obtener(selectedCompanyId, applied.desde, applied.hasta)
+        if (active) { setData(result); setError(null) }
+      } catch (cause) {
+        if (active) setError(cause instanceof Error ? cause.message : 'No se pudieron cargar los indicadores.')
+      } finally {
+        inFlight = false
+        if (active && initial) setLoading(false)
+      }
+    }
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') void refresh() }
+    void refresh(true)
+    const interval = window.setInterval(() => { void refresh() }, 3000)
+    window.addEventListener('focus', refreshWhenVisible)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+    return () => {
+      active = false
+      window.clearInterval(interval)
+      window.removeEventListener('focus', refreshWhenVisible)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
   }, [selectedCompanyId, applied, revision])
-  useEffect(() => { void load() }, [load])
 
   const funnel = useMemo(() => data ? Object.entries(data.embudo_reclutamiento).map(([label, count]) => ({ label: label.replaceAll('_', ' '), count })) : [], [data])
   const stages = useMemo(() => data?.embudo_por_etapa.map(item => ({ label: item.etapa, count: item.postulaciones })) ?? [], [data])

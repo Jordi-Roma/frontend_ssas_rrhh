@@ -13,12 +13,30 @@ export function DashboardPage() {
 
   useEffect(() => {
     let active = true
-    void getDashboardResumen().then((result) => {
-      if (active) setData(result)
-    }).catch((cause: unknown) => {
-      if (active) setError(cause instanceof Error ? cause.message : 'No se pudo cargar el resumen.')
-    })
-    return () => { active = false }
+    let inFlight = false
+    const refresh = async () => {
+      if (!active || inFlight || document.visibilityState === 'hidden') return
+      inFlight = true
+      try {
+        const result = await getDashboardResumen()
+        if (active) { setData(result); setError('') }
+      } catch (cause) {
+        if (active) setError(cause instanceof Error ? cause.message : 'No se pudo cargar el resumen.')
+      } finally {
+        inFlight = false
+      }
+    }
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') void refresh() }
+    void refresh()
+    const interval = window.setInterval(() => { void refresh() }, 3000)
+    window.addEventListener('focus', refreshWhenVisible)
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+    return () => {
+      active = false
+      window.clearInterval(interval)
+      window.removeEventListener('focus', refreshWhenVisible)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
   }, [])
 
   const empresa = data?.empresa
